@@ -14,16 +14,18 @@ from sklearn.cluster import KMeans
 
 logger = logging.getLogger(__name__)
 
+import base64
+import asyncio
+
 # Check for Pillow and HTTPX dependencies
 HAS_ML_LIBRARIES = False
 try:
     from PIL import Image
     import httpx
-    import base64
-    import asyncio
     HAS_ML_LIBRARIES = True
 except ImportError:
     HAS_ML_LIBRARIES = False
+
 
 def get_vllm_endpoints() -> dict[str, str]:
     """Retrieve Jetson and DGX Spark VLLM URLs from vault env or defaults."""
