@@ -1,5 +1,5 @@
 """
-Canonical data models for the cannabis-researcher warehouse.
+Canonical data models for the treesearch-service warehouse.
 
 These models define the unified schema that all sources (Kannapedia,
 SeedFinder, Leafly, forums, etc.) map into after ingestion.

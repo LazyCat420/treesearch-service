@@ -1,7 +1,7 @@
 """
 test_kannapedia_import.py
 ---------------------------
-Mock tests for the Kannapedia → cannabis-researcher import pipeline.
+Mock tests for the Kannapedia → treesearch-client import pipeline.
 
 Validates:
   1. Kannapedia strain name → RSP number lookup (index search)

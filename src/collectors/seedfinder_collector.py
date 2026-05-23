@@ -54,7 +54,11 @@ async def search_seedfinder(query: str, limit: int = 20) -> list[dict]:
                 from src.scraper_client import ScraperClient
                 scraper = ScraperClient()
                 try:
-                    res = await scraper.scrape(url, engine="playwright", options={"raw_html": True})
+                    res = await scraper.scrape(
+                        url, 
+                        engine="playwright", 
+                        options={"raw_html": True, "wait_for": "a[href*='/strain-info/']"}
+                    )
                     if res.get("success") and res.get("content"):
                         html = res["content"]
                 finally:
@@ -187,7 +191,11 @@ async def scrape_seedfinder_strain(
                 from src.scraper_client import ScraperClient
                 scraper = ScraperClient()
                 try:
-                    res = await scraper.scrape(url, engine="playwright", options={"raw_html": True})
+                    res = await scraper.scrape(
+                        url, 
+                        engine="playwright", 
+                        options={"raw_html": True, "wait_for": "h1"}
+                    )
                     if res.get("success") and res.get("content"):
                         html = res["content"]
                 finally:

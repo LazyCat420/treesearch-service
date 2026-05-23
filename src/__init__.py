@@ -1,1 +1,1 @@
-# cannabis-researcher — Unified cannabis data warehouse + analysis
+# treesearch-service — Unified cannabis data warehouse + analysis

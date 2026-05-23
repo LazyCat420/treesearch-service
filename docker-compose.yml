@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  cannabis-service:
-    image: cannabis-service:latest
-    container_name: cannabis-service
+  treesearch-service:
+    image: treesearch-service:latest
+    container_name: treesearch-service
     restart: unless-stopped
     ports:
       - "8005:8005"

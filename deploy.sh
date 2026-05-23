@@ -1,13 +1,13 @@
 #!/bin/bash
 # ============================================================
-# Cannabis Service — Build & Deploy to Synology NAS
+# Treesearch Service — Build & Deploy to Synology NAS
 #
 # Thin wrapper — all logic lives in ../deploy-kit/lib.sh
 # ============================================================
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-IMAGE_NAME="cannabis-service"
-DISPLAY_NAME="🧬 Cannabis Service"
+IMAGE_NAME="treesearch-service"
+DISPLAY_NAME="🧬 Treesearch Service"
 
 PRE_BUILD() {
   local CENTRAL_ENV="${DEPLOY_KIT_DIR}/.env.deploy"

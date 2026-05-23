@@ -1,5 +1,5 @@
 """
-cannabis-service — Unified cannabis data warehouse + analysis API.
+treesearch-service — Unified cannabis data warehouse + analysis API.
 
 Standalone backend service. Provides:
   - REST API for strain search/compare
@@ -7,7 +7,7 @@ Standalone backend service. Provides:
   - ETL ingestion from scraper-service
   - Strain detail endpoints
 
-The frontend is served separately by cannabis-researcher (nginx).
+The frontend is served separately by treesearch-client (nginx).
 """
 
 import logging
@@ -519,10 +519,10 @@ async def lifespan(app: FastAPI):
     else:
         logger.info("No KANNAPEDIA_DATA_DIR set, database starts as-is.")
     yield
-    logger.info("cannabis-service stopped")
+    logger.info("treesearch-service stopped")
 
 app = FastAPI(
-    title="cannabis-service",
+    title="treesearch-service",
     description=(
         "Unified cannabis data warehouse + analysis API. "
         "Provides strain search, genomic analysis, terpene profiling, "
@@ -532,7 +532,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Allow requests from the cannabis-researcher frontend
+# Allow requests from the treesearch-client frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -562,7 +562,7 @@ async def health():
 @app.get("/")
 async def root():
     """Root endpoint — redirects to docs."""
-    return {"service": "cannabis-service", "docs": "/docs"}
+    return {"service": "treesearch-service", "docs": "/docs"}
 
 # ----- Network Data API ----- #
 
@@ -793,7 +793,15 @@ async def _save_forum_posts_to_db(session, posts: list[dict], source_name: str, 
         title = p.get("title", "")
         body = p.get("body", "")
         created_at_str = p.get("created_at")
-        dt = datetime.fromisoformat(created_at_str).replace(tzinfo=None) if created_at_str else datetime.utcnow()
+        dt = datetime.utcnow()
+        if created_at_str:
+            try:
+                dt = datetime.fromisoformat(created_at_str).replace(tzinfo=None)
+            except Exception:
+                try:
+                    dt = datetime.strptime(created_at_str, "%Y-%m-%d %H:%M:%S")
+                except Exception:
+                    dt = datetime.utcnow()
 
         obs = ObservationORM(
             source_name=source_name,
@@ -977,7 +985,6 @@ async def import_strain(request: Request):
                             real_name = primary_name
                             strain_slug = primary_name.lower().replace("_", "-")
                             # Eagerly load the breeder name
-                            from src.models.orm import BreederORM
                             stmt_br = select(BreederORM).where(BreederORM.id == strain_orm.breeder_id)
                             br = (await session.execute(stmt_br)).scalars().first() if strain_orm.breeder_id else None
                             
@@ -1253,146 +1260,65 @@ async def import_strain(request: Request):
 
             # Scrape forum threads for observations and pictures
             try:
-                # Overgrow (Discourse) — DDG-based search returns full post content directly
+                # Overgrow (Discourse)
                 try:
-                    search_res = await scraper_client.collect({
-                        "source": "discourse",
-                        "base_url": "https://overgrow.com",
-                        "forum_name": "overgrow",
-                        "query": f'"{search_query}"',
-                        "limit": 30
-                    })
-                    p_saved, i_saved = await _save_forum_posts_to_db(session, search_res.get("items", []), "overgrow", strain_orm.id, search_query)
+                    from src.collectors.discourse_collector import DiscourseCollector
+                    collector = DiscourseCollector(base_url="https://overgrow.com", forum_name="overgrow")
+                    items = await collector.search(search_query, limit=30)
+                    p_saved, i_saved = await _save_forum_posts_to_db(session, items, "overgrow", strain_orm.id, search_query)
                     total_posts += p_saved
                     total_images += i_saved
                     yield json.dumps({"type": "progress", "message": f"Overgrow complete ({p_saved} posts, {i_saved} images). Scraping Rollitup...", "posts": total_posts, "images": total_images}) + "\n"
                 except Exception as ex:
                     logger.error(f"Failed to scrape Overgrow for {search_query}: {ex}")
 
-                # Helper for XenForo normalization
-                def normalize_xenforo_thread_url(url: str) -> str:
-                    if not url:
-                        return ""
-                    if "/post-" in url:
-                        return url
-                    if not url.endswith("/"):
-                        url += "/"
-                    return url
-
-                # Rollitup
+                # Rollitup (XenForo)
                 try:
-                    search_res = await scraper_client.collect({
-                        "source": "xenforo",
-                        "base_url": "https://www.rollitup.org",
-                        "forum_name": "rollitup",
-                        "query": f'"{search_query}"',
-                        "limit": 10
-                    })
-                    thread_urls = []
-                    for item in search_res.get("items", []):
-                        turl = normalize_xenforo_thread_url(item.get("url"))
-                        if turl and turl not in thread_urls:
-                            thread_urls.append(turl)
-                        if len(thread_urls) >= 3:
-                            break
-                    for idx, turl in enumerate(thread_urls):
-                        yield json.dumps({"type": "progress", "message": f"Scraping Rollitup thread {idx+1}/{len(thread_urls)}...", "posts": total_posts, "images": total_images}) + "\n"
-                        try:
-                            posts_riu = await scraper_client.collect({
-                                "source": "xenforo",
-                                "base_url": "https://www.rollitup.org",
-                                "forum_name": "rollitup",
-                                "thread_url": turl,
-                                "limit": 30
-                            })
-                            p_saved, i_saved = await _save_forum_posts_to_db(session, posts_riu.get("items", []), "rollitup", strain_orm.id, search_query)
-                            total_posts += p_saved
-                            total_images += i_saved
-                        except Exception as ex:
-                            logger.error(f"Failed to fetch Rollitup thread {turl} posts: {ex}")
-                    yield json.dumps({"type": "progress", "message": "Rollitup complete. Scraping THCFarmer...", "posts": total_posts, "images": total_images}) + "\n"
+                    from src.collectors.xenforo_collector import XenForoCollector
+                    collector = XenForoCollector(base_url="https://www.rollitup.org", forum_name="rollitup")
+                    items = await collector.search(search_query, limit=30)
+                    p_saved, i_saved = await _save_forum_posts_to_db(session, items, "rollitup", strain_orm.id, search_query)
+                    total_posts += p_saved
+                    total_images += i_saved
+                    yield json.dumps({"type": "progress", "message": f"Rollitup complete ({p_saved} posts, {i_saved} images). Scraping THCFarmer...", "posts": total_posts, "images": total_images}) + "\n"
                 except Exception as ex:
                     logger.error(f"Failed to scrape Rollitup for {search_query}: {ex}")
 
-                # THCFarmer
+                # THCFarmer (XenForo)
                 try:
-                    search_res = await scraper_client.collect({
-                        "source": "xenforo",
-                        "base_url": "https://www.thcfarmer.com",
-                        "forum_name": "thcfarmer",
-                        "query": f'"{search_query}"',
-                        "limit": 10
-                    })
-                    thread_urls = []
-                    for item in search_res.get("items", []):
-                        turl = normalize_xenforo_thread_url(item.get("url"))
-                        if turl and turl not in thread_urls:
-                            thread_urls.append(turl)
-                        if len(thread_urls) >= 3:
-                            break
-                    for idx, turl in enumerate(thread_urls):
-                        yield json.dumps({"type": "progress", "message": f"Scraping THCFarmer thread {idx+1}/{len(thread_urls)}...", "posts": total_posts, "images": total_images}) + "\n"
-                        try:
-                            posts_thc = await scraper_client.collect({
-                                "source": "xenforo",
-                                "base_url": "https://www.thcfarmer.com",
-                                "forum_name": "thcfarmer",
-                                "thread_url": turl,
-                                "limit": 30
-                            })
-                            p_saved, i_saved = await _save_forum_posts_to_db(session, posts_thc.get("items", []), "thcfarmer", strain_orm.id, search_query)
-                            total_posts += p_saved
-                            total_images += i_saved
-                        except Exception as ex:
-                            logger.error(f"Failed to fetch THCFarmer thread {turl} posts: {ex}")
-                    yield json.dumps({"type": "progress", "message": "THCFarmer complete. Scraping ICMag...", "posts": total_posts, "images": total_images}) + "\n"
+                    from src.collectors.xenforo_collector import XenForoCollector
+                    collector = XenForoCollector(base_url="https://www.thcfarmer.com", forum_name="thcfarmer")
+                    items = await collector.search(search_query, limit=30)
+                    p_saved, i_saved = await _save_forum_posts_to_db(session, items, "thcfarmer", strain_orm.id, search_query)
+                    total_posts += p_saved
+                    total_images += i_saved
+                    yield json.dumps({"type": "progress", "message": f"THCFarmer complete ({p_saved} posts, {i_saved} images). Scraping ICMag...", "posts": total_posts, "images": total_images}) + "\n"
                 except Exception as ex:
                     logger.error(f"Failed to scrape THCFarmer for {search_query}: {ex}")
 
-                # ICMag
+                # ICMag (XenForo)
                 try:
-                    search_res = await scraper_client.collect({
-                        "source": "xenforo",
-                        "base_url": "https://www.icmag.com",
-                        "forum_name": "icmag",
-                        "query": f'"{search_query}"',
-                        "limit": 10
-                    })
-                    thread_urls = []
-                    for item in search_res.get("items", []):
-                        turl = normalize_xenforo_thread_url(item.get("url"))
-                        if turl and turl not in thread_urls:
-                            thread_urls.append(turl)
-                        if len(thread_urls) >= 3:
-                            break
-                    for idx, turl in enumerate(thread_urls):
-                        yield json.dumps({"type": "progress", "message": f"Scraping ICMag thread {idx+1}/{len(thread_urls)}...", "posts": total_posts, "images": total_images}) + "\n"
-                        try:
-                            posts_icmag = await scraper_client.collect({
-                                "source": "xenforo",
-                                "base_url": "https://www.icmag.com",
-                                "forum_name": "icmag",
-                                "thread_url": turl,
-                                "limit": 30
-                            })
-                            p_saved, i_saved = await _save_forum_posts_to_db(session, posts_icmag.get("items", []), "icmag", strain_orm.id, search_query)
-                            total_posts += p_saved
-                            total_images += i_saved
-                        except Exception as ex:
-                            logger.error(f"Failed to fetch ICMag thread {turl} posts: {ex}")
+                    from src.collectors.xenforo_collector import XenForoCollector
+                    collector = XenForoCollector(base_url="https://www.icmag.com", forum_name="icmag")
+                    items = await collector.search(search_query, limit=30)
+                    p_saved, i_saved = await _save_forum_posts_to_db(session, items, "icmag", strain_orm.id, search_query)
+                    total_posts += p_saved
+                    total_images += i_saved
+                    yield json.dumps({"type": "progress", "message": f"ICMag complete ({p_saved} posts, {i_saved} images). Scraping Reddit...", "posts": total_posts, "images": total_images}) + "\n"
                 except Exception as ex:
                     logger.error(f"Failed to scrape ICMag for {search_query}: {ex}")
 
                 # Reddit — search cannabis subreddits for strain discussions and grow photos
                 yield json.dumps({"type": "progress", "message": "Scraping Reddit...", "posts": total_posts, "images": total_images}) + "\n"
                 try:
-                    reddit_res = await scraper_client.collect({
-                        "source": "reddit",
-                        "subreddits": ["microgrowery", "cannabiscultivation", "trees", "GrowingMarijuana"],
-                        "query": search_query,
-                        "limit": 10
-                    })
-                    p_saved, i_saved = await _save_forum_posts_to_db(session, reddit_res.get("items", []), "reddit", strain_orm.id, search_query)
+                    from src.collectors.reddit_collector import RedditCollector
+                    collector = RedditCollector()
+                    items = await collector.search(
+                        query=search_query,
+                        subreddits=["microgrowery", "cannabiscultivation", "trees", "GrowingMarijuana"],
+                        limit=20
+                    )
+                    p_saved, i_saved = await _save_forum_posts_to_db(session, items, "reddit", strain_orm.id, search_query)
                     total_posts += p_saved
                     total_images += i_saved
                     yield json.dumps({"type": "progress", "message": f"Reddit complete ({p_saved} posts, {i_saved} images).", "posts": total_posts, "images": total_images}) + "\n"
