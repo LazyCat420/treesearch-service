@@ -1,0 +1,40 @@
+Type,Distance,Strain,RSP
+all_samples,0.167,C-930 lot 211005,RSP12603
+all_samples,0.18,Tygra,RSP10667
+all_samples,0.181,Santhica 27,RSP10665
+all_samples,0.187,KYRG-151,RSP11052
+all_samples,0.189,Fedora 17,RSP10661
+all_samples,0.189,Lovrin,RSP10658
+all_samples,0.193,Futura 75,RSP10664
+all_samples,0.194,Tisza,RSP10659
+all_samples,0.195,Santhica27,RSP10056
+all_samples,0.195,Santhica27,RSP11046
+all_samples,0.2,Santhica27,RSP11047
+all_samples,0.202,USO 31,RSP10981
+all_samples,0.209,Fedora 17,RSP11203
+all_samples,0.209,USO 31,RSP10983
+all_samples,0.21,Tisza,RSP11044
+all_samples,0.21,Monoica,RSP10241
+all_samples,0.214,Carmagnola,RSP10982
+all_samples,0.214,Carmagnola/USO 31,RSP11204
+all_samples,0.214,Tak-HN,RSP11618
+base_tree,0.446,BCH Rt-Fl,RSP13141
+base_tree,0.415,Cherry Blossom,RSP11318
+base_tree,0.415,El Gordo Dried,RSP13122
+base_tree,0.411,Cherry Blossom,RSP11323
+base_tree,0.408,Rainbow Belts 1.0,RSP12911
+base_tree,0.403,Jamaican Lion,RSP12916
+base_tree,0.401,Chem 91,RSP11185
+base_tree,0.4,Cherry Blossom,RSP11301
+base_tree,0.399,El Gordo,RSP12938
+base_tree,0.394,Unknown-(Cherry Wine)-(001),RSP11268
+base_tree,0.394,EG2 Roots,RSP13096
+base_tree,0.393,EG2 Leaves,RSP13094
+base_tree,0.393,Chematonic (Cannatonic x Chemdawg),RSP11394
+base_tree,0.393,EGd St-M,RSP13147
+base_tree,0.392,Cherry Blossom,RSP11300
+base_tree,0.392,EGd Rt-Fl,RSP13144
+base_tree,0.392,EG2 Stems,RSP13095
+base_tree,0.391,T20 Dried,RSP13125
+base_tree,0.39,EGd Rt-M,RSP13146
+base_tree,0.39,Blch-Rt-Coco,RSP13197

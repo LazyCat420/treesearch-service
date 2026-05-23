@@ -1,0 +1,48 @@
+================================================================================
+Blueberry TrainMAC F2 (RSP13463) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: August 6, 2025
+Reported Plant Sex: Not Reported
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Not Reported
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.286 - Wedding Cake x MAC (RSP11464)
+  0.286 - Pink Runtz (VO1) (RSP13307)
+  0.293 - Runtz (RO3) (RSP13306)
+  0.294 - White Cherry Gelato-V (D15) (RSP13305)
+  0.308 - Deadhead OG (RSP11463)
+  0.313 - JABBA'S STASH (RSP11348)
+  0.314 - Purple Urkle (RSP12890)
+  0.314 - El Presidente (RSP12807)
+  0.319 - Black Triangle (RSP11638)
+  0.321 - Tenth Planet (Roots) (RSP13179)
+  0.321 - New BSR (RSP12104)
+  0.322 - Blch-Rt-Coco (RSP13197)
+  0.322 - BCP Dring (RSP13118)
+  0.323 - Tenth Planet (Leaves) (RSP13180)
+  0.327 - Right Mark (RSP11628)
+  0.327 - Mendo Breath (RSP11747)
+  0.328 - Disco Rose #21 (RSP12866)
+  0.330 - Arcata Trainwreck (RSP11176)
+  0.333 - Super Sour Diesel (RSP11191)
+  0.334 - BCP Buds (RSP13137)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13463-mgc-ots-certificate
+shasum: c65357f08d39f26db3a0b857d12de78ef0f72b9b75f76022cd9c691fd34170be

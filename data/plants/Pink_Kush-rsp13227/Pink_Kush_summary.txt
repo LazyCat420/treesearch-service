@@ -1,0 +1,49 @@
+================================================================================
+Pink Kush (RSP13227) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: PK-Lf-TC_20240925
+Accession Date: September 24, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Common
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.004 - Pink Kush (RSP13230)
+  0.005 - Pink Kush (RSP13228)
+  0.005 - Pink Kush (RSP13229)
+  0.006 - Pink Kush (RSP13231)
+  0.007 - PK Buds (RSP13153)
+  0.007 - Pink Kush (RSP13226)
+  0.011 - PK (RSP13087)
+  0.012 - PK St-Fl (RSP13155)
+  0.012 - PK-Lf-M (RSP13201)
+  0.013 - PK-St-M (RSP13205)
+  0.015 - PK (RSP12932)
+  0.021 - PK Rt-Fl (RSP13154)
+  0.022 - PK-Rt-RW (RSP13204)
+  0.030 - PK Drying (RSP13124)
+  0.032 - PK-Rt-Coco (RSP13202)
+  0.033 - PK-Rt-BioG- (RSP13200)
+  0.037 - PK (RSP12926)
+  0.039 - PK-Rt-M (RSP13203)
+  0.070 - PK Dried (RSP13123)
+  0.116 - RKM-2018-008 (RSP11099)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13227-mgc-ots-certificate
+shasum: 10557dff75f139e2b41275e178443461f106dcba3fbbaed9cdaec791c4acc1d7

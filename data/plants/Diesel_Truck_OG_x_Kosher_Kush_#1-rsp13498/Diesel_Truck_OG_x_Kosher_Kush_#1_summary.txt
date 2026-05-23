@@ -1,0 +1,45 @@
+================================================================================
+Diesel Truck OG x Kosher Kush #1 (RSP13498) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: K_x_DTOG_#1_20251230
+Accession Date: December 28, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.201 - 501st OG (RSP11241)
+  0.206 - Mothers Milk #5 (RSP11186)
+  0.209 - Donnie Burger (RSP13220)
+  0.210 - DB (RSP13083)
+  0.211 - Donnie Burger (RSP13219)
+  0.211 - Whitey (RSP11363)
+  0.212 - DB St-Fl (RSP13142)
+  0.213 - CBG Fiber (RSP11440)
+  0.215 - SFVxTK (RSP11072)
+  0.215 - Skywalker OG (RSP10837)
+  0.217 - DNA Genetics - Tangie (Legend of Hash Seeds) (RSP12921)
+  0.219 - Durban Poison #1 (RSP11013)
+  0.220 - SHERBERT (RSP11355)
+  0.220 - CBG Berry (RSP11445)
+  0.221 - CBG-#40 (RSP11444)
+  0.222 - Mother's Milk No. 31 (RSP11623)
+  0.222 - Absolute_OG (RSP11455)
+  0.223 - GPie x GodMac cross (RSP13223)
+  0.223 - CBG #30 (RSP11447)
+  0.224 - DB (RSP12930)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13498-mgc-ots-certificate
+shasum: b17ffa1dccd29c43f1063526383af70e3314ec2d1098977b1a34881dbe1a9a59

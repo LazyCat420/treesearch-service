@@ -1,0 +1,49 @@
+================================================================================
+PG Rt-Fl (RSP13152) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: PG Rt-Fl-20240516
+Accession Date: June 5, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.021 - PG Buds (RSP13151)
+  0.026 - PG (RSP13088)
+  0.038 - PG (RSP12934)
+  0.061 - PG (RSP12928)
+  0.195 - PD Lf-M (RSP13150)
+  0.198 - PD St-M (RSP13149)
+  0.201 - T20G (RSP13091)
+  0.203 - T20H (RSP13092)
+  0.203 - T20I (RSP13093)
+  0.211 - JL Cross 1 (RSP11502)
+  0.214 - JFG (RSP13085)
+  0.214 - Blch Buds (RSP13134)
+  0.215 - JFG (RSP12927)
+  0.215 - Blch St-Fl (RSP13136)
+  0.216 - Blue Dream (RSP11004)
+  0.219 - Hermaphrodite_Research_Sample1 (RSP11042)
+  0.220 - Blch Rt-Fl (RSP13135)
+  0.220 - Horncreek Lazie OG (RSP13158)
+  0.221 - Blue Dream (RSP11007)
+  0.223 - Powdered Donuts (RSP12939)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: e0a4b4c84915ebafe1de055ea1e6697de5093ecfcdbcafb792bc50a291327892
+shasum: 42368c144ace20ddbcb971803ff440cc8651640cd76c7faf7b9bddea946b0cd6

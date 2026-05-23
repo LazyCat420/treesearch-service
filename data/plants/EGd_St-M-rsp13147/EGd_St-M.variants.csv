@@ -1,0 +1,41 @@
+Type,Distance,Strain,RSP
+all_samples,0.012,EG2 Stems,RSP13095
+all_samples,0.013,EG2 Roots,RSP13096
+all_samples,0.016,EGd Rt-Fl,RSP13144
+all_samples,0.016,EGd Rt-M,RSP13146
+all_samples,0.026,EG2 Leaves,RSP13094
+all_samples,0.031,El Gordo,RSP12938
+all_samples,0.048,El Gordo Dried,RSP13122
+all_samples,0.169,Chem 91,RSP11185
+all_samples,0.175,Mother's Milk No. 31,RSP11623
+all_samples,0.208,RKM-2018-009,RSP11100
+all_samples,0.209,Styrofoam Cup x Cuban Linx #1,RSP12984
+all_samples,0.211,GMO,RSP12091
+all_samples,0.212,Styrofoam Cup x Pearadise #6,RSP12986
+all_samples,0.212,Pearadise x Orange Juice #4,RSP12975
+all_samples,0.213,Motor Breath #15,RSP12093
+all_samples,0.216,RKM-2018-032,RSP11124
+all_samples,0.217,RKM-2018-021,RSP11113
+all_samples,0.217,RKM-2018-017,RSP11109
+all_samples,0.218,GG#4,RSP11461
+all_samples,0.219,GMO x [REDACTED] #43,RSP11976
+base_tree,0.525,Cherry Blossom,RSP11311
+base_tree,0.501,Cherry Blossom,RSP11335
+base_tree,0.5,Cherry Blossom,RSP11314
+base_tree,0.499,Cherry Blossom,RSP11308
+base_tree,0.494,Northern Skunk,RSP11456
+base_tree,0.483,Cherry Blossom,RSP11333
+base_tree,0.48,Cherry Blossom,RSP11324
+base_tree,0.479,Cherry Blossom,RSP11317
+base_tree,0.467,Cherry Blossom,RSP11328
+base_tree,0.467,Cherry Blossom,RSP11334
+base_tree,0.464,Cherry Blossom,RSP11312
+base_tree,0.462,Unknown-(Cherry Wine)-(004),RSP11271
+base_tree,0.462,Cherry Blossom,RSP11300
+base_tree,0.461,Unknown-(Cherry Wine)-(003),RSP11270
+base_tree,0.459,Avidekel_05MAY2017,RSP10938
+base_tree,0.458,Tiger Tail (30),RSP11484
+base_tree,0.457,Cbot-2019-005,RSP11133
+base_tree,0.457,Unknown-(Cherry Wine)-(001),RSP11268
+base_tree,0.455,Jamaican Lion,RSP12913
+base_tree,0.455,CS,RSP11208

@@ -1,0 +1,49 @@
+================================================================================
+Blch Rt-Fl (RSP13135) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: Blch Rt-Fl-20240516
+Accession Date: June 2, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.024 - Blch Buds (RSP13134)
+  0.029 - Blch St-Fl (RSP13136)
+  0.030 - D1 (RSP12875)
+  0.182 - BCP St-Fl (RSP13140)
+  0.183 - BCP Buds (RSP13137)
+  0.187 - BCP Rt-Fl (RSP13138)
+  0.192 - Rest (RSP11377)
+  0.195 - Electra (RSP11366)
+  0.197 - Ringo's Angel (RSP10085)
+  0.197 - Blueberry Cheesecake (RSP10684)
+  0.198 - Domnesia (RSP11184)
+  0.200 - Blue Dream (RSP11017)
+  0.200 - Trump x Trump (RSP11466)
+  0.201 - Blue Dream (RSP11004)
+  0.201 - Serious Happiness (RSP10763)
+  0.202 - Blue Dream (RSP11010)
+  0.203 - Super Blue Dream (RSP11011)
+  0.203 - CBG-#40 (RSP11444)
+  0.204 - Thank You Jerry (RSP11459)
+  0.207 - Lift (RSP11378)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: 6880eab18df4c59d843c482a693902a27625ea7a8b121459b20f01bf86ca2744
+shasum: 33c3a5e70d5601f53bf010c3d8eb683955facf211b4c49a66c0a41a19b95bef1

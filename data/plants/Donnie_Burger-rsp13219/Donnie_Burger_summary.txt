@@ -1,0 +1,49 @@
+================================================================================
+Donnie Burger (RSP13219) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: DBg2-Rt-Fl_20240925
+Accession Date: September 24, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.014 - Donnie Burger (RSP13220)
+  0.015 - DB (RSP13083)
+  0.022 - DB St-Fl (RSP13142)
+  0.046 - DB (RSP12930)
+  0.048 - DB Dried (RSP13119)
+  0.079 - DB (RSP12936)
+  0.150 - GPie x GodMac cross (RSP13223)
+  0.153 - Black Triangle (RSP11638)
+  0.168 - 501st OG (RSP11241)
+  0.172 - SHERBERT (RSP11355)
+  0.173 - GG#4 (RSP11461)
+  0.178 - RKM-2018-021 (RSP11113)
+  0.179 - Lemon OG Haze (RSP11977)
+  0.179 - RKM-2018-032 (RSP11124)
+  0.179 - RKM-2018-017 (RSP11109)
+  0.180 - GG4 (RSP12096)
+  0.188 - Tahoe OG (RSP11189)
+  0.191 - Pink Kush (RSP13226)
+  0.191 - JL Cross 10 (RSP11511)
+  0.192 - RKM-2018-008 (RSP11099)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13219-mgc-ots-certificate
+shasum: a1555d37c27a3c3d26a92d21b5de9f550067c86b5ea22658358aa3586e6eb560

@@ -1,0 +1,45 @@
+================================================================================
+Orange Soda x Styrofoam Cup #2 (RSP13388) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SxSoda_#2_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.171 - Crème de la Crème x Styrofoam Cup #12 (RSP13395)
+  0.193 - Styrofoam Cup x Fuzzy Melon #1 (RSP12977)
+  0.194 - Styrofoam Cup x Fuzzy Melon #11 (RSP12983)
+  0.196 - Bolo Runtz x Styrofoam Cup #1 (RSP13401)
+  0.201 - El Presidente (RSP12807)
+  0.205 - Biker Kush (RSP12910)
+  0.208 - Hermaphrodite_ResearchSample2 (RSP11050)
+  0.209 - Crème de la Crème x Pearadise #14 (RSP13396)
+  0.210 - Styrofoam Cup x Orange Juice #5 (RSP12974)
+  0.211 - GMO (RSP12091)
+  0.211 - Styrofoam Cup X Sh3rb3t #2 (RSP13102)
+  0.211 - Styrofoam Cup x Cuban Linx #6 (RSP12982)
+  0.212 - Runtz (RO3) (RSP13306)
+  0.214 - Champelli OJ (RSP12805)
+  0.215 - BagSeed (RSP12501)
+  0.215 - White Cherry Gelato-V (D15) (RSP13305)
+  0.216 - Crème de la Crème x Styrofoam Cup #2 (RSP13394)
+  0.216 - Garlic (RSP11341)
+  0.216 - East Coast Sour Diesel (RSP12922)
+  0.217 - Pearadise x Orange Juice #2 (RSP12981)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13388-mgc-ots-certificate
+shasum: df59dadbff8b0f2bbb4514c1dc2b390c939a8240e8daf269220679a7035ba73b

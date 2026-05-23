@@ -1,0 +1,45 @@
+================================================================================
+UK Cheese x Styrofoam Cup #1 (RSP13389) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SxUK_#1_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.186 - Styrofoam Cup (RSP13099)
+  0.187 - Styrofoam Cup x Cuban Linx #1 (RSP12984)
+  0.192 - Pearadise x Fuzzy Melon #3 (RSP12985)
+  0.194 - Dominion Skunk (RSP11354)
+  0.195 - Styrofoam Cup x Cuban Linx #6 (RSP12982)
+  0.201 - Crème de la Crème x Styrofoam Cup #12 (RSP13395)
+  0.202 - Styrofoam Cup x Orange Juice #1 (RSP12980)
+  0.203 - Styrofoam Cup X Sh3rb3t #2 (RSP13102)
+  0.208 - Cheese (RSP10460)
+  0.212 - GMO x [REDACTED] #43 (RSP11976)
+  0.214 - Styrofoam Cup x Diesel Truck OG #16 (RSP12972)
+  0.214 - Styrofoam Cup x Orange Juice #2 (RSP13109)
+  0.215 - Garlic (RSP11341)
+  0.216 - Pearadise x Pineapple Pez Melonade #6 (RSP12978)
+  0.219 - RKM-2018-003 (RSP11094)
+  0.222 - Styrofoam Cup x Pearadise #6 (RSP12986)
+  0.222 - Domnesia (RSP11184)
+  0.223 - Styrofoam Cup x Fuzzy Melon #1 (RSP12977)
+  0.224 - Northern Lights (RSP11501)
+  0.226 - Pearadise x Orange Juice #2 (RSP12981)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13389-mgc-ots-certificate
+shasum: 21c372d6e0f3acd173417e9d0ef23f1eb0afd8af81790d0bb864181c178e5703

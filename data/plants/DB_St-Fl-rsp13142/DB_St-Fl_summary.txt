@@ -1,0 +1,49 @@
+================================================================================
+DB St-Fl (RSP13142) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: DB St-Fl-20240516
+Accession Date: June 5, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.029 - DB (RSP13083)
+  0.053 - DB (RSP12930)
+  0.058 - DB Dried (RSP13119)
+  0.080 - DB (RSP12936)
+  0.164 - Black Triangle (RSP11638)
+  0.171 - 501st OG (RSP11241)
+  0.174 - RKM-2018-021 (RSP11113)
+  0.174 - RKM-2018-032 (RSP11124)
+  0.176 - RKM-2018-017 (RSP11109)
+  0.178 - GG#4 (RSP11461)
+  0.181 - SHERBERT (RSP11355)
+  0.184 - GG4 (RSP12096)
+  0.188 - Lemon OG Haze (RSP11977)
+  0.190 - RKM-2018-008 (RSP11099)
+  0.191 - The Gift (RSP10988)
+  0.192 - PK St-Fl (RSP13155)
+  0.194 - PK Buds (RSP13153)
+  0.195 - PK (RSP12932)
+  0.198 - Mother's Milk No. 31 (RSP11623)
+  0.198 - RKM-2018-012 (RSP11103)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: 98f7b16ad8cd944c316a02922f73387c70baa51ec04b14800c64c5bdbb808eab
+shasum: 1e45b597b9280d0afd60507b4fde9e2157dc6bd3edc288007d36c4e0d4e813b8

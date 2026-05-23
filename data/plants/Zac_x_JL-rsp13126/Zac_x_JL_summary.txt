@@ -1,0 +1,49 @@
+================================================================================
+Zac x JL (RSP13126) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: Zac x JL 1
+Accession Date: May 22, 2024
+Reported Plant Sex: Male
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Male
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.165 - Zac x JL (RSP13127)
+  0.208 - JL 3rd Gen Mother (RSP11197)
+  0.212 - JL yellow (RSP11075)
+  0.213 - JL_X_NSPM1_5 (RSP11467)
+  0.214 - JL_x_NSPM1_1 (RSP11478)
+  0.215 - JL Cross 19 (RSP11520)
+  0.215 - JL_X_NSPM1_22 (RSP11475)
+  0.215 - Original Jamaican Lions (RSP11127)
+  0.216 - JL_X_NSPM1_14 (RSP11473)
+  0.216 - JL Cross 24 (RSP11525)
+  0.217 - JL 3rd Gen Mother (RSP11214)
+  0.219 - JL_X_NSPM1_11 (RSP11471)
+  0.221 - JL Cross 9 (RSP11510)
+  0.222 - JL 4th Gen 7 (RSP11153)
+  0.222 - JL Cross 27 (RSP11528)
+  0.224 - UnObtanium (RSP11611)
+  0.225 - JL 4th Gen 6 (RSP11200)
+  0.226 - Jamaican Lion (RSP12917)
+  0.226 - JL Cross 22 (RSP11523)
+  0.227 - JL_X_NSPM1_8 (RSP11470)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: e27b6f7b659ce8d0b324e6dc018b68bfc23c125f8865192db2089b838d776b81
+shasum: 987d645c1ca8f9f6dc8fdccb977f968e7363e32ba11a798c3e08ac8e0769562e

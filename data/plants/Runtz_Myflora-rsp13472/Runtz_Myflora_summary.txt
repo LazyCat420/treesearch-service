@@ -1,0 +1,48 @@
+================================================================================
+Runtz Myflora (RSP13472) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: August 28, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.027 - Runtz (RSP13426)
+  0.027 - RO3 by "3R Bio" (RSP13429)
+  0.038 - White Cherry Gelato-V (D15) (RSP13305)
+  0.042 - Runtz (RO3) (RSP13306)
+  0.058 - Pink Runtz (VO1) (RSP13307)
+  0.060 - Purple Urkle (RSP12890)
+  0.154 - Bolo Runtz x Styrofoam Cup #1 (RSP13401)
+  0.171 - Absolute_OG (RSP11455)
+  0.186 - SFVxTK (RSP11072)
+  0.189 - Skywalker OG (RSP10837)
+  0.194 - CDSD (RSP13084)
+  0.196 - UK Cheese (RSP12896)
+  0.199 - East side OG (RSP12089)
+  0.201 - Red Eye OG (RSP11190)
+  0.201 - Rootbeer Rolex #50 (RSP12645)
+  0.204 - Super Runtz (RSP12810)
+  0.205 - RKM-2018-013 (RSP11104)
+  0.207 - Cherry Lime Runtz (RSP12486)
+  0.207 - T20H (RSP13092)
+  0.207 - Powdered Donuts (RSP13268)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13472-mgc-ots-certificate
+shasum: e9a9b263aeb024dd85eb6ff33398c568610362a9971293701d1cf0bff0284a0f

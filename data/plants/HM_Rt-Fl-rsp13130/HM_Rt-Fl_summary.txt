@@ -1,0 +1,49 @@
+================================================================================
+HM Rt-Fl (RSP13130) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: HM Rt-Fl-20240516
+Accession Date: June 2, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.035 - HM Buds (RSP13128)
+  0.046 - HM Rt-M (RSP13129)
+  0.088 - HM (RSP12941)
+  0.182 - Eucalyptus (RSP12803)
+  0.184 - PMK 16953 (RSP13111)
+  0.185 - East Coast Sour Diesel (RSP12922)
+  0.186 - PMK 16949 (RSP13110)
+  0.186 - CDSD (RSP13084)
+  0.193 - RKM-2018-034 (RSP11126)
+  0.202 - UK Cheese (RSP12896)
+  0.203 - Gorilla Cookies (RSP11231)
+  0.203 - Peach Ringz (RSP12899)
+  0.204 - CDSD (RSP12929)
+  0.206 - Rootbeer Rolex #50 (RSP12645)
+  0.206 - Cherry Lime Runtz (RSP12486)
+  0.212 - CDSD (RSP12935)
+  0.213 - RKM-2018-026 (RSP11118)
+  0.213 - GMO x [REDACTED] #43 (RSP11976)
+  0.220 - Deadhead OG (RSP11463)
+  0.223 - Pure Power Plant (RSP11265)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: f6521f21954ab3ff5fee7f388377b3d1d14d59d5c83aca3cbf5d231610947860
+shasum: 7559cda06f3d791debe011020d901db2277ce4b285d4fe55e6f8db87a4503a1f

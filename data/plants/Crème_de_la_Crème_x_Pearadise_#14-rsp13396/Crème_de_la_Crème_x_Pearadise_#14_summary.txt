@@ -1,0 +1,45 @@
+================================================================================
+Crème de la Crème x Pearadise #14 (RSP13396) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: PxCreme_#14_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.148 - Crème de la Crème x Styrofoam Cup #11 (RSP13402)
+  0.158 - Crème de la Crème x Styrofoam Cup #12 (RSP13395)
+  0.161 - Styrofoam Cup x Pearadise #6 (RSP12986)
+  0.164 - Fresca Melon x Pearadise #15 (RSP13399)
+  0.165 - SHERBERT (RSP11355)
+  0.171 - Pearadise x Cookie Dough #11 (RSP13106)
+  0.175 - Fresca Melon x Styrofoam Cup #6 (RSP13398)
+  0.181 - Styrofoam Cup x Pineapple Pez Melonade #3 (RSP12976)
+  0.184 - SFVxTK (RSP11072)
+  0.185 - Domnesia (RSP11184)
+  0.187 - Center Mark (RSP11629)
+  0.187 - RKM-2018-034 (RSP11126)
+  0.187 - Absolute_OG (RSP11455)
+  0.189 - 501st OG (RSP11241)
+  0.188 - Skywalker OG (RSP10837)
+  0.189 - Eucalyptus (RSP12803)
+  0.192 - Miami Beach #1 (RSP13108)
+  0.194 - Sunday Driver (RSP11071)
+  0.195 - Pearadise x Cookie Dough #13 (RSP13105)
+  0.197 - El Presidente (RSP12807)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13396-mgc-ots-certificate
+shasum: ff00c02d0a2a98a0a5191b3fc81145e72e8c8e04697d800a95aeb49182652c37

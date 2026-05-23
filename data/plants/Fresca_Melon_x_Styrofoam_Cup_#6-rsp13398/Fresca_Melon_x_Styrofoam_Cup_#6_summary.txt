@@ -1,0 +1,45 @@
+================================================================================
+Fresca Melon x Styrofoam Cup #6 (RSP13398) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SxFresca_#6_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.142 - Fresca Melon x Pearadise #15 (RSP13399)
+  0.143 - Crème de la Crème x Styrofoam Cup #11 (RSP13402)
+  0.162 - Glitter Bomb (RSP12901)
+  0.167 - PD St-M (RSP13149)
+  0.171 - Powdered Donuts (RSP13263)
+  0.171 - Styrofoam Cup x Pearadise #6 (RSP12986)
+  0.172 - Permanent Marker (RSP12907)
+  0.172 - Powdered Donuts (RSP13270)
+  0.172 - PD Lf-M (RSP13150)
+  0.173 - Powdered Donuts (RSP13268)
+  0.174 - Powdered Donuts (RSP13273)
+  0.175 - Powdered Donuts (RSP13272)
+  0.175 - Crème de la Crème x Pearadise #14 (RSP13396)
+  0.175 - Powdered Donuts (RSP13266)
+  0.176 - Pearadise x Cookie Dough #11 (RSP13106)
+  0.180 - Powdered Donuts (RSP13264)
+  0.181 - JFG (RSP13085)
+  0.185 - Old Family Purple (RSP12098)
+  0.185 - Dump Truck x Tropical Juicebox #4 (RSP13390)
+  0.187 - Domnesia (RSP11184)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13398-mgc-ots-certificate
+shasum: 6bbaf9bd89d4765add5093e64f624c6f46eee15142450178af3efd9515fe63f2

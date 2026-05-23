@@ -1,0 +1,45 @@
+================================================================================
+UK Cheese x Styrofoam Cup #5 (RSP13506) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: S_x_UK_#5_20251230
+Accession Date: December 28, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.188 - Cheese (RSP10460)
+  0.196 - RKM-2018-003 (RSP11094)
+  0.210 - SK6210 (RSP12735)
+  0.211 - Durban Poison #1 (RSP11013)
+  0.214 - Pearadise (RSP13100)
+  0.219 - Durban Poison #1 (RSP10996)
+  0.230 - Peach Ozz x Pearadise #2 (RSP13505)
+  0.231 - RKM-2018-020 (RSP11112)
+  0.235 - Black Jack (RSP10603)
+  0.235 - Durban Poison (RSP10998)
+  0.236 - Lemon G13 (RSP11465)
+  0.237 - Northern Lights (RSP11501)
+  0.238 - BLACK JACK (RSP11346)
+  0.238 - Durban Poison (RSP11226)
+  0.239 - UK Cheese x Styrofoam Cup #1 (RSP13389)
+  0.239 - RKM-2018-027 (RSP11119)
+  0.240 - Jasmine Silver Haze (RSP11979)
+  0.243 - Durban Poison (RSP11014)
+  0.245 - Lemon Skunk (RSP11229)
+  0.245 - RKM-2018-025 (RSP11117)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13506-mgc-ots-certificate
+shasum: bee51c7fdcea328c1e9af23538f533cf9d667d77e4652db285d2092e9582c4f4

@@ -1,0 +1,48 @@
+================================================================================
+Runtz (RO3) (RSP13306) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: January 8, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.024 - White Cherry Gelato-V (D15) (RSP13305)
+  0.041 - Pink Runtz (VO1) (RSP13307)
+  0.042 - Purple Urkle (RSP12890)
+  0.140 - Absolute_OG (RSP11455)
+  0.154 - T20G (RSP13091)
+  0.157 - Red Eye OG (RSP11190)
+  0.157 - T20H (RSP13092)
+  0.157 - T20I (RSP13093)
+  0.160 - SFVxTK (RSP11072)
+  0.164 - East side OG (RSP12089)
+  0.165 - Skywalker OG (RSP10837)
+  0.167 - CDSD (RSP13084)
+  0.170 - Bueller F3 (RSP12503)
+  0.171 - Deadhead OG (RSP11463)
+  0.177 - UK Cheese (RSP12896)
+  0.179 - Casco Kush (RSP11167)
+  0.182 - Gorilla Cookies (RSP11231)
+  0.183 - Rootbeer Rolex #50 (RSP12645)
+  0.183 - RKM-2018-034 (RSP11126)
+  0.184 - Super Runtz (RSP12810)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13306-mgc-ots-certificate
+shasum: 99d6e813babcc6a5609c057ce1011531e54c303a5658c90e65a1f0f719569dfe

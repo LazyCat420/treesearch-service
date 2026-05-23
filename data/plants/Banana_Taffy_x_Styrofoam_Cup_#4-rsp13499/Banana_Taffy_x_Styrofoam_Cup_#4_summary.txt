@@ -1,0 +1,45 @@
+================================================================================
+Banana Taffy x Styrofoam Cup #4 (RSP13499) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: S_x_Taffy_#4_20251230
+Accession Date: December 28, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.169 - Styrofoam Cup x Cuban Linx #6 (RSP12982)
+  0.172 - Banana Taffy x Styrofoam Cup #6 (RSP13403)
+  0.184 - Styrofoam Cup x Cuban Linx #1 (RSP12984)
+  0.188 - Garlic (RSP11341)
+  0.189 - Orange Soda x Styrofoam Cup #2 (RSP13388)
+  0.193 - white wedding (RSP12103)
+  0.198 - Styrofoam Cup x Fuzzy Melon #1 (RSP12977)
+  0.204 - GMO (RSP12091)
+  0.206 - Champelli OJ (RSP12805)
+  0.207 - Bolo Runtz x Styrofoam Cup #1 (RSP13401)
+  0.210 - Styrofoam Cup x Orange Juice #5 (RSP12974)
+  0.211 - NSPM_x_NSPM (RSP11487)
+  0.215 - Styrofoam Cup (RSP13099)
+  0.221 - Styrofoam Cup x Fuzzy Melon #11 (RSP12983)
+  0.224 - Rootbeer Rolex #50 (RSP12645)
+  0.225 - Runtz (RO3) (RSP13306)
+  0.230 - UK Cheese x Styrofoam Cup #1 (RSP13389)
+  0.231 - Gorilla Cookies (RSP11231)
+  0.231 - White Cherry Gelato-V (D15) (RSP13305)
+  0.233 - Crème de la Crème x Styrofoam Cup #12 (RSP13395)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13499-mgc-ots-certificate
+shasum: c4df5de8a2e8b2c11cac481baf1d3e24189668b58060b65c6cc3bfd8838d3cf4

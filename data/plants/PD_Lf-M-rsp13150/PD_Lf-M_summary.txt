@@ -1,0 +1,49 @@
+================================================================================
+PD Lf-M (RSP13150) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: PD Lf-M-20240516
+Accession Date: June 5, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.015 - PD St-M (RSP13149)
+  0.023 - JFG (RSP13085)
+  0.052 - JFG (RSP12927)
+  0.071 - Dried Leaves (RSP13120)
+  0.072 - Powdered Donuts (RSP12939)
+  0.086 - JFG (RSP12933)
+  0.152 - Old Family Purple (RSP12098)
+  0.173 - BF (RSP12931)
+  0.174 - SFVxTK (RSP11072)
+  0.177 - Skywalker OG (RSP10837)
+  0.185 - 501st OG (RSP11241)
+  0.187 - PG Buds (RSP13151)
+  0.187 - BF (RSP13086)
+  0.192 - Jilly bean (RSP11230)
+  0.195 - RKM-2018-012 (RSP11103)
+  0.195 - PG Rt-Fl (RSP13152)
+  0.196 - East side OG (RSP12089)
+  0.196 - unknown (RSP11432)
+  0.198 - Absolute_OG (RSP11455)
+  0.198 - Champelli Red #4 (RSP12804)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: fd74650b0e7c91518e1a7958b187e3cb835c80e43cc367905ce8e21a532e2492
+shasum: 6e9d62c9da20aeed7a4d579661338f6f8fe868bc453a672c5778b269123e2569

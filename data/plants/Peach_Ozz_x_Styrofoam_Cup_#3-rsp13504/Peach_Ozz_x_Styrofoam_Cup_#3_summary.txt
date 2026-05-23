@@ -1,0 +1,45 @@
+================================================================================
+Peach Ozz x Styrofoam Cup #3 (RSP13504) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: S_x_Peach_#3_20251230
+Accession Date: December 28, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.190 - JL_X_NSPM1_7 (RSP11469)
+  0.194 - Lift (RSP11378)
+  0.196 - Electra (RSP11366)
+  0.196 - Serious Happiness (RSP10763)
+  0.201 - Domnesia (RSP11184)
+  0.202 - Blue Dream (RSP11010)
+  0.202 - SPQ (quite resistant) (RSP11370)
+  0.202 - UK Cheese x Styrofoam Cup #1 (RSP13389)
+  0.202 - Blue Dream (RSP11017)
+  0.203 - JL_x_NSPM1_3 (RSP11481)
+  0.206 - Blue Dream (RSP11007)
+  0.207 - Super Blue Dream (RSP11011)
+  0.207 - JL Cross 26 (RSP11527)
+  0.208 - JL_X_NSPM1_14 (RSP11473)
+  0.209 - UnObtanium (RSP11611)
+  0.210 - Peach Ozz x  Styrofoam Cup #8 (RSP13393)
+  0.210 - Blue Dream (RSP11004)
+  0.214 - JL_Tent_1_yellow_stake (RSP11488)
+  0.216 - Blue Dream (RSP11012)
+  0.216 - Sweet Tooth (RSP11224)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13504-mgc-ots-certificate
+shasum: 29ff14c56e62fef6c58a8f325f6c73bf3ef37c6870b637e64d8b52a7d9443b79

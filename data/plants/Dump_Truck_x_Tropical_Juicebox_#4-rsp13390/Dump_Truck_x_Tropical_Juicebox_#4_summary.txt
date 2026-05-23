@@ -1,0 +1,45 @@
+================================================================================
+Dump Truck x Tropical Juicebox #4 (RSP13390) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: TJBxDump_#4_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.103 - Pearadise x Orange Juice #4 (RSP12975)
+  0.158 - PGB x Tropical Juice Box #2 (RSP13391)
+  0.164 - Mother's Milk No. 31 (RSP11623)
+  0.174 - unknown (RSP11432)
+  0.175 - Styrofoam Cup x Diesel Truck OG #16 (RSP12972)
+  0.183 - Crème de la Crème x Styrofoam Cup #11 (RSP13402)
+  0.185 - Fresca Melon x Styrofoam Cup #6 (RSP13398)
+  0.187 - Mothers Milk #5 (RSP11186)
+  0.189 - Styrofoam Cup x Orange Juice #5 (RSP12974)
+  0.194 - Motor Breath #15 (RSP12093)
+  0.195 - PD Lf-M (RSP13150)
+  0.195 - PD St-M (RSP13149)
+  0.196 - Styrofoam Cup x Pineapple Pez Melonade #3 (RSP12976)
+  0.196 - Lime OG (RSP12101)
+  0.199 - Garlic (RSP11341)
+  0.199 - JL Cross 13 (RSP11514)
+  0.199 - Pearadise x Orange Juice #2 (RSP12981)
+  0.200 - Powdered Donuts (RSP13270)
+  0.200 - Headcheese (RSP11192)
+  0.201 - Blueberry Cheesecake (RSP10684)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13390-mgc-ots-certificate
+shasum: b5c57bc96703d56aafa9fcc4a8661ad6356d02f41acf920a76945e31e3da3cb0

@@ -1,0 +1,45 @@
+================================================================================
+Crème de la Crème x Styrofoam Cup #11 (RSP13402) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SxCreme_#11_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Common
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.101 - Pearadise x Cookie Dough #11 (RSP13106)
+  0.143 - Fresca Melon x Styrofoam Cup #6 (RSP13398)
+  0.148 - PD St-M (RSP13149)
+  0.148 - Crème de la Crème x Pearadise #14 (RSP13396)
+  0.152 - Powdered Donuts (RSP13270)
+  0.154 - Powdered Donuts (RSP13268)
+  0.155 - PD Lf-M (RSP13150)
+  0.155 - Pearadise x Fuzzy Melon #7 (RSP13103)
+  0.155 - Powdered Donuts (RSP13263)
+  0.155 - Powdered Donuts (RSP13273)
+  0.156 - Powdered Donuts (RSP13272)
+  0.157 - Powdered Donuts (RSP13266)
+  0.158 - Mexican Flan x Audios mother fu*ker (RSP12906)
+  0.161 - JFG (RSP13085)
+  0.162 - Styrofoam Cup x Pearadise #6 (RSP12986)
+  0.163 - Powdered Donuts (RSP13264)
+  0.165 - Miami Beach #1 (RSP13108)
+  0.167 - Fresca Melon x Pearadise #15 (RSP13399)
+  0.168 - Powdered Donuts (RSP13269)
+  0.171 - JFG (RSP12927)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13402-mgc-ots-certificate
+shasum: b069990ae3572a75e6e79e9d731f34c05cd292765f5e189277a81074728794c2

@@ -1,0 +1,49 @@
+================================================================================
+GPie x GodMac cross (RSP13223) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: GPxGM-Seed_20240925
+Accession Date: September 24, 2024
+Reported Plant Sex: Not Reported
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Not Reported
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.135 - Electra (RSP11366)
+  0.145 - Doug's Varin (RSP11243)
+  0.146 - Domnesia (RSP11184)
+  0.150 - Serious Happiness (RSP10763)
+  0.150 - Donnie Burger (RSP13219)
+  0.151 - DB (RSP13083)
+  0.153 - Donnie Burger (RSP13220)
+  0.155 - Lift (RSP11378)
+  0.159 - CBG-#40 (RSP11444)
+  0.162 - DB St-Fl (RSP13142)
+  0.163 - Trump x Trump (RSP11466)
+  0.163 - Rest (RSP11377)
+  0.166 - A29-St-M-Rw (RSP13189)
+  0.169 - Blueberry Cheesecake (RSP10684)
+  0.170 - A29-Rt-M-Rw (RSP13188)
+  0.174 - DB Dried (RSP13119)
+  0.175 - JL_X_NSPM1_7 (RSP11469)
+  0.175 - Suver Haze (RSP11364)
+  0.177 - Badger (RSP11614)
+  0.177 - Thank You Jerry (RSP11459)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13223-mgc-ots-certificate
+shasum: cafcba373e43843f4c8d7276405d9095b35a227007469ded6a4eafc726054dd6

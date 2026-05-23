@@ -1,0 +1,45 @@
+================================================================================
+Banana Taffy x Styrofoam Cup #7 (RSP13397) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SxTaffy_#7_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.165 - Banana Taffy x Styrofoam Cup #6 (RSP13403)
+  0.196 - DNA Genetics - Tangie (Legend of Hash Seeds) (RSP12921)
+  0.198 - Styrofoam Cup x Pearadise #6 (RSP12986)
+  0.201 - NSPM1 (RSP11362)
+  0.214 - PGB x Tropical Juice Box #2 (RSP13391)
+  0.217 - Pearadise x Orange Juice #4 (RSP12975)
+  0.220 - Crème de la Crème x Styrofoam Cup #2 (RSP13394)
+  0.223 - C4-7 (RSP13221)
+  0.224 - Styrofoam Cup (RSP13099)
+  0.225 - Dump Truck x Tropical Juicebox #4 (RSP13390)
+  0.227 - Mother's Milk No. 31 (RSP11623)
+  0.229 - Styrofoam Cup x Orange Juice #1 (RSP12980)
+  0.230 - JL Cross 10 (RSP11511)
+  0.230 - Styrofoam Cup X Pineapple Pez Melonade #15 (RSP13101)
+  0.231 - RKM-2018-033 (RSP11125)
+  0.234 - Tahoe OG (RSP11189)
+  0.235 - Styrofoam Cup x Cuban Linx #4 (RSP12970)
+  0.235 - JL Cross 13 (RSP11514)
+  0.236 - Fresca Melon x Styrofoam Cup #6 (RSP13398)
+  0.239 - Tropicana Banana (RSP12909)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13397-mgc-ots-certificate
+shasum: 8bfb2686b515bc82f68e791a3624a81a38d9947188ceedabe4306fe2bd7c8e8c

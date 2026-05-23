@@ -1,0 +1,45 @@
+================================================================================
+Bolo Runtz x Styrofoam Cup #1 (RSP13401) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SxBolo_#1_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.144 - Runtz (RO3) (RSP13306)
+  0.148 - White Cherry Gelato-V (D15) (RSP13305)
+  0.157 - Pink Runtz (VO1) (RSP13307)
+  0.172 - Styrofoam Cup x Cuban Linx #6 (RSP12982)
+  0.173 - Purple Urkle (RSP12890)
+  0.175 - Crème de la Crème x Styrofoam Cup #12 (RSP13395)
+  0.195 - Garlic (RSP11341)
+  0.196 - Orange Soda x Styrofoam Cup #2 (RSP13388)
+  0.198 - Styrofoam Cup x Diesel Truck OG #16 (RSP12972)
+  0.202 - Styrofoam Cup x Cuban Linx #1 (RSP12984)
+  0.203 - RKM-2018-034 (RSP11126)
+  0.208 - Styrofoam Cup (RSP13099)
+  0.214 - UK Cheese (RSP12896)
+  0.215 - SHERBERT (RSP11355)
+  0.217 - Styrofoam Cup x Fuzzy Melon #11 (RSP12983)
+  0.217 - NSPM1 (RSP11362)
+  0.219 - Super Runtz (RSP12810)
+  0.221 - Champelli OJ (RSP12805)
+  0.222 - Absolute_OG (RSP11455)
+  0.222 - Pie Hoe (RSP11073)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13401-mgc-ots-certificate
+shasum: d19d51f3918d6464dc2630a4d34ed13fa1a8a6bf022cadfcf66400456be865ff

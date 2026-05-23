@@ -1,0 +1,45 @@
+================================================================================
+Peach Ozz x  Styrofoam Cup #8 (RSP13393) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SxPeach_#8_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.152 - Peach Ozz x  Styrofoam Cup #4 (RSP13392)
+  0.168 - Styrofoam Cup x Pearadise #6 (RSP12986)
+  0.178 - Pearadise (RSP13100)
+  0.190 - Pearadise x Orange Juice #2 (RSP12981)
+  0.193 - Center Mark (RSP11629)
+  0.198 - Nage Champa Rose (RSP12874)
+  0.203 - Crème de la Crème x Pearadise #14 (RSP13396)
+  0.204 - Styrofoam Cup x Pineapple Pez Melonade #3 (RSP12976)
+  0.206 - Durban Poison #1 (RSP11013)
+  0.208 - Crème de la Crème x Styrofoam Cup #11 (RSP13402)
+  0.209 - Nag Champa #7 (RSP12865)
+  0.214 - Fresca Melon x Pearadise #15 (RSP13399)
+  0.219 - Styrofoam Cup x Diesel Truck OG #16 (RSP12972)
+  0.219 - Durban Poison #1 (RSP10996)
+  0.220 - Pearadise x Pineapple Pez Melonade #6 (RSP12978)
+  0.222 - Miami Beach #1 (RSP13108)
+  0.222 - Gold Cracker (RSP11041)
+  0.222 - Gold Cracker (RSP11048)
+  0.223 - TropCookies (RSP12097)
+  0.223 - Fresca Melon x Styrofoam Cup #6 (RSP13398)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13393-mgc-ots-certificate
+shasum: 6d0bdeed185c93c9c7c8a4b2ff09f64c35eeb73f4cc290b6a9b83d5b3dc1b7dd

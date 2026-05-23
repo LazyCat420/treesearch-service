@@ -1,0 +1,49 @@
+================================================================================
+DP Dried (RSP13143) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: DP Dried-20240516
+Accession Date: June 5, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.135 - Pure Power Plant (RSP11265)
+  0.141 - PK St-Fl (RSP13155)
+  0.142 - PK Buds (RSP13153)
+  0.143 - PK Rt-Fl (RSP13154)
+  0.146 - PK (RSP13087)
+  0.147 - PK (RSP12932)
+  0.160 - PK (RSP12926)
+  0.163 - RKM-2018-021 (RSP11113)
+  0.163 - PK Drying (RSP13124)
+  0.163 - RKM-2018-017 (RSP11109)
+  0.163 - RKM-2018-032 (RSP11124)
+  0.164 - Rugburn OG (RSP11353)
+  0.173 - Gorilla Cookies (RSP11231)
+  0.176 - 501st OG (RSP11241)
+  0.180 - RKM-2018-012 (RSP11103)
+  0.181 - GG4 (RSP12096)
+  0.182 - RKM-2018-013 (RSP11104)
+  0.183 - Deadhead OG (RSP11463)
+  0.186 - Bueller F3 (RSP12503)
+  0.188 - East Coast Sour Diesel (RSP12922)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: ee4c94407a52e25954457aa14436a91345627e37d98b784a15bd18bdd2f10ac4
+shasum: 0d7dd572b4fcd923c5eb20297bf0ae850a42fa67e457524bc46defb797923cb2

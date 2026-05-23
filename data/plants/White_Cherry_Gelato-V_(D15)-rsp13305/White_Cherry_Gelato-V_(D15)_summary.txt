@@ -1,0 +1,48 @@
+================================================================================
+White Cherry Gelato-V (D15) (RSP13305) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: January 8, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.024 - Runtz (RO3) (RSP13306)
+  0.041 - Purple Urkle (RSP12890)
+  0.043 - Pink Runtz (VO1) (RSP13307)
+  0.146 - Absolute_OG (RSP11455)
+  0.147 - Red Eye OG (RSP11190)
+  0.153 - T20I (RSP13093)
+  0.154 - T20G (RSP13091)
+  0.155 - T20H (RSP13092)
+  0.162 - SFVxTK (RSP11072)
+  0.165 - CDSD (RSP13084)
+  0.165 - East side OG (RSP12089)
+  0.166 - Deadhead OG (RSP11463)
+  0.170 - Skywalker OG (RSP10837)
+  0.175 - Bueller F3 (RSP12503)
+  0.178 - UK Cheese (RSP12896)
+  0.179 - Casco Kush (RSP11167)
+  0.180 - Rootbeer Rolex #50 (RSP12645)
+  0.181 - Gorilla Cookies (RSP11231)
+  0.182 - Super Runtz (RSP12810)
+  0.186 - RKM-2018-034 (RSP11126)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13305-mgc-ots-certificate
+shasum: db3ae6ab7b3d860008c8e6bad875f5fb27f2938ee917421511b101359113f891

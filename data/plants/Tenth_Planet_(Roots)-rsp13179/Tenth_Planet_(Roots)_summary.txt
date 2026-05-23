@@ -1,0 +1,49 @@
+================================================================================
+Tenth Planet (Roots) (RSP13179) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: Tenth_Planet_(Roots)_20240722
+Accession Date: July 28, 2024
+Reported Plant Sex: Not Reported
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Not Reported
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.127 - Tenth Planet (Leaves) (RSP13180)
+  0.197 - Serious Happiness (RSP10763)
+  0.197 - Blueberry Cheesecake (RSP10684)
+  0.198 - Trump x Trump (RSP11466)
+  0.210 - Electra (RSP11366)
+  0.214 - Tahoe OG (RSP11189)
+  0.214 - Domnesia (RSP11184)
+  0.220 - Thank You Jerry (RSP11459)
+  0.221 - Banana Daddy 1 (Big) (RSP11496)
+  0.221 - Doug's Varin (RSP11243)
+  0.226 - Rest (RSP11377)
+  0.227 - SPQ (quite resistant) (RSP11370)
+  0.233 - Lift (RSP11378)
+  0.233 - JL Cross 10 (RSP11511)
+  0.234 - Liberty Haze (RSP11000)
+  0.236 - GG#4 (RSP11461)
+  0.237 - Joy (RSP11380)
+  0.242 - CPH (RSP11367)
+  0.243 - Suver Haze (RSP11364)
+  0.244 - Badger (RSP11614)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: 22938c84ae0b5b05136cb98a1ca48d780bc7781648387ee2d9e1a6f5387c799f
+shasum: 11272ed9931c62320058a8303b8f3e5af9ff4ad4161f81e7f2ede448f109b19e

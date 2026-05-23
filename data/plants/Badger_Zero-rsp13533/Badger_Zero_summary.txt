@@ -1,0 +1,43 @@
+================================================================================
+Badger Zero (RSP13533) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: March 11, 2026
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.242 - Cherry (RSP11142)
+  0.251 - Cherry Blossom (RSP11314)
+  0.256 - Cherry Blossom (RSP11313)
+  0.263 - Badger (RSP11614)
+  0.271 - 13 Cherries (RSP11442)
+  0.273 - Cherry Blossom (RSP11333)
+  0.274 - Domnesia (RSP11184)
+  0.278 - Cherry Wine (RSP11267)
+  0.284 - JL Cross 6 (RSP11507)
+  0.285 - Badger G (RSP13082)
+  0.288 - Miss X (RSP10999)
+  0.290 - Trump x Trump (RSP11466)
+  0.291 - Cherry Blossom (RSP11320)
+  0.292 - Electra (RSP11366)
+  0.295 - Queen Dream CBG (RSP11280)
+  0.296 - Cherry Blossom (RSP11302)
+  0.296 - Stormy (RSP11454)
+  0.299 - Cherry Blossom (RSP11311)
+  0.300 - CANNATONIC (RSP11349)
+  0.301 - Suver Haze (RSP11364)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+shasum: fc163aa0f3e0524cc4b83ef74fb8887d938acdb9f2d41cdc04c5d7c9891542d3

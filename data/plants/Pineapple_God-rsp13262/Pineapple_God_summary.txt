@@ -1,0 +1,49 @@
+================================================================================
+Pineapple God (RSP13262) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: Pineapple_God__LeafSpot__20241120
+Accession Date: November 19, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.081 - PG Buds (RSP13151)
+  0.089 - PG (RSP13088)
+  0.090 - PG Rt-Fl (RSP13152)
+  0.096 - PG (RSP12934)
+  0.100 - PG (RSP12928)
+  0.151 - BCP-Stem-Fl2 (RSP13196)
+  0.201 - Blue Dream (RSP11004)
+  0.202 - Domnesia (RSP11184)
+  0.202 - PD Lf-M (RSP13150)
+  0.204 - Blch Buds (RSP13134)
+  0.205 - Blch St-Fl (RSP13136)
+  0.206 - Powdered Donuts (RSP13268)
+  0.206 - Powdered Donuts (RSP13263)
+  0.207 - Powdered Donuts (RSP13273)
+  0.207 - Powdered Donuts (RSP13272)
+  0.207 - Powdered Donuts (RSP13270)
+  0.208 - PD St-M (RSP13149)
+  0.208 - Powdered Donuts (RSP13266)
+  0.209 - Blch Rt-Fl (RSP13135)
+  0.212 - Powdered Donuts (RSP13264)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13262-mgc-ots-certificate
+shasum: 3539a3eadb4b243517e3a8818464645fbcf5ff2a8e3b4cfcfaed7dcd2b05b9c7

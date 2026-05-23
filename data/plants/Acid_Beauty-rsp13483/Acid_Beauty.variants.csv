@@ -1,0 +1,39 @@
+Type,Distance,Strain,RSP
+all_samples,0.218,Recon,RSP10755
+all_samples,0.251,Purple Columbian,RSP12924
+all_samples,0.256,C5 Haze,RSP12817
+all_samples,0.256,T2R4,RSP12660
+all_samples,0.257,Cheese,RSP10460
+all_samples,0.258,RKM-2018-016,RSP11108
+all_samples,0.258,Black Jack,RSP10603
+all_samples,0.259,RKM-2018-025,RSP11117
+all_samples,0.259,Electra,RSP11366
+all_samples,0.26,Squirrel Tail (31),RSP11485
+all_samples,0.262,CST,RSP11002
+all_samples,0.263,C5 Haze,RSP12818
+all_samples,0.263,Punta Roja,RSP12923
+all_samples,0.265,Doug's Varin,RSP11243
+all_samples,0.267,A5 Haze,RSP12815
+all_samples,0.267,Serious Happiness,RSP10763
+all_samples,0.27,A5 Haze,RSP12816
+all_samples,0.27,SK6210,RSP12735
+base_tree,0.458,Cherry Blossom,RSP11323
+base_tree,0.458,Cherry Blossom,RSP11318
+base_tree,0.454,Blch-Rt-Coco,RSP13197
+base_tree,0.453,Rainbow Belts 1.0,RSP12911
+base_tree,0.45,GG4,RSP11978
+base_tree,0.449,Jamaican Lion,RSP12916
+base_tree,0.449,Animal Tree x [REDACTED] #4,RSP12792
+base_tree,0.447,Danny Noonan,RSP11070
+base_tree,0.444,BCP Lf-Fl,RSP13139
+base_tree,0.443,RKM-2018-002,RSP11093
+base_tree,0.443,BCP Buds,RSP13137
+base_tree,0.442,BCP St-Fl,RSP13140
+base_tree,0.442,Blch-Rt-RW,RSP13198
+base_tree,0.44,BCP Rt-Fl,RSP13138
+base_tree,0.439,BCP Lf-MET,RSP13190
+base_tree,0.438,BCP-Lf-NoMET,RSP13191
+base_tree,0.438,BCP-St-MET,RSP13194
+base_tree,0.438,BCP-Rt-NoMET,RSP13193
+base_tree,0.435,BCP-St-NoMET,RSP13195
+base_tree,0.435,BCP Dring,RSP13118

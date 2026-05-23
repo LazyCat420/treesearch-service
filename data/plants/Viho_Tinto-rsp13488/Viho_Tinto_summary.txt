@@ -1,0 +1,44 @@
+================================================================================
+Viho Tinto (RSP13488) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: October 22, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.166 - Opalo (RSP13489)
+  0.201 - Violletta Swag (RSP13487)
+  0.212 - 80E (RSP11211)
+  0.228 - 80E (RSP11212)
+  0.234 - 80E (RSP11213)
+  0.247 - Swag Trinidat, by Kaly (RSP12876)
+  0.285 - Tiger Tail (78) (RSP11619)
+  0.286 - Jiangji (RSP10653)
+  0.287 - Domnesia (RSP11184)
+  0.288 - Tak-HN (RSP11618)
+  0.289 - Lift (RSP11378)
+  0.292 - Recon (RSP10755)
+  0.296 - Squirrel Tail (31) (RSP11485)
+  0.296 - Acid Beauty (RSP13483)
+  0.297 - Liberty Haze (RSP11000)
+  0.297 - Sunday Driver (RSP11071)
+  0.299 - Jerrys Blue Cheese (RSP12729)
+  0.299 - KYRG-151 (RSP11052)
+  0.490 - Cherry Blossom (RSP11323)
+  0.485 - Cherry Blossom (RSP11318)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13488-mgc-ots-certificate
+shasum: 514106d24b601fb4575bb38998d0241a2565f5d6bcbaf0e48793b65496d0d49e

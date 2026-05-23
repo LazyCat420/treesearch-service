@@ -1,0 +1,49 @@
+================================================================================
+PK St-Fl (RSP13155) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: PK St-Fl-20240516
+Accession Date: June 5, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Common
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.015 - PK Buds (RSP13153)
+  0.018 - PK (RSP13087)
+  0.023 - PK (RSP12932)
+  0.027 - PK Rt-Fl (RSP13154)
+  0.036 - PK Drying (RSP13124)
+  0.042 - PK (RSP12926)
+  0.074 - PK Dried (RSP13123)
+  0.110 - RKM-2018-008 (RSP11099)
+  0.113 - The Gift (RSP10988)
+  0.132 - RKM-2018-013 (RSP11104)
+  0.135 - Rugburn OG (RSP11353)
+  0.141 - DP Dried (RSP13143)
+  0.142 - Skywalker OG (RSP10837)
+  0.142 - SFVxTK (RSP11072)
+  0.144 - RKM-2018-012 (RSP11103)
+  0.151 - Absolute_OG (RSP11455)
+  0.152 - Elc.Grp. Drying (RSP13121)
+  0.159 - Red Eye OG (RSP11190)
+  0.159 - East side OG (RSP12089)
+  0.160 - Pure Power Plant (RSP11265)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: fa71e8de6aed097b51ae7dc1abf6454f40cd75ba946fa7811202b1dc5da5e962
+shasum: 85bc0c31740b02177f3dcea8500a25731e444e7748cc6010d1cbab4e49ec5519

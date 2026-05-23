@@ -1,0 +1,45 @@
+================================================================================
+Crème de la Crème x Styrofoam Cup #5 (RSP13500) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: S_x_Crème_#5_20251230
+Accession Date: December 28, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.091 - Crème de la Crème x Styrofoam Cup #2 (RSP13394)
+  0.147 - El Presidente (RSP12807)
+  0.149 - Crème de la Crème x Styrofoam Cup #7 (RSP13501)
+  0.165 - GMO (RSP12091)
+  0.178 - Animal Tree x [REDACTED] #2 (RSP12793)
+  0.178 - Crème de la Crème x Styrofoam Cup #11 (RSP13402)
+  0.189 - Styrofoam Cup X Cookie Dough #2 (RSP13104)
+  0.189 - Styrofoam Cup x Cuban Linx #4 (RSP12970)
+  0.191 - GMO x Garlic Breath (RSP12507)
+  0.195 - PK St-Fl (RSP13155)
+  0.196 - PK-St-M (RSP13205)
+  0.196 - Absolute_OG (RSP11455)
+  0.196 - PK-Lf-M (RSP13201)
+  0.196 - PK Buds (RSP13153)
+  0.197 - SFVxTK (RSP11072)
+  0.198 - Donnie Burger (RSP13219)
+  0.198 - DB St-Fl (RSP13142)
+  0.199 - Animal Tree x [REDACTED] #4 (RSP12792)
+  0.200 - The Gift (RSP10988)
+  0.200 - Donnie Burger (RSP13220)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13500-mgc-ots-certificate
+shasum: 84ecd7284b5709d36ae5c2dd4792b9cbefd1032079cddbef5596d054451ae9a9

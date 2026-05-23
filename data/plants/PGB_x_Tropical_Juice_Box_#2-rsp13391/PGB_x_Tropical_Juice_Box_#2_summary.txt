@@ -1,0 +1,45 @@
+================================================================================
+PGB x Tropical Juice Box #2 (RSP13391) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: TJBxPGB_#2_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.139 - Pearadise x Orange Juice #4 (RSP12975)
+  0.158 - Dump Truck x Tropical Juicebox #4 (RSP13390)
+  0.178 - Mother's Milk No. 31 (RSP11623)
+  0.183 - Styrofoam Cup X Pineapple Pez Melonade #15 (RSP13101)
+  0.187 - Styrofoam Cup x Orange Juice #1 (RSP12980)
+  0.196 - Crème de la Crème x Styrofoam Cup #2 (RSP13394)
+  0.201 - Styrofoam Cup x Pineapple Pez Melonade #3 (RSP12976)
+  0.206 - Styrofoam Cup x Orange Juice #2 (RSP13109)
+  0.207 - Super Sour Diesel (RSP11191)
+  0.210 - Eucalyptus (RSP12803)
+  0.213 - EGd St-M (RSP13147)
+  0.213 - EGd Rt-Fl (RSP13144)
+  0.213 - Styrofoam Cup x Orange Juice #5 (RSP12974)
+  0.214 - Banana Taffy x Styrofoam Cup #7 (RSP13397)
+  0.215 - GMO (RSP12091)
+  0.215 - JL Cross 11 (RSP11512)
+  0.216 - Blueberry Cheesecake (RSP10684)
+  0.216 - EGd Rt-M (RSP13146)
+  0.217 - Styrofoam Cup x Pearadise #6 (RSP12986)
+  0.218 - RKM-2018-021 (RSP11113)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13391-mgc-ots-certificate
+shasum: 1add727b4c13bc10d560776adae44ca5902536ba2a5513ab0b91567b5e3073e0

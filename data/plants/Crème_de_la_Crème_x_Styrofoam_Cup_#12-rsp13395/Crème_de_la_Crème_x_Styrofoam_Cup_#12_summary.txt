@@ -1,0 +1,45 @@
+================================================================================
+Crème de la Crème x Styrofoam Cup #12 (RSP13395) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SxCreme_#12_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.132 - Styrofoam Cup (RSP13099)
+  0.150 - Styrofoam Cup x Diesel Truck OG #16 (RSP12972)
+  0.157 - Styrofoam Cup X Sh3rb3t #2 (RSP13102)
+  0.158 - Styrofoam Cup x Orange Juice #5 (RSP12974)
+  0.158 - Crème de la Crème x Pearadise #14 (RSP13396)
+  0.164 - SFVxTK (RSP11072)
+  0.164 - SHERBERT (RSP11355)
+  0.164 - Skywalker OG (RSP10837)
+  0.167 - RKM-2018-034 (RSP11126)
+  0.169 - Red Eye OG (RSP11190)
+  0.169 - Styrofoam Cup X Cookie Dough #2 (RSP13104)
+  0.171 - Purple Dumptruck (RSP13098)
+  0.171 - Orange Soda x Styrofoam Cup #2 (RSP13388)
+  0.172 - Absolute_OG (RSP11455)
+  0.175 - Bolo Runtz x Styrofoam Cup #1 (RSP13401)
+  0.177 - East side OG (RSP12089)
+  0.177 - Crème de la Crème x Styrofoam Cup #2 (RSP13394)
+  0.183 - Styrofoam Cup x Cuban Linx #1 (RSP12984)
+  0.184 - Styrofoam Cup x Cuban Linx #6 (RSP12982)
+  0.185 - Styrofoam Cup x Orange Juice #2 (RSP13109)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13395-mgc-ots-certificate
+shasum: 4a9eac3a1d27a89057a3bcd760a6eec7739ce2f4059b8d3d2cc415a5ccb5734f

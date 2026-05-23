@@ -1,0 +1,43 @@
+================================================================================
+GA-G13-001 (RSP13513) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: February 25, 2026
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.095 - Black 84 (RSP11188)
+  0.234 - Banana Kush (RSP11739)
+  0.236 - Rest (RSP11377)
+  0.247 - Miss X (RSP10999)
+  0.254 - Trump x Trump (RSP11466)
+  0.256 - Lemon G13 (RSP11465)
+  0.264 - JL Cross 3 (RSP11504)
+  0.265 - Domnesia (RSP11184)
+  0.265 - Badger (RSP11614)
+  0.266 - Thank You Jerry (RSP11459)
+  0.266 - GPie x GodMac cross (RSP13223)
+  0.268 - Tenth Planet (Leaves) (RSP13180)
+  0.268 - Blueberry Cheesecake (RSP10684)
+  0.271 - Master Kush (RSP11182)
+  0.271 - Suver Haze (RSP11364)
+  0.272 - Serious Happiness (RSP10763)
+  0.272 - Liberty Haze (RSP10946)
+  0.275 - RKM-2018-001 (RSP11092)
+  0.275 - Lift (RSP11378)
+  0.276 - Durban Poison #1 (RSP10996)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+shasum: c2b493957f1f8a7fca936bdef31b308feef17ab0af3a1360154d09741d52a978

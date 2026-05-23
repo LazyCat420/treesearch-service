@@ -1,0 +1,49 @@
+================================================================================
+Powdered Donuts (RSP13265) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: Powdered_Donuts__Auto-Fort-Root__20241120
+Accession Date: November 19, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Common
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.120 - Powdered Donuts (RSP13270)
+  0.121 - Powdered Donuts (RSP13266)
+  0.122 - PD St-M (RSP13149)
+  0.122 - Powdered Donuts (RSP13273)
+  0.123 - Powdered Donuts (RSP13263)
+  0.123 - Powdered Donuts (RSP13268)
+  0.125 - Powdered Donuts (RSP13272)
+  0.127 - PD Lf-M (RSP13150)
+  0.129 - Powdered Donuts (RSP13264)
+  0.130 - Powdered Donuts (RSP13269)
+  0.136 - JFG (RSP13085)
+  0.144 - JFG (RSP12927)
+  0.144 - Powdered Donuts (RSP12939)
+  0.153 - Dried Leaves (RSP13120)
+  0.155 - JFG (RSP12933)
+  0.157 - Powdered Donuts (RSP13267)
+  0.180 - Powdered Donuts (RSP13271)
+  0.212 - Skywalker OG (RSP10837)
+  0.215 - SFVxTK (RSP11072)
+  0.226 - RKM-2018-012 (RSP11103)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13265-mgc-ots-certificate
+shasum: 5ae4f70755f316bfcf89e935799806bb2925784374520fa0991807e3cdee4a06

@@ -1,0 +1,44 @@
+================================================================================
+JL_x_MandarinCookies_XX_THC_5 (RSP13167) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: July 7, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.064 - JL_x_MandarinCookies_XX_THC_10 (RSP13168)
+  0.108 - JL 4th Gen 2 (RSP11194)
+  0.140 - JL 4th Gen 1 (RSP11193)
+  0.152 - JL 4th Gen 4 (RSP11198)
+  0.154 - JL 4th Gen 5 (RSP11199)
+  0.159 - JL 4th Gen 3 (RSP11195)
+  0.160 - JL yellow (RSP11075)
+  0.162 - JL 3rd Gen Mother (RSP11197)
+  0.169 - JL 3rd Gen Mother (RSP11214)
+  0.173 - Jamaican Lion (RSP12915)
+  0.174 - Jamaican Lion (RSP12917)
+  0.182 - Jamaican Lion (RSP12918)
+  0.182 - Jamaican Lion (RSP12919)
+  0.184 - JL 4th Gen 7 (RSP11153)
+  0.187 - Jamaican Lion (RSP12920)
+  0.190 - Jamaican Lion (RSP12916)
+  0.191 - Original Jamaican Lions (RSP11127)
+  0.194 - JL 4th Gen 6 (RSP11200)
+  0.211 - Jamaican Lion (RSP12913)
+  0.223 - JL 3rd Gen Father (RSP11196)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: c2030bacc8830c69d4f22fcc3d3d4c5414e237d02ece9ea77e07bc6cfd966e35
+shasum: ace753d99b982c06114cdf12d5d41b2f5739c126e8d4ddbb4d49b6acaae28695

@@ -1,0 +1,50 @@
+================================================================================
+JL x MC7 (RSP13213) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: JL x MC7-Flower
+Accession Date: September 11, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+PathoSEEK® ID Report: RSP13213-PathoSEEKID.html
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.151 - JL_x_MandarinCookies_XX_THC_5 (RSP13167)
+  0.156 - JL x MC5 (RSP13212)
+  0.162 - JL_x_MandarinCookies_XX_THC_10 (RSP13168)
+  0.163 - JL yellow (RSP11075)
+  0.168 - Jamaican Lion (RSP12917)
+  0.171 - JL 3rd Gen Mother (RSP11214)
+  0.174 - Jamaican Lion (RSP12915)
+  0.174 - JL 3rd Gen Mother (RSP11197)
+  0.178 - JL 4th Gen 2 (RSP11194)
+  0.182 - JL 4th Gen 4 (RSP11198)
+  0.186 - JL 4th Gen 1 (RSP11193)
+  0.188 - JL 4th Gen 5 (RSP11199)
+  0.188 - Jamaican Lion (RSP12916)
+  0.191 - JL 4th Gen 3 (RSP11195)
+  0.199 - Original Jamaican Lions (RSP11127)
+  0.225 - JL 4th Gen 7 (RSP11153)
+  0.238 - Jamaican Lion (RSP12913)
+  0.238 - Jamaican Lion (RSP12920)
+  0.239 - Jamaican Lion (RSP12918)
+  0.241 - Jamaican Lion (RSP12919)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13213-mgc-ots-certificate
+shasum: 5e6be3f6c056852dab6b95df51f1b5fbb66a89fcdac3c26adc7528982ac4e762

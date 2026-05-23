@@ -1,0 +1,45 @@
+================================================================================
+Fresca Melon x Styrofoam Cup #8 (RSP13503) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: S_x_Fresca_#8_20251230
+Accession Date: December 28, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.160 - RKM-2018-034 (RSP11126)
+  0.161 - Rainbow Belts 2.0 (RSP12802)
+  0.168 - Fresca Melon x Styrofoam Cup #6 (RSP13398)
+  0.174 - Fresca Melon x Pearadise #15 (RSP13399)
+  0.179 - Styrofoam Cup X Cookie Dough #2 (RSP13104)
+  0.186 - Pearadise x Fuzzy Melon #7 (RSP13103)
+  0.187 - SHERBERT (RSP11355)
+  0.189 - Pearadise x Cookie Dough #13 (RSP13105)
+  0.190 - Casco Kush (RSP11167)
+  0.194 - Pure Power Plant (RSP11265)
+  0.199 - Domnesia (RSP11184)
+  0.199 - Gorilla Cookies (RSP11231)
+  0.203 - Deadhead OG (RSP11463)
+  0.203 - East Coast Sour Diesel (RSP12922)
+  0.204 - NSPM_x_NSPM (RSP11487)
+  0.206 - Styrofoam Cup X Sh3rb3t #2 (RSP13102)
+  0.206 - MENDO BREATH (RSP11242)
+  0.206 - Pearadise x Cookie Dough #11 (RSP13106)
+  0.207 - Runtz (RO3) (RSP13306)
+  0.207 - HM Buds (RSP13128)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13503-mgc-ots-certificate
+shasum: 81bb28d9dd19a0be1f9796653bcbb833a57f30712687389915790e65960528a7

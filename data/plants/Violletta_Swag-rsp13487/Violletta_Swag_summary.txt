@@ -1,0 +1,44 @@
+================================================================================
+Violletta Swag (RSP13487) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: October 22, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.160 - Opalo (RSP13489)
+  0.184 - Swag Trinidat, by Kaly (RSP12876)
+  0.188 - 80E (RSP11211)
+  0.192 - 80E (RSP11212)
+  0.195 - 80E (RSP11213)
+  0.201 - Viho Tinto (RSP13488)
+  0.285 - Tiger Tail (78) (RSP11619)
+  0.289 - Tak-HN (RSP11618)
+  0.289 - T2R15 (RSP12661)
+  0.293 - Recon (RSP10755)
+  0.294 - Squirrel Tail (31) (RSP11485)
+  0.294 - T4R2 (RSP12662)
+  0.296 - Elite (Hemp) (RSP13222)
+  0.297 - Santhica 27 (RSP10665)
+  0.297 - Tisza (RSP10659)
+  0.299 - KYRG-151 (RSP11052)
+  0.301 - Tanao Sri-white (79) (RSP11620)
+  0.301 - T2R4 (RSP12660)
+  0.302 - Domnesia (RSP11184)
+  0.483 - Cherry Blossom (RSP11318)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13487-mgc-ots-certificate
+shasum: 0feac4d4d81bab93a5df4db2c956384816d0abc246589718893f01442a7334f3

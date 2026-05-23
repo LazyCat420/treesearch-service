@@ -1,0 +1,49 @@
+================================================================================
+Black Scotti (RSP13469) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: Black Scotti Top Stems
+Accession Date: August 20, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.032 - Black Scotti (RSP13468)
+  0.037 - Black Scotti (RSP13471)
+  0.049 - Black Scotti (RSP13467)
+  0.063 - Black Scotti (RSP13470)
+  0.068 - Black Scotti (RSP13466)
+  0.254 - Styrofoam Cup X Sh3rb3t #2 (RSP13102)
+  0.263 - Roze ([REDACTED] x Unknown) (RSP12925)
+  0.264 - Original Sour Diesel (RSP12902)
+  0.267 - Original Diesel (RSP12895)
+  0.271 - T20H (RSP13092)
+  0.271 - PMK 16949 (RSP13110)
+  0.272 - T20G (RSP13091)
+  0.272 - Orange Soda x Styrofoam Cup #2 (RSP13388)
+  0.273 - AJ Sour Diesel (RSP12903)
+  0.273 - T20I (RSP13093)
+  0.274 - PMK 16953 (RSP13111)
+  0.275 - Chem Dog 91 (RSP12905)
+  0.280 - Square Wave (RSP11344)
+  0.282 - Gorilla Cookies (RSP11231)
+  0.286 - GMO x Poison Momosa (RSP12500)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13469-mgc-ots-certificate
+shasum: 4639bfb5ab25ca6c149e2d2eed7d60ddb02fa22325026ce05511e7dd8204303f

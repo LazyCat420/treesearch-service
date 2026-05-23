@@ -1,0 +1,45 @@
+================================================================================
+Fresca Melon x Pearadise #15 (RSP13399) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: PxFresca_#15_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.142 - Fresca Melon x Styrofoam Cup #6 (RSP13398)
+  0.148 - Styrofoam Cup x Pearadise #6 (RSP12986)
+  0.148 - Pearadise x Cookie Dough #11 (RSP13106)
+  0.164 - Crème de la Crème x Pearadise #14 (RSP13396)
+  0.167 - Crème de la Crème x Styrofoam Cup #11 (RSP13402)
+  0.168 - SHERBERT (RSP11355)
+  0.173 - Miami Beach #1 (RSP13108)
+  0.198 - Pearadise x Fuzzy Melon #7 (RSP13103)
+  0.199 - Pieface (RSP12794)
+  0.206 - Styrofoam Cup x Pineapple Pez Melonade #3 (RSP12976)
+  0.206 - Domnesia (RSP11184)
+  0.207 - Blueberry Cheesecake (RSP10684)
+  0.210 - Pearadise (RSP13100)
+  0.213 - Peach Cresendo (RSP12483)
+  0.214 - Peach Ozz x  Styrofoam Cup #8 (RSP13393)
+  0.215 - NSPM1 (RSP11362)
+  0.215 - El Presidente (RSP12807)
+  0.218 - Rest (RSP11377)
+  0.218 - Blch Buds (RSP13134)
+  0.218 - unknown (RSP11432)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13399-mgc-ots-certificate
+shasum: 371520d7fc1abc8d5a16ad3f801e22d213faebd9d9be97c2371e062abe318466

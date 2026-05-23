@@ -1,0 +1,49 @@
+================================================================================
+BCP-Lf-NoMET (RSP13191) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: BCP-Lf-NoMET-20240730
+Accession Date: August 7, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Common
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.016 - BCP St-Fl (RSP13140)
+  0.016 - BCP-St-NoMET (RSP13195)
+  0.017 - BCP Buds (RSP13137)
+  0.025 - BCP-St-MET (RSP13194)
+  0.025 - BCP-Rt-MET (RSP13192)
+  0.029 - BCP-Rt-NoMET (RSP13193)
+  0.032 - BCP Rt-Fl (RSP13138)
+  0.054 - Blch-Rt-RW (RSP13198)
+  0.068 - BCP Lf-Fl (RSP13139)
+  0.083 - BCP Dring (RSP13118)
+  0.091 - BCP Lf-MET (RSP13190)
+  0.103 - Blch-Rt-Coco (RSP13197)
+  0.122 - BCP-Stem-Fl2 (RSP13196)
+  0.183 - Blch Buds (RSP13134)
+  0.187 - Blch St-Fl (RSP13136)
+  0.187 - D1 (RSP12875)
+  0.188 - Blch Rt-Fl (RSP13135)
+  0.227 - T20H (RSP13092)
+  0.228 - T20G (RSP13091)
+  0.229 - T20I (RSP13093)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13191-mgc-ots-certificate
+shasum: c81f79814764b72ef4554b546db000068eb61d505327591faf83a06e390b4952

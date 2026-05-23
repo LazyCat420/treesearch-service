@@ -1,0 +1,43 @@
+================================================================================
+RK02 BK (blue Kross) (RSP13512) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: February 25, 2026
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.198 - Joy (RSP11380)
+  0.198 - Electra (RSP11366)
+  0.201 - Lift (RSP11378)
+  0.211 - Badger (RSP11614)
+  0.221 - Doug's Varin (RSP11243)
+  0.224 - Suver Haze (RSP11364)
+  0.228 - UP Sunrise (RSP10989)
+  0.228 - Serious Happiness (RSP10763)
+  0.233 - Calm (RSP11379)
+  0.235 - Durban Poison #1 (RSP11013)
+  0.236 - UnObtanium (RSP11611)
+  0.238 - Trump x Trump (RSP11466)
+  0.239 - BlueBerry Cheesecake x JL Male (RSP11201)
+  0.242 - Domnesia (RSP11184)
+  0.242 - Liberty Haze (RSP11000)
+  0.244 - Durban Poison (RSP11014)
+  0.245 - Horncreek Tropical Tempest (RSP13161)
+  0.246 - Durban Poison #1 (RSP10996)
+  0.248 - Purple Hash Dog (RSP12726)
+  0.250 - Blueberry Cheesecake (RSP10684)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+shasum: d3625e7d900a13a6f70e9a21eca6e0649577c8990197cacbd07aa301bed7c8d7

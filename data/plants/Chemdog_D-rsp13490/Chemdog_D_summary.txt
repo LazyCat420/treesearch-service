@@ -1,0 +1,44 @@
+================================================================================
+Chemdog D (RSP13490) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: October 30, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.003 - Super Sour Diesel (RSP11191)
+  0.105 - CHEM4 (RSP12090)
+  0.124 - Dog Patch (RSP11725)
+  0.127 - Motor Breath #15 (RSP12093)
+  0.153 - 501st OG (RSP11241)
+  0.158 - RKM-2018-002 (RSP11093)
+  0.160 - Star Dawg (RSP11352)
+  0.170 - Sour D (RSP11343)
+  0.171 - BEEFCAKE D (RSP12642)
+  0.176 - New York City Deisel (RSP11225)
+  0.177 - RKM-2018-032 (RSP11124)
+  0.178 - Chem'91 (RSP13491)
+  0.178 - RKM-2018-021 (RSP11113)
+  0.178 - GG#4 (RSP11461)
+  0.179 - RKM-2018-017 (RSP11109)
+  0.179 - Sour Diesel (Wing Wang NYC) (RSP13089)
+  0.183 - GG4 (RSP12096)
+  0.183 - GMO (RSP12091)
+  0.186 - Mothers Milk #5 (RSP11186)
+  0.188 - Mother's Milk No. 31 (RSP11623)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13490-mgc-ots-certificate
+shasum: bb8c34114a7c9b1071cb064f8ed038f82c35b592fecc033e3e1d7a86ad79531c

@@ -1,0 +1,45 @@
+================================================================================
+AST 530 (RSP13256) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: AST 530-20241017
+Accession Date: October 16, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.180 - Electra (RSP11366)
+  0.200 - Lift (RSP11378)
+  0.210 - Serious Happiness (RSP10763)
+  0.212 - Suver Haze (RSP11364)
+  0.217 - Doug's Varin (RSP11243)
+  0.225 - Liberty Haze (RSP11000)
+  0.230 - Lifter (RSP11365)
+  0.233 - Queen Dream CBG (RSP11296)
+  0.233 - Queen Dream CBG (RSP11286)
+  0.236 - Queen Dream CBG (RSP11285)
+  0.236 - FL30 7/11/2019 (RSP11361)
+  0.237 - Badger (RSP11614)
+  0.238 - Rest (RSP11377)
+  0.240 - Miss X (RSP10999)
+  0.242 - Queen Dream CBG (RSP11294)
+  0.243 - Liberty Haze (RSP10946)
+  0.246 - Hot Blonde (RSP11290)
+  0.249 - CBG-#40 (RSP11444)
+  0.250 - Hot Blonde (RSP11292)
+  0.251 - JL_X_NSPM1_14 (RSP11473)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13256-mgc-ots-certificate
+shasum: b470ee308e9fa3fab634f2c0197bed05a74e16691cf9e78575f2af70042857ea

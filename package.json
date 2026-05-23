@@ -1,0 +1,9 @@
+{
+  "name": "cannabis-service",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cannabis data warehouse API service",
+  "scripts": {
+    "deploy": "./deploy.sh"
+  }
+}

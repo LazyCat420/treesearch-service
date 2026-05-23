@@ -1,0 +1,45 @@
+================================================================================
+Peach Ozz x Pearadise #2 (RSP13505) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: P_x_Peach_#2_20251230
+Accession Date: December 28, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.081 - Peach Ozz x  Styrofoam Cup #4 (RSP13392)
+  0.209 - Peach Ozz x  Styrofoam Cup #8 (RSP13393)
+  0.209 - Jacks Cleaner (RSP11347)
+  0.210 - Lemon Skunk (RSP11229)
+  0.213 - RKM-2018-027 (RSP11119)
+  0.216 - Blue Dream (RSP11006)
+  0.216 - UP Sunrise (RSP10989)
+  0.216 - RKM-2018-025 (RSP11117)
+  0.216 - Black Jack (RSP10603)
+  0.218 - RKM-2018-016 (RSP11108)
+  0.220 - Electra (RSP11366)
+  0.221 - Blue Dream (RSP11017)
+  0.222 - SK6210 (RSP12735)
+  0.224 - Blue Dream (RSP11009)
+  0.225 - PWE (RSP11369)
+  0.226 - Blue Dream (RSP11007)
+  0.226 - BLACK JACK (RSP11346)
+  0.226 - Serious Happiness (RSP10763)
+  0.227 - Blue Dream (RSP11010)
+  0.228 - Blue Dream (RSP11012)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13505-mgc-ots-certificate
+shasum: ad535a3944a9cd1637f22d4b113f37a0c4c9d7d57508d9f25849f1f3b95f7d2c

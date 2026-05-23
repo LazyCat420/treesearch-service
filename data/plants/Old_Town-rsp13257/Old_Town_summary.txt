@@ -1,0 +1,45 @@
+================================================================================
+Old Town (RSP13257) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: CS195-20241021
+Accession Date: October 20, 2024
+Reported Plant Sex: Not Reported
+Report Type: Whole-Genome Sequencing
+Reported Sex: Not Reported
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.250 - RKM-2018-027 (RSP11119)
+  0.257 - Blue Dream (RSP11006)
+  0.260 - BLACK JACK (RSP11346)
+  0.264 - RKM-2018-025 (RSP11117)
+  0.265 - RKM-2018-016 (RSP11108)
+  0.267 - Black Jack (RSP10603)
+  0.269 - Blue Dream (RSP11017)
+  0.272 - Blue Dream (RSP11010)
+  0.275 - Blueberry Cheesecake (RSP10684)
+  0.276 - Durban Poison (RSP11014)
+  0.288 - Blue Dream (RSP11012)
+  0.290 - Blue Dream (RSP11008)
+  0.292 - Electra (RSP11366)
+  0.295 - Snoops Dream (RSP11003)
+  0.295 - Super Blue Dream (RSP11011)
+  0.296 - UP Sunrise (RSP10989)
+  0.297 - Durban Poison (RSP10998)
+  0.298 - Blue Dream (RSP11004)
+  0.299 - Doug's Varin (RSP11243)
+  0.300 - Durban Poison #1 (RSP10996)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13257-mgc-ots-certificate
+shasum: f6780211e2e4c9360c4738dfd1138c7262f8fe91c485475e257e29700fe23670

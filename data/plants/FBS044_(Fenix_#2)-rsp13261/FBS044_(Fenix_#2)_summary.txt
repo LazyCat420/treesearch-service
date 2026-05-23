@@ -1,0 +1,45 @@
+================================================================================
+FBS044 (Fenix #2) (RSP13261) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: FBS044_(Fenix_#2)_20241118
+Accession Date: November 17, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.048 - FBS044 (Fenix #1) (RSP13260)
+  0.233 - Tak-HN (RSP11618)
+  0.247 - R4 (RSP11617)
+  0.252 - KYRG-151 (RSP11052)
+  0.253 - R3 (RSP11616)
+  0.258 - R1 (RSP11483)
+  0.259 - R2 (RSP11615)
+  0.259 - Blch-Rt-RW (RSP13199)
+  0.264 - Elite (Hemp) (RSP13222)
+  0.265 - Tygra (RSP10667)
+  0.270 - Jiangji (RSP10653)
+  0.271 - Kyrgyz Gold (RSP11054)
+  0.274 - Squirrel Tail (31) (RSP11485)
+  0.455 - Cherry Blossom (RSP11318)
+  0.453 - BCH Rt-Fl (RSP13141)
+  0.439 - Cherry Blossom (RSP11300)
+  0.432 - Big Red (RSP13217)
+  0.429 - El Gordo Dried (RSP13122)
+  0.427 - Cherry Blossom (RSP11301)
+  0.424 - Cherry Blossom (RSP11323)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13261-mgc-ots-certificate
+shasum: 3041bd32864bc1acb59eff3e55f47fddf68975f8ac8a1f4a8bfd5d17e6b9e051

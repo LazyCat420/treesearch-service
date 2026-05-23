@@ -1,0 +1,49 @@
+================================================================================
+SLH Rt-M (RSP13132) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SLH Rt-M-20240516
+Accession Date: June 2, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.025 - SLH Buds (RSP13131)
+  0.037 - SLH Rt-Fl (RSP13133)
+  0.057 - SLH C3 (RSP12943)
+  0.080 - SLH C3 (RSP12942)
+  0.194 - Domnesia (RSP11184)
+  0.204 - Pie Face Mac (RSP11974)
+  0.209 - Wedding Cake x MAC (RSP11464)
+  0.219 - Casco Kush (RSP11167)
+  0.222 - Blue Dream (RSP11009)
+  0.223 - Durban Poison #1 (RSP11013)
+  0.227 - White Chronic (RSP11220)
+  0.227 - Sunday Driver (RSP11071)
+  0.228 - SHERBERT (RSP11355)
+  0.228 - Serious Happiness (RSP10763)
+  0.230 - Pieface (RSP12794)
+  0.234 - Blue Dream (RSP11006)
+  0.234 - Blue Dream (RSP11017)
+  0.235 - JL Cross 29 (RSP11530)
+  0.237 - Super Blue Dream (RSP11011)
+  0.238 - Dominion Skunk (RSP11354)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: 24657d7c42371a39ec748199f9d734c011bb0634b176eb3ae1b629c19c55f66d
+shasum: 04670cb15719009ef325353b23a188ccb7dca53997ad02316f2c311005b6bb19

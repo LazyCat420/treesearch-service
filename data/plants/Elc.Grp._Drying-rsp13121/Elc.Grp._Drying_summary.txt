@@ -1,0 +1,49 @@
+================================================================================
+Elc.Grp. Drying (RSP13121) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: Elc.Grp. Drying-20240416
+Accession Date: April 24, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.151 - PK (RSP12932)
+  0.151 - PK (RSP13087)
+  0.164 - PK (RSP12926)
+  0.164 - PK Drying (RSP13124)
+  0.173 - RKM-2018-008 (RSP11099)
+  0.173 - SourD (RSP12092)
+  0.175 - The Gift (RSP10988)
+  0.176 - Serious Happiness (RSP10763)
+  0.190 - Domnesia (RSP11184)
+  0.192 - RKM-2018-013 (RSP11104)
+  0.192 - PK Dried (RSP13123)
+  0.196 - Deadhead OG (RSP11463)
+  0.196 - Electra (RSP11366)
+  0.199 - Whitey (RSP11363)
+  0.199 - Lift (RSP11378)
+  0.202 - Pearadise x Pineapple Pez Melonade #6 (RSP12978)
+  0.202 - Pure Power Plant (RSP11265)
+  0.203 - Skywalker OG (RSP10837)
+  0.203 - Doug's Varin (RSP11243)
+  0.203 - SFVxTK (RSP11072)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: 47cc59b1ba5fc2698e61d1b7f8b62aa374ab88228f9840135aaffb55d25bded6
+shasum: 7763c36c88559d89ffef24a3978a3d88bc3335d3ebad18861a629060735d90c8

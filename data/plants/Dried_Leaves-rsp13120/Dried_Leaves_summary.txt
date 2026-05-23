@@ -1,0 +1,49 @@
+================================================================================
+Dried Leaves (RSP13120) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: Dried Leaves-20240416
+Accession Date: April 24, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.078 - JFG (RSP13085)
+  0.085 - JFG (RSP12927)
+  0.095 - Powdered Donuts (RSP12939)
+  0.116 - JFG (RSP12933)
+  0.203 - Old Family Purple (RSP12098)
+  0.206 - Skywalker OG (RSP10837)
+  0.208 - BF (RSP12931)
+  0.216 - SFVxTK (RSP11072)
+  0.217 - BF (RSP13086)
+  0.219 - Champelli Red #4 (RSP12804)
+  0.227 - 501st OG (RSP11241)
+  0.228 - Jilly bean (RSP11230)
+  0.229 - PG (RSP12928)
+  0.230 - East side OG (RSP12089)
+  0.230 - PG (RSP12934)
+  0.231 - PG (RSP13088)
+  0.232 - BF (RSP12937)
+  0.233 - Durban Poison #1 (RSP11013)
+  0.233 - Absolute_OG (RSP11455)
+  0.234 - RKM-2018-012 (RSP11103)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: d6af39a9d9082ea5875967fbf9c740295f7cba43660f6dc0605c4f2966458b1b
+shasum: 64055202c904763821085343499f7d43286770f71f8bbc349ad7ecdb89fe6dfe

@@ -1,0 +1,44 @@
+================================================================================
+Opalo (RSP13489) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: October 22, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.160 - Violletta Swag (RSP13487)
+  0.166 - Viho Tinto (RSP13488)
+  0.234 - 80E (RSP11211)
+  0.236 - Swag Trinidat, by Kaly (RSP12876)
+  0.241 - 80E (RSP11213)
+  0.248 - 80E (RSP11212)
+  0.302 - Acid Beauty (RSP13483)
+  0.306 - Tiger Tail (78) (RSP11619)
+  0.307 - Squirrel Tail (31) (RSP11485)
+  0.308 - T2R4 (RSP12660)
+  0.317 - Recon (RSP10755)
+  0.317 - T4R2 (RSP12662)
+  0.317 - Purple Columbian (RSP12924)
+  0.319 - Tiger Tail (30) (RSP11484)
+  0.323 - Jiangji (RSP10653)
+  0.323 - ST (RSP12666)
+  0.323 - Liberty Haze (RSP11000)
+  0.325 - Tanao Sri-white (79) (RSP11620)
+  0.325 - PK (RSP12667)
+  0.326 - T4R6 (RSP12664)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13489-mgc-ots-certificate
+shasum: 62d844d16bad407533abf31d3524dd967cc6226550d48e5912a1abfc28eff2c7

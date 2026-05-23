@@ -1,0 +1,49 @@
+================================================================================
+BCP-Stem-Fl2 (RSP13196) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: BCP-Stem-Fl2-20240730
+Accession Date: August 7, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.116 - BCP Buds (RSP13137)
+  0.118 - BCP-St-NoMET (RSP13195)
+  0.120 - BCP St-Fl (RSP13140)
+  0.122 - BCP-Lf-NoMET (RSP13191)
+  0.126 - BCP-St-MET (RSP13194)
+  0.128 - BCP-Rt-MET (RSP13192)
+  0.129 - BCP Rt-Fl (RSP13138)
+  0.131 - BCP-Rt-NoMET (RSP13193)
+  0.151 - Blch-Rt-RW (RSP13198)
+  0.153 - BCP Lf-Fl (RSP13139)
+  0.172 - PG Buds (RSP13151)
+  0.175 - Domnesia (RSP11184)
+  0.178 - PG (RSP13088)
+  0.179 - Blch Buds (RSP13134)
+  0.180 - PG Rt-Fl (RSP13152)
+  0.181 - Blch Rt-Fl (RSP13135)
+  0.182 - Blch St-Fl (RSP13136)
+  0.183 - PG (RSP12934)
+  0.183 - Serious Happiness (RSP10763)
+  0.184 - T20H (RSP13092)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13196-mgc-ots-certificate
+shasum: fc4a870c6c8127b7f854db9a9edc50f15b0f63f5c7b660c64e89aa67a802d009

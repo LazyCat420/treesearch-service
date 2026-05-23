@@ -1,0 +1,49 @@
+================================================================================
+JL x MC5 (RSP13212) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: JL x MC5-yellow leaf
+Accession Date: September 11, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.021 - JL_x_MandarinCookies_XX_THC_5 (RSP13167)
+  0.076 - JL_x_MandarinCookies_XX_THC_10 (RSP13168)
+  0.117 - JL 4th Gen 2 (RSP11194)
+  0.151 - JL 4th Gen 1 (RSP11193)
+  0.156 - JL x MC7 (RSP13213)
+  0.157 - JL 4th Gen 4 (RSP11198)
+  0.158 - JL 4th Gen 5 (RSP11199)
+  0.161 - JL yellow (RSP11075)
+  0.162 - JL 4th Gen 3 (RSP11195)
+  0.164 - JL 3rd Gen Mother (RSP11197)
+  0.169 - JL 3rd Gen Mother (RSP11214)
+  0.173 - Jamaican Lion (RSP12917)
+  0.175 - Jamaican Lion (RSP12915)
+  0.190 - Jamaican Lion (RSP12916)
+  0.191 - Jamaican Lion (RSP12918)
+  0.192 - Jamaican Lion (RSP12919)
+  0.193 - JL 4th Gen 7 (RSP11153)
+  0.194 - JL 4th Gen 6 (RSP11200)
+  0.195 - Original Jamaican Lions (RSP11127)
+  0.198 - Jamaican Lion (RSP12920)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13212-mgc-ots-certificate
+shasum: b07065a4b114a49b61e31c72639750d67d4a3f21caaaf60e3db2cac64f0e4092

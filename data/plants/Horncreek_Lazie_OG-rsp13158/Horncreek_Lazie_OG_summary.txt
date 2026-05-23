@@ -1,0 +1,48 @@
+================================================================================
+Horncreek Lazie OG (RSP13158) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: June 9, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.135 - Trump x Trump (RSP11466)
+  0.149 - Rest (RSP11377)
+  0.180 - TI (RSP11149)
+  0.195 - Electra (RSP11366)
+  0.204 - Blueberry Cheesecake (RSP10684)
+  0.205 - Lift (RSP11378)
+  0.205 - Domnesia (RSP11184)
+  0.207 - Doug's Varin (RSP11243)
+  0.211 - Suver Haze (RSP11364)
+  0.219 - PG Buds (RSP13151)
+  0.220 - PG Rt-Fl (RSP13152)
+  0.223 - UnObtanium (RSP11611)
+  0.223 - Danny Noonan (RSP11070)
+  0.224 - Durban Poison #1 (RSP11013)
+  0.225 - Serious Happiness (RSP10763)
+  0.225 - T.S.A.G.E (RSP11351)
+  0.226 - Sunday Driver (RSP11071)
+  0.226 - T20G (RSP13091)
+  0.227 - Old Family Purple (RSP12098)
+  0.227 - PG (RSP12934)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: 6364a94231961d80532c84b4b1a3f8c226e7193266576f6a89596f13976144cd
+shasum: 20a0108b5244a11a2ba589de944d500ea2c2e473280e86c98dd0964fb8ddda7b

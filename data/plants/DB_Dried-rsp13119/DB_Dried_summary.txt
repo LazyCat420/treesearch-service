@@ -1,0 +1,49 @@
+================================================================================
+DB Dried (RSP13119) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: DB Dried-20240416
+Accession Date: April 24, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.052 - DB (RSP13083)
+  0.075 - DB (RSP12930)
+  0.109 - DB (RSP12936)
+  0.173 - Black Triangle (RSP11638)
+  0.186 - GG#4 (RSP11461)
+  0.188 - 501st OG (RSP11241)
+  0.193 - RKM-2018-032 (RSP11124)
+  0.194 - RKM-2018-021 (RSP11113)
+  0.196 - RKM-2018-017 (RSP11109)
+  0.198 - GG4 (RSP12096)
+  0.200 - Lemon OG Haze (RSP11977)
+  0.202 - SHERBERT (RSP11355)
+  0.211 - Tahoe OG (RSP11189)
+  0.216 - RKM-2018-008 (RSP11099)
+  0.217 - JL Cross 10 (RSP11511)
+  0.217 - RKM-2018-012 (RSP11103)
+  0.218 - PK (RSP12932)
+  0.218 - GG4 (RSP11978)
+  0.218 - T20 Dried (RSP13125)
+  0.219 - Mother's Milk No. 31 (RSP11623)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: a823d9fbce953b524a3e2ff2da29dfa86aa536179e5441b889d00d08c98eb484
+shasum: 86b3581622cdb965e9b76191eb24e4d1d6c691c12a9a7b9924cd67f199801b54

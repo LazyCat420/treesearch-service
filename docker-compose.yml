@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  cannabis-service:
+    image: cannabis-service:latest
+    container_name: cannabis-service
+    restart: unless-stopped
+    ports:
+      - "8005:8005"
+    environment:
+      - PORT=8005
+      - SCRAPER_SERVICE_URL=http://10.0.0.16:8001
+    env_file:
+      - .env

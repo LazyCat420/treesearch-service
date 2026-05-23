@@ -1,0 +1,48 @@
+================================================================================
+RO3 by "3R Bio" (RSP13429) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: June 22, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.016 - White Cherry Gelato-V (D15) (RSP13305)
+  0.022 - Runtz (RO3) (RSP13306)
+  0.041 - Pink Runtz (VO1) (RSP13307)
+  0.042 - Purple Urkle (RSP12890)
+  0.087 - Runtz (RSP13426)
+  0.137 - Bolo Runtz x Styrofoam Cup #1 (RSP13401)
+  0.152 - Absolute_OG (RSP11455)
+  0.162 - SFVxTK (RSP11072)
+  0.164 - Skywalker OG (RSP10837)
+  0.177 - Red Eye OG (RSP11190)
+  0.179 - CDSD (RSP13084)
+  0.182 - East side OG (RSP12089)
+  0.185 - T20H (RSP13092)
+  0.187 - Rootbeer Rolex #50 (RSP12645)
+  0.187 - T20G (RSP13091)
+  0.188 - T20I (RSP13093)
+  0.188 - UK Cheese (RSP12896)
+  0.189 - Super Runtz (RSP12810)
+  0.189 - PD St-M (RSP13149)
+  0.189 - CDSD (RSP12929)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13429-mgc-ots-certificate
+shasum: bf7ce70960f17cc0f67337e90acabc43e1b651e5201088bd1713ea2604aa1040

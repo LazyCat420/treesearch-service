@@ -1,0 +1,49 @@
+================================================================================
+HM Buds (RSP13128) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: HM Buds-20240516
+Accession Date: June 2, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.026 - HM Rt-M (RSP13129)
+  0.035 - HM Rt-Fl (RSP13130)
+  0.075 - HM (RSP12941)
+  0.170 - Eucalyptus (RSP12803)
+  0.177 - PMK 16953 (RSP13111)
+  0.177 - CDSD (RSP13084)
+  0.179 - PMK 16949 (RSP13110)
+  0.180 - East Coast Sour Diesel (RSP12922)
+  0.183 - RKM-2018-034 (RSP11126)
+  0.192 - Peach Ringz (RSP12899)
+  0.194 - Gorilla Cookies (RSP11231)
+  0.198 - Cherry Lime Runtz (RSP12486)
+  0.199 - UK Cheese (RSP12896)
+  0.201 - Rootbeer Rolex #50 (RSP12645)
+  0.202 - GMO x [REDACTED] #43 (RSP11976)
+  0.202 - CDSD (RSP12929)
+  0.205 - RKM-2018-026 (RSP11118)
+  0.206 - Deadhead OG (RSP11463)
+  0.213 - Styrofoam Cup x Cuban Linx #1 (RSP12984)
+  0.213 - CDSD (RSP12935)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: 54bd5f18ba82258c83ffd89565f24670700ac6c4648ca5e68dd84ad0bf991465
+shasum: 1d60153542c256253bd8cc10bb687884ef2062b3a417fe76acbe2eb0687bf9d6

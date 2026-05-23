@@ -1,0 +1,45 @@
+================================================================================
+Acid Beauty (RSP13483) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: Acid Beauty Hermi 5 weeks
+Accession Date: September 14, 2025
+Reported Plant Sex: Hermaphrodite
+Report Type: Whole-Genome Sequencing
+Reported Sex: Hermaphrodite
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.218 - Recon (RSP10755)
+  0.251 - Purple Columbian (RSP12924)
+  0.256 - C5 Haze (RSP12817)
+  0.256 - T2R4 (RSP12660)
+  0.257 - Cheese (RSP10460)
+  0.258 - RKM-2018-016 (RSP11108)
+  0.258 - Black Jack (RSP10603)
+  0.259 - RKM-2018-025 (RSP11117)
+  0.259 - Electra (RSP11366)
+  0.260 - Squirrel Tail (31) (RSP11485)
+  0.262 - CST (RSP11002)
+  0.263 - C5 Haze (RSP12818)
+  0.263 - Punta Roja (RSP12923)
+  0.265 - Doug's Varin (RSP11243)
+  0.267 - A5 Haze (RSP12815)
+  0.267 - Serious Happiness (RSP10763)
+  0.270 - A5 Haze (RSP12816)
+  0.270 - SK6210 (RSP12735)
+  0.458 - Cherry Blossom (RSP11323)
+  0.458 - Cherry Blossom (RSP11318)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13483-mgc-ots-certificate
+shasum: ef6c716948752385862239ba2755124077bb1b9e15faa5cec9caf4bc81bbc1e8

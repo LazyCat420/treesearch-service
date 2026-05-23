@@ -1,0 +1,44 @@
+================================================================================
+Mass Surper Skunk Backcross (RSP13493) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: Mass Surper Skunk Backcross-10282025
+Accession Date: October 30, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.193 - Jasmine Silver Haze (RSP11979)
+  0.199 - T.S.A.G.E (RSP11351)
+  0.225 - RKM-2018-028 (RSP11120)
+  0.229 - Thank You Jerry (RSP11459)
+  0.231 - TI (RSP11149)
+  0.232 - Wilburs Great Adventure (RSP11727)
+  0.233 - Green Crack (RSP11339)
+  0.233 - Medxotic (RSP11410)
+  0.242 - Danny Noonan (RSP11070)
+  0.243 - Cheese (RSP10460)
+  0.248 - PG Buds (RSP13151)
+  0.251 - Trump x Trump (RSP11466)
+  0.251 - PG (RSP13088)
+  0.251 - PG Rt-Fl (RSP13152)
+  0.253 - Hermaphrodite_Research_Sample1 (RSP11042)
+  0.254 - Hermaphrodite_Research_Sample1 (RSP11049)
+  0.255 - Blue Dream (RSP11010)
+  0.257 - RKM-2018-003 (RSP11094)
+  0.258 - Bordello (RSP11228)
+  0.504 - Cherry Blossom (RSP11317)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+shasum: 38ea927f7430f1de7e91edc906d61bfb542ab5d7bfdabb735ccdc394fe242e97

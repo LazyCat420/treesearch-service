@@ -1,0 +1,49 @@
+================================================================================
+EGd Rt-Fl (RSP13144) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: EGd Rt-Fl-20240516
+Accession Date: June 5, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.016 - EGd St-M (RSP13147)
+  0.017 - EG2 Stems (RSP13095)
+  0.017 - EG2 Roots (RSP13096)
+  0.021 - EGd Rt-M (RSP13146)
+  0.028 - EG2 Leaves (RSP13094)
+  0.035 - El Gordo (RSP12938)
+  0.052 - El Gordo Dried (RSP13122)
+  0.167 - Chem 91 (RSP11185)
+  0.177 - Mother's Milk No. 31 (RSP11623)
+  0.207 - RKM-2018-009 (RSP11100)
+  0.208 - Styrofoam Cup x Cuban Linx #1 (RSP12984)
+  0.212 - Motor Breath #15 (RSP12093)
+  0.214 - Styrofoam Cup x Pearadise #6 (RSP12986)
+  0.216 - Pearadise x Orange Juice #4 (RSP12975)
+  0.217 - RKM-2018-032 (RSP11124)
+  0.217 - GMO (RSP12091)
+  0.217 - RKM-2018-021 (RSP11113)
+  0.218 - RKM-2018-017 (RSP11109)
+  0.220 - GG#4 (RSP11461)
+  0.221 - GMO x [REDACTED] #43 (RSP11976)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: ae0878b2244f1b4e9a462b93447e87ed5abb54f003ba672cfe525b0196e31a74
+shasum: 5fa416330e9aca307ecd8bc21a8f9a3f7a24e31a2b0739b63bacc4cf34f80348

@@ -1,0 +1,49 @@
+================================================================================
+Blch-Rt-RW (RSP13199) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: Elite-Seed-20240801
+Accession Date: August 7, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.167 - C-930 lot 211005 (RSP12603)
+  0.180 - Tygra (RSP10667)
+  0.181 - Santhica 27 (RSP10665)
+  0.187 - KYRG-151 (RSP11052)
+  0.189 - Fedora 17 (RSP10661)
+  0.189 - Lovrin (RSP10658)
+  0.193 - Futura 75 (RSP10664)
+  0.194 - Tisza (RSP10659)
+  0.195 - Santhica27 (RSP10056)
+  0.195 - Santhica27 (RSP11046)
+  0.200 - Santhica27 (RSP11047)
+  0.202 - USO 31 (RSP10981)
+  0.209 - Fedora 17 (RSP11203)
+  0.209 - USO 31 (RSP10983)
+  0.210 - Tisza (RSP11044)
+  0.210 - Monoica (RSP10241)
+  0.214 - Carmagnola (RSP10982)
+  0.214 - Carmagnola/USO 31 (RSP11204)
+  0.214 - Tak-HN (RSP11618)
+  0.446 - BCH Rt-Fl (RSP13141)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13199-mgc-ots-certificate
+shasum: 3c77e14a2d85149a13fbf174a0409b3df994044a2a6875d0d71ec4d26bc96651

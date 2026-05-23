@@ -1,0 +1,45 @@
+================================================================================
+Crème de la Crème x Styrofoam Cup #7 (RSP13501) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: S_x_Crème_#7_20251230
+Accession Date: December 28, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.143 - Crème de la Crème x Styrofoam Cup #2 (RSP13394)
+  0.149 - Crème de la Crème x Styrofoam Cup #5 (RSP13500)
+  0.171 - Skywalker OG (RSP10837)
+  0.172 - SFVxTK (RSP11072)
+  0.175 - Absolute_OG (RSP11455)
+  0.176 - Crème de la Crème x Styrofoam Cup #12 (RSP13395)
+  0.181 - Styrofoam Cup (RSP13099)
+  0.185 - Styrofoam Cup x Cuban Linx #4 (RSP12970)
+  0.187 - Red Eye OG (RSP11190)
+  0.192 - East side OG (RSP12089)
+  0.195 - Styrofoam Cup x Diesel Truck OG #16 (RSP12972)
+  0.196 - Crème de la Crème x Pearadise #14 (RSP13396)
+  0.198 - RKM-2018-013 (RSP11104)
+  0.200 - Styrofoam Cup x Orange Juice #5 (RSP12974)
+  0.209 - El Presidente (RSP12807)
+  0.211 - MAC x Styrofoam Cup #1 (RSP13400)
+  0.211 - NSPM1 (RSP11362)
+  0.211 - Styrofoam Cup X Sh3rb3t #2 (RSP13102)
+  0.217 - Bolo Runtz x Styrofoam Cup #1 (RSP13401)
+  0.219 - Banana Taffy x Styrofoam Cup #6 (RSP13403)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13501-mgc-ots-certificate
+shasum: 44e99ef1bc4411745495ac9ad1cc70bbea6895329702779a334eb4023c9cbc00

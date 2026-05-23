@@ -1,0 +1,40 @@
+Type,Distance,Strain,RSP
+all_samples,0.023,BCP Buds,RSP13137
+all_samples,0.023,BCP-St-NoMET,RSP13195
+all_samples,0.023,BCP St-Fl,RSP13140
+all_samples,0.025,BCP-Lf-NoMET,RSP13191
+all_samples,0.031,BCP-St-MET,RSP13194
+all_samples,0.035,BCP Rt-Fl,RSP13138
+all_samples,0.036,BCP-Rt-NoMET,RSP13193
+all_samples,0.058,Blch-Rt-RW,RSP13198
+all_samples,0.069,BCP Lf-Fl,RSP13139
+all_samples,0.083,BCP Dring,RSP13118
+all_samples,0.098,BCP Lf-MET,RSP13190
+all_samples,0.108,Blch-Rt-Coco,RSP13197
+all_samples,0.128,BCP-Stem-Fl2,RSP13196
+all_samples,0.185,Blch Buds,RSP13134
+all_samples,0.187,Blch St-Fl,RSP13136
+all_samples,0.188,D1,RSP12875
+all_samples,0.189,Blch Rt-Fl,RSP13135
+all_samples,0.228,T20I,RSP13093
+all_samples,0.23,T20G,RSP13091
+all_samples,0.232,T20H,RSP13092
+base_tree,0.452,Cherry Blossom,RSP11317
+base_tree,0.445,Jamaican Lion,RSP12916
+base_tree,0.443,JL yellow,RSP11075
+base_tree,0.439,JL 3rd Gen Mother,RSP11214
+base_tree,0.438,Cherry Blossom,RSP11323
+base_tree,0.433,Jamaican Lion,RSP12917
+base_tree,0.431,Cherry Blossom,RSP11311
+base_tree,0.43,Cherry Blossom,RSP11314
+base_tree,0.424,Cherry Blossom,RSP11306
+base_tree,0.421,Jamaican Lion,RSP12915
+base_tree,0.42,Cherry Blossom,RSP11328
+base_tree,0.414,Cherry Blossom,RSP11325
+base_tree,0.413,Tiger Tail (30),RSP11484
+base_tree,0.41,Cherry Blossom,RSP11324
+base_tree,0.408,CS Indica,RSP11658
+base_tree,0.408,Cherry Blossom,RSP11309
+base_tree,0.408,Cherry Blossom,RSP11330
+base_tree,0.407,Cherry Blossom,RSP11335
+base_tree,0.405,Cherry Blossom,RSP11308

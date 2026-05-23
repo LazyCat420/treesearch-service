@@ -1,0 +1,45 @@
+================================================================================
+Crème de la Crème x Styrofoam Cup #2 (RSP13394) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SxCreme_#2_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.146 - Styrofoam Cup X Cookie Dough #2 (RSP13104)
+  0.147 - El Presidente (RSP12807)
+  0.149 - GMO (RSP12091)
+  0.160 - Animal Tree x [REDACTED] #2 (RSP12793)
+  0.173 - Styrofoam Cup x Orange Juice #2 (RSP13109)
+  0.177 - Crème de la Crème x Styrofoam Cup #12 (RSP13395)
+  0.178 - The Original Z (Zk*****z) (RSP13259)
+  0.178 - Animal Tree x [REDACTED] #4 (RSP12792)
+  0.185 - Crème de la Crème x Styrofoam Cup #11 (RSP13402)
+  0.187 - Rugburn OG (RSP11353)
+  0.189 - Styrofoam Cup x Orange Juice #5 (RSP12974)
+  0.190 - PK St-Fl (RSP13155)
+  0.192 - GMO x Garlic Breath (RSP12507)
+  0.193 - PK Buds (RSP13153)
+  0.193 - PK-St-M (RSP13205)
+  0.194 - PK-Lf-M (RSP13201)
+  0.194 - Styrofoam Cup x Orange Juice #1 (RSP12980)
+  0.194 - SFVxTK (RSP11072)
+  0.195 - RKM-2018-034 (RSP11126)
+  0.195 - Pink Kush (RSP13229)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13394-mgc-ots-certificate
+shasum: f5bf42d55bacd209a2b44109a42eef76f00c6f440ecdfae32ed16c789744b152

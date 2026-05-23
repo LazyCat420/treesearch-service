@@ -1,0 +1,43 @@
+================================================================================
+Chem'91 (RSP13491) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: October 30, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Common
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.119 - SFVxTK (RSP11072)
+  0.125 - Skywalker OG (RSP10837)
+  0.126 - Red Eye OG (RSP11190)
+  0.135 - RKM-2018-013 (RSP11104)
+  0.135 - Motor Breath #15 (RSP12093)
+  0.136 - Absolute_OG (RSP11455)
+  0.140 - East side OG (RSP12089)
+  0.144 - Deadhead OG (RSP11463)
+  0.150 - Rugburn OG (RSP11353)
+  0.153 - SourD (RSP12092)
+  0.153 - CHEM4 (RSP12090)
+  0.158 - East Coast Sour Diesel (RSP12922)
+  0.166 - Fatso (RSP11741)
+  0.167 - Star Dawg (RSP11352)
+  0.174 - RKM-2018-002 (RSP11093)
+  0.178 - Chemdog D (RSP13490)
+  0.182 - RKM-2018-026 (RSP11118)
+  0.185 - Pure Power Plant (RSP11265)
+  0.187 - 501st OG (RSP11241)
+  0.186 - Super Sour Diesel (RSP11191)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+shasum: 713deb31cb1b5820f737f950dc726d3e839962f347912dc539842d8d6aa4e871

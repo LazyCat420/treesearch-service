@@ -1,0 +1,49 @@
+================================================================================
+A29-Rt-M-Rw (RSP13188) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: A29-Rt-M-Rw-20240730
+Accession Date: August 7, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Microbiome: Krona Plot
+Fungal Microbiome: Krona Plot
+Bacterial Microbiome: Krona Plot
+Viral Microbiome: Krona Plot
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.051 - A29-St-M-Rw (RSP13189)
+  0.097 - A29-Lf-M-Rw (RSP13187)
+  0.166 - Electra (RSP11366)
+  0.170 - Domnesia (RSP11184)
+  0.188 - Doug's Varin (RSP11243)
+  0.190 - SHERBERT (RSP11355)
+  0.190 - JL_X_NSPM1_7 (RSP11469)
+  0.190 - Lift (RSP11378)
+  0.195 - Glitter Bomb (RSP12901)
+  0.196 - PD St-M (RSP13149)
+  0.197 - JFG (RSP13085)
+  0.197 - Serious Happiness (RSP10763)
+  0.197 - PD Lf-M (RSP13150)
+  0.198 - Trump x Trump (RSP11466)
+  0.198 - JL_X_NSPM1_14 (RSP11473)
+  0.201 - Old Family Purple (RSP12098)
+  0.203 - Pieface (RSP12794)
+  0.203 - Blueberry Cheesecake (RSP10684)
+  0.205 - UnObtanium (RSP11611)
+  0.205 - Badger (RSP11614)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13188-mgc-ots-certificate
+shasum: 51f7b2260c88327e5de28668fb8c8ee0e48b8866bbb59ff142c53086b6999f83

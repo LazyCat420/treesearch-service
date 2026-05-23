@@ -1,0 +1,45 @@
+================================================================================
+Peach Ozz x  Styrofoam Cup #4 (RSP13392) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SxPeach_#4_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.152 - Peach Ozz x  Styrofoam Cup #8 (RSP13393)
+  0.207 - Jacks Cleaner (RSP11347)
+  0.211 - RKM-2018-025 (RSP11117)
+  0.212 - RKM-2018-016 (RSP11108)
+  0.213 - Durban Poison #1 (RSP11013)
+  0.213 - Black Jack (RSP10603)
+  0.217 - Blue Dream (RSP11006)
+  0.221 - Calm (RSP11379)
+  0.221 - Electra (RSP11366)
+  0.223 - BLACK JACK (RSP11346)
+  0.227 - PWE (RSP11369)
+  0.227 - Nag Champa #27 (RSP12873)
+  0.227 - Pearadise (RSP13100)
+  0.229 - Blue Dream (RSP11009)
+  0.229 - Serious Happiness (RSP10763)
+  0.229 - Styrofoam Cup x Pineapple Pez Melonade #3 (RSP12976)
+  0.229 - Blue Dream (RSP11007)
+  0.229 - Super Blue Dream (RSP11011)
+  0.230 - UP Sunrise (RSP10989)
+  0.230 - Gold Cracker (RSP11041)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13392-mgc-ots-certificate
+shasum: dbdb58bb91dabccf59c59a6c43ba193d553a4e21f42b988ef6074f9f8edeb020

@@ -1,0 +1,43 @@
+================================================================================
+Badger PMR (RSP13534) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Accession Date: March 11, 2026
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Rare
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.268 - Cbot-2019-005 (RSP11133)
+  0.294 - Cbot-2019-003 (RSP11131)
+  0.299 - Sparrow (RSP11443)
+  0.302 - Stormy (RSP11454)
+  0.310 - JL Cross 14 (RSP11515)
+  0.310 - Danny Noonan (RSP11070)
+  0.313 - Rootbeer Rolex #50 (RSP12645)
+  0.314 - EGd Lf-M (RSP13145)
+  0.315 - RAPHAEL #2 (RSP11172)
+  0.316 - Cherry Blossom (RSP11333)
+  0.317 - BIG E x Unknown (RSP12730)
+  0.318 - Cbot-2019-002 (RSP11130)
+  0.318 - Star Dawg (RSP11352)
+  0.318 - White Cherry Gelato-V (D15) (RSP13305)
+  0.318 - Unknown-(Cherry Wine)-(005) (RSP11272)
+  0.319 - Runtz (RO3) (RSP13306)
+  0.321 - Peanut Butter Breath (RSP11640)
+  0.323 - 101st AIRBORN CBD (RSP11350)
+  0.323 - Purple Urkle (RSP12890)
+  0.324 - Runtz Myflora (RSP13472)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+shasum: a73e741d4b3e31f9e4b32483f92f2d3d0f16c8b1b7020ac9aee54624b798c2c1

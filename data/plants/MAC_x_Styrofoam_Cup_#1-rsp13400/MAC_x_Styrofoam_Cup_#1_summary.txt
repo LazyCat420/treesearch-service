@@ -1,0 +1,45 @@
+================================================================================
+MAC x Styrofoam Cup #1 (RSP13400) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: SxMac_#1_20250430
+Accession Date: April 29, 2025
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.194 - Styrofoam Cup (RSP13099)
+  0.195 - Styrofoam Cup X Sh3rb3t #2 (RSP13102)
+  0.198 - Domnesia (RSP11184)
+  0.199 - Crème de la Crème x Styrofoam Cup #12 (RSP13395)
+  0.204 - JL Cross 26 (RSP11527)
+  0.204 - JL_X_NSPM1_7 (RSP11469)
+  0.206 - Crème de la Crème x Styrofoam Cup #2 (RSP13394)
+  0.210 - JL Cross 27 (RSP11528)
+  0.212 - JL Cross 24 (RSP11525)
+  0.216 - SHERBERT (RSP11355)
+  0.216 - NSPM1 (RSP11362)
+  0.218 - Garlic (RSP11341)
+  0.218 - Pearadise x Pineapple Pez Melonade #6 (RSP12978)
+  0.218 - GMO (RSP12091)
+  0.219 - Styrofoam Cup x Pineapple Pez Melonade #3 (RSP12976)
+  0.220 - Super Runtz (RSP12810)
+  0.220 - A29-St-M-Rw (RSP13189)
+  0.224 - Pie Face Mac (RSP11974)
+  0.225 - A29-Rt-M-Rw (RSP13188)
+  0.228 - JL_X_NSPM1_14 (RSP11473)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13400-mgc-ots-certificate
+shasum: d5ca8aceb399cf9b14f33f35ece56c9061d43d28b81bf7c390699f081d9097f7

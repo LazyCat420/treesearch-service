@@ -1,0 +1,45 @@
+================================================================================
+The Original Z (Zk*****z) (RSP13259) Summary
+================================================================================
+
+GENERAL INFORMATION
+--------------------------------------------------------------------------------
+Sample Name: TH2024001
+Accession Date: November 13, 2024
+Reported Plant Sex: Female
+Report Type: Whole-Genome Sequencing
+Reported Sex: Female
+Rarity: Uncommon
+
+CHEMICAL CONTENT
+--------------------------------------------------------------------------------
+Cannabinoids:
+Terpenoids:
+
+GENETIC RELATIONSHIPS
+--------------------------------------------------------------------------------
+  0.087 - Animal Tree x [REDACTED] #4 (RSP12792)
+  0.137 - Animal Tree x [REDACTED] #2 (RSP12793)
+  0.139 - Rainbow Belts 1.0 (RSP12911)
+  0.144 - Rainbow Belts 3.0 #11 (RSP12801)
+  0.148 - SHERBERT (RSP11355)
+  0.171 - Rainbow Belts 2.0 (RSP12802)
+  0.199 - GMO (RSP12091)
+  0.200 - Black Triangle (RSP11638)
+  0.207 - S21-002-01 (RSP12656)
+  0.208 - El Presidente (RSP12807)
+  0.210 - Donnie Burger (RSP13219)
+  0.211 - Donnie Burger (RSP13220)
+  0.214 - DB St-Fl (RSP13142)
+  0.216 - Lemon OG Haze (RSP11977)
+  0.219 - DB (RSP13083)
+  0.220 - DB (RSP12930)
+  0.222 - Animal Tree (RSP12791)
+  0.225 - Fatso (RSP11741)
+  0.226 - DB Dried (RSP13119)
+  0.228 - Rugburn OG (RSP11353)
+
+BLOCKCHAIN INFORMATION
+--------------------------------------------------------------------------------
+txid: RSP13259-mgc-ots-certificate
+shasum: 1d4e87f101e8a7352458786fbc6111bb3311f8f72b787f1735f56c2926c2d261
