@@ -351,6 +351,34 @@ async def load_state_from_db(session) -> dict:
             genetic_relationships=domain_rels,
         )
         domain_samples.append(s_domain)
+
+    # Load all canonical strains to ensure we have placeholder samples for strains without genomic data
+    stmt_strains = select(CanonicalStrainORM).options(
+        selectinload(CanonicalStrainORM.aliases)
+    )
+    strains_db = (await session.execute(stmt_strains)).scalars().all()
+    
+    sampled_strain_ids = {s.canonical_strain_id for s in samples_db if s.canonical_strain_id}
+    for strain in strains_db:
+        if strain.id not in sampled_strain_ids:
+            # Try to determine source from aliases, default to 'forum'
+            source = "forum"
+            if strain.aliases:
+                for alias in strain.aliases:
+                    if alias.source_name in ("seedfinder", "forum"):
+                        source = alias.source_name
+                        break
+            
+            s_domain = GenomicSample(
+                id=f"PLACEHOLDER-{strain.id}",
+                canonical_strain_id=strain.id,
+                rsp_number=f"PLACEHOLDER-{strain.primary_name}",
+                sample_name=strain.primary_name,
+                strain_name=strain.primary_name,
+                source=source,
+                is_complete=False,
+            )
+            domain_samples.append(s_domain)
         
     from src.genomics.data_loader import load_strain_data_from_samples
     strains_data, relationships = load_strain_data_from_samples(domain_samples)
@@ -604,11 +632,27 @@ async def list_strains(
         results = []
         
         for s in strains:
-            # Query chemical details for completion and terpene info
-            stmt_sample = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == s.id).options(
+            stmt_samples = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == s.id).options(
                 selectinload(GenomicSampleORM.chemical_profile)
             )
-            sample = (await session.execute(stmt_sample)).scalars().first()
+            samples = (await session.execute(stmt_samples)).scalars().all()
+            sample = None
+            if samples:
+                def sample_pref(sm):
+                    score = 0
+                    if sm.is_complete:
+                        score += 10
+                    if sm.source == "manual":
+                        score += 5
+                    elif sm.source == "kannapedia":
+                        score += 3
+                    elif sm.source == "seedfinder":
+                        score += 2
+                    else:
+                        score += 1
+                    return score
+                samples_sorted = sorted(samples, key=sample_pref, reverse=True)
+                sample = samples_sorted[0]
             
             is_complete = sample.is_complete if sample else False
             
@@ -1250,11 +1294,47 @@ async def import_strain(request: Request):
 
                 if kannapedia_ingested > 0:
                     yield json.dumps({"type": "progress", "message": f"Kannapedia: {kannapedia_ingested} genomic sample(s) ingested.", "posts": 0, "images": 0}) + "\n"
+                    # Clean up any incomplete placeholder samples since we now have real Kannapedia WGS data
+                    from sqlalchemy import delete
+                    await session.execute(
+                        delete(GenomicSampleORM).where(
+                            (GenomicSampleORM.canonical_strain_id == strain_orm.id) &
+                            (GenomicSampleORM.source != "kannapedia") &
+                            (GenomicSampleORM.is_complete == False)
+                        )
+                    )
+                    await session.flush()
                 else:
-                    yield json.dumps({"type": "progress", "message": "No Kannapedia genomic data found.", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "message": "No Kannapedia genomic data found. Creating community placeholder...", "posts": 0, "images": 0}) + "\n"
+                    stmt_sample_check = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == strain_orm.id)
+                    existing_sample = (await session.execute(stmt_sample_check)).scalars().first()
+                    if not existing_sample:
+                        placeholder_source = "forum" if breeder_slug == "forum-import" else "seedfinder"
+                        placeholder_sample = GenomicSampleORM(
+                            canonical_strain_id=strain_orm.id,
+                            rsp_number=f"PLACEHOLDER-{strain_orm.primary_name}",
+                            strain_name=strain_orm.primary_name,
+                            source=placeholder_source,
+                            is_complete=False,
+                        )
+                        session.add(placeholder_sample)
+                        await session.flush()
             except Exception as e:
                 logger.error(f"Kannapedia lookup failed for {primary_name}: {e}")
-                yield json.dumps({"type": "progress", "message": "Kannapedia lookup failed, continuing with forums...", "posts": 0, "images": 0}) + "\n"
+                yield json.dumps({"type": "progress", "message": "Kannapedia lookup failed, creating community placeholder...", "posts": 0, "images": 0}) + "\n"
+                stmt_sample_check = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == strain_orm.id)
+                existing_sample = (await session.execute(stmt_sample_check)).scalars().first()
+                if not existing_sample:
+                    placeholder_source = "forum" if breeder_slug == "forum-import" else "seedfinder"
+                    placeholder_sample = GenomicSampleORM(
+                        canonical_strain_id=strain_orm.id,
+                        rsp_number=f"PLACEHOLDER-{strain_orm.primary_name}",
+                        strain_name=strain_orm.primary_name,
+                        source=placeholder_source,
+                        is_complete=False,
+                    )
+                    session.add(placeholder_sample)
+                    await session.flush()
 
             yield json.dumps({"type": "progress", "message": "Scraping Overgrow...", "posts": 0, "images": 0}) + "\n"
 
@@ -1357,10 +1437,27 @@ async def strain_detail(strain_name: str):
         if not strain:
             return JSONResponse({"error": f"Strain '{strain_name}' not found"}, status_code=404)
             
-        stmt_sample = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == strain.id).options(
+        stmt_samples = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == strain.id).options(
             selectinload(GenomicSampleORM.chemical_profile)
         )
-        sample = (await session.execute(stmt_sample)).scalars().first()
+        samples = (await session.execute(stmt_samples)).scalars().all()
+        sample = None
+        if samples:
+            def sample_pref(sm):
+                score = 0
+                if sm.is_complete:
+                    score += 10
+                if sm.source == "manual":
+                    score += 5
+                elif sm.source == "kannapedia":
+                    score += 3
+                elif sm.source == "seedfinder":
+                    score += 2
+                else:
+                    score += 1
+                return score
+            samples_sorted = sorted(samples, key=sample_pref, reverse=True)
+            sample = samples_sorted[0]
 
         # Eagerly load breeder for strain-level info
         breeder_name = ""
@@ -1408,6 +1505,7 @@ async def strain_detail(strain_name: str):
             "breeder_slug": breeder_slug,
             "rsp": sample.rsp_number if sample else "",
             "complete": (sample.is_complete if sample else False) or has_observations,
+            "source": sample.source if sample else "kannapedia",
             "description": original_desc,
             "translated_description": translated_desc if detected_lang != "en" and translated_desc != original_desc else None,
             "detected_language": detected_lang,
@@ -1559,7 +1657,87 @@ async def update_strain_metadata(strain_name: str, request: Request):
             else:
                 strain.lineage = {}
                 
+        # Update cannabinoids and terpenes if provided
+        if "cannabinoids" in payload or "terpenes" in payload:
+            # 1. Locate or create GenomicSampleORM linked to this strain
+            stmt_samples = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == strain.id)
+            samples = (await session.execute(stmt_samples)).scalars().all()
+            
+            # Find a manual/seedfinder/forum sample to modify, or if none, create a new manual sample
+            sample_to_edit = next((s for s in samples if s.source != "kannapedia"), None)
+            if not sample_to_edit:
+                sample_to_edit = GenomicSampleORM(
+                    canonical_strain_id=strain.id,
+                    rsp_number=f"MANUAL-{strain.id[:8]}",
+                    strain_name=strain.primary_name,
+                    source="manual",
+                    is_complete=True,
+                )
+                session.add(sample_to_edit)
+                await session.flush()
+            else:
+                # Update source to manual if the user is editing it, and mark as complete
+                sample_to_edit.source = "manual"
+                sample_to_edit.is_complete = True
+                await session.flush()
+                
+            # 2. Get or create ChemicalProfileORM
+            stmt_profile = select(ChemicalProfileORM).where(ChemicalProfileORM.sample_id == sample_to_edit.id)
+            profile = (await session.execute(stmt_profile)).scalars().first()
+            if not profile:
+                profile = ChemicalProfileORM(sample_id=sample_to_edit.id)
+                session.add(profile)
+                await session.flush()
+                
+            # 3. Update Cannabinoids
+            if "cannabinoids" in payload:
+                cann_data = payload["cannabinoids"] or {}
+                if "thc" in cann_data:
+                    try:
+                        profile.thc = float(cann_data["thc"]) if cann_data["thc"] is not None and str(cann_data["thc"]).strip() != "" else None
+                    except (ValueError, TypeError):
+                        pass
+                if "cbd" in cann_data:
+                    try:
+                        profile.cbd = float(cann_data["cbd"]) if cann_data["cbd"] is not None and str(cann_data["cbd"]).strip() != "" else None
+                    except (ValueError, TypeError):
+                        pass
+                    
+            # 4. Update Terpenes
+            if "terpenes" in payload:
+                terp_data = payload["terpenes"] or {}
+                terp_fields = [
+                    "myrcene", "limonene", "caryophyllene", "pinene_alpha",
+                    "pinene_beta", "linalool", "humulene", "terpinolene",
+                    "ocimene", "nerolidol", "bisabolol", "borneol", "camphene",
+                    "carene", "caryophyllene_oxide", "fenchol", "geraniol",
+                    "phellandrene", "terpineol", "terpinene_alpha", "terpinene_gamma",
+                ]
+                for t_field in terp_fields:
+                    if t_field in terp_data:
+                        val = terp_data[t_field]
+                        try:
+                            setattr(profile, t_field, float(val) if val is not None and str(val).strip() != "" else None)
+                        except (ValueError, TypeError):
+                            pass
+            
+            await session.flush()
+            
+            # 5. Recalculate average THC/CBD and dominant terpenes on CanonicalStrainORM
+            if profile.thc is not None:
+                strain.avg_thc_pct = profile.thc
+            if profile.cbd is not None:
+                strain.avg_cbd_pct = profile.cbd
+                
+            terp_dict = profile.terpene_dict
+            if terp_dict:
+                sorted_terps = sorted(terp_dict.items(), key=lambda x: x[1], reverse=True)
+                strain.dominant_terpenes = [t[0] for t in sorted_terps[:5]]
+            else:
+                strain.dominant_terpenes = []
+                
         await session.flush()
+        await session.commit()
         
         detail = await strain_detail(resolved_name)
         return detail

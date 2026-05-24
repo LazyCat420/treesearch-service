@@ -156,3 +156,44 @@ async def test_get_canonical_strain_name():
             await session.commit()
         break
 
+
+async def test_load_state_from_db_with_placeholders():
+    from main import load_state_from_db
+    
+    await init_db()
+    
+    async for session in get_session():
+        # Create a mock breeder
+        breeder = BreederORM(
+            name="Placeholder Test Breeder",
+            website="https://example.com"
+        )
+        session.add(breeder)
+        await session.flush()
+        
+        # Create a mock strain with no genomic samples
+        strain = CanonicalStrainORM(
+            primary_name="Test_Placeholder_NoSample_Strain",
+            breeder_id=breeder.id,
+            strain_type="hybrid"
+        )
+        session.add(strain)
+        await session.commit()
+        
+        try:
+            # Load state and verify it contains our mock strain
+            state = await load_state_from_db(session)
+            strains_data = state["strains_data"]
+            
+            assert "Test_Placeholder_NoSample_Strain" in strains_data
+            data = strains_data["Test_Placeholder_NoSample_Strain"]
+            assert data["complete"] is False
+            assert data["rsp"] == "PLACEHOLDER-Test_Placeholder_NoSample_Strain"
+            assert data["source"] == "forum"  # default when no aliases present
+        finally:
+            # Cleanup
+            await session.delete(strain)
+            await session.delete(breeder)
+            await session.commit()
+        break
+

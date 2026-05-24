@@ -83,6 +83,7 @@ def load_strain_data_from_directory(folder_path: str) -> tuple[StrainDataDict, R
                 "complete": is_complete,
                 "rsp": rsp,
                 "dir_name": dir_name,
+                "source": "kannapedia",
             }
 
             # Parse variant relationships
@@ -131,6 +132,7 @@ def _parse_variants_csv(
                     "complete": False,
                     "rsp": row.get("RSP", ""),
                     "dir_name": "",
+                    "source": "kannapedia",
                 }
 
 
@@ -185,17 +187,37 @@ def load_strain_data_from_samples(
 
     for sample in samples:
         name = sample.strain_name or sample.rsp_number
-        strains_data[name] = {
-            "complete": sample.is_complete,
-            "rsp": sample.rsp_number,
-            "dir_name": "",
-        }
+        src = sample.source or "kannapedia"
+        
+        existing = strains_data.get(name)
+        should_update = True
+        if existing:
+            # If the existing one is complete, don't overwrite it with an incomplete one
+            if existing.get("complete", False) and not sample.is_complete:
+                should_update = False
+            # If the existing one is incomplete, and new one is complete, definitely update
+            elif not existing.get("complete", False) and sample.is_complete:
+                should_update = True
+            # If both have same completeness, prefer sources in order: manual > kannapedia > seedfinder > forum
+            else:
+                pref = {"manual": 4, "kannapedia": 3, "seedfinder": 2, "forum": 1}
+                existing_pref = pref.get(existing.get("source"), 0)
+                new_pref = pref.get(src, 0)
+                if existing_pref >= new_pref:
+                    should_update = False
 
-        # Build terpene dict from chemical profile
-        if sample.chemical_profile:
-            terpenes = sample.chemical_profile.terpene_dict
-            if terpenes:
-                strains_data[name]["terpenes"] = terpenes
+        if should_update:
+            strains_data[name] = {
+                "complete": sample.is_complete,
+                "rsp": sample.rsp_number,
+                "dir_name": "",
+                "source": src,
+            }
+            # Build terpene dict from chemical profile
+            if sample.chemical_profile:
+                terpenes = sample.chemical_profile.terpene_dict
+                if terpenes:
+                    strains_data[name]["terpenes"] = terpenes
 
         # Build relationships
         for rel in sample.genetic_relationships:
@@ -208,6 +230,7 @@ def load_strain_data_from_samples(
                     "complete": False,
                     "rsp": other_rsp,
                     "dir_name": "",
+                    "source": "kannapedia",
                 }
 
     logger.info(

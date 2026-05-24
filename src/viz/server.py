@@ -76,15 +76,25 @@ def build_network_data(
             },
             "rsp": rsp,
             "complete": is_complete,
+            "source": data.get("source", "kannapedia"),
         })
 
     # Build edges
+    seen_edges = set()
     for s1, s2, distance in all_relationships:
         rsp1 = strains_data.get(s1, {}).get("rsp", "").upper()
         rsp2 = strains_data.get(s2, {}).get("rsp", "").upper()
 
         from_name = seen_rsp.get(rsp1, {}).get("name", s1) if rsp1 else s1
         to_name = seen_rsp.get(rsp2, {}).get("name", s2) if rsp2 else s2
+
+        if from_name == to_name:
+            continue
+
+        edge_key = tuple(sorted([from_name, to_name]))
+        if edge_key in seen_edges:
+            continue
+        seen_edges.add(edge_key)
 
         relationships_list.append({
             "from": from_name,
