@@ -430,10 +430,63 @@ async def load_state_from_db_internal(session) -> dict:
     from src.genomics.terpene_analysis import calculate_terpene_relationships
     terpene_relationships = calculate_terpene_relationships(strains_data)
     
+    # Extract lineage relationships from canonical strain lineage data
+    # SeedFinder stores full ancestor trees, so we only use the first 2-3
+    # entries as direct parents to avoid cluttering the graph.
+    lineage_relationships = []
+    seen_lineage_keys = set()
+    known_strains = set(strains_data.keys())
+    import re as _re
+    for strain in strains_db:
+        if not strain.lineage:
+            continue
+        parent_names = []
+        if isinstance(strain.lineage, list):
+            # Take only the first 2-3 entries as direct parents
+            for entry in strain.lineage[:3]:
+                if isinstance(entry, dict) and entry.get("name"):
+                    parent_names.append(entry["name"])
+                elif isinstance(entry, str):
+                    parent_names.append(entry)
+        elif isinstance(strain.lineage, dict):
+            for key in ("mother", "father", "parent1", "parent2"):
+                if key in strain.lineage:
+                    parent_names.append(str(strain.lineage[key]))
+        
+        child_name = strain.primary_name
+        for parent_name in parent_names:
+            # Skip generic/meta parent names
+            if parent_name.lower() in ("sativa", "indica", "hybrid", "ruderalis",
+                                       "unknown strain", "unknown hybrid",
+                                       "unknown mostly indica", "unknown mostly sativa"):
+                continue
+            # Try to match parent to an existing strain in the graph
+            # using case-insensitive + underscore normalization
+            matched_parent = None
+            parent_norm = _re.sub(r"[^a-z0-9]", "", parent_name.lower())
+            for known in known_strains:
+                known_norm = _re.sub(r"[^a-z0-9]", "", known.lower())
+                if known_norm == parent_norm:
+                    matched_parent = known
+                    break
+            if matched_parent and matched_parent != child_name:
+                lineage_key = (matched_parent, child_name)
+                if lineage_key not in seen_lineage_keys:
+                    seen_lineage_keys.add(lineage_key)
+                    lineage_relationships.append({
+                        "from": matched_parent,
+                        "to": child_name,
+                        "distance": 0.1,  # Close distance for direct parent-child
+                        "type": "lineage",
+                    })
+    
+    logger.info("Extracted %d lineage relationships from strain lineage data", len(lineage_relationships))
+    
     return {
         "strains_data": strains_data,
         "relationships": relationships,
         "terpene_relationships": terpene_relationships,
+        "lineage_relationships": lineage_relationships,
         "samples": domain_samples,
     }
 
@@ -659,6 +712,7 @@ async def network_data():
             state["strains_data"],
             state["relationships"],
             state["terpene_relationships"],
+            state.get("lineage_relationships"),
         )
         return data
 

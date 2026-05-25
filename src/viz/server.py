@@ -17,7 +17,6 @@ from typing import Any
 from src.genomics.data_loader import (
     StrainDataDict,
     RelationshipSet,
-    load_strain_data_from_directory,
     load_strain_data_from_samples,
 )
 from src.genomics.terpene_analysis import calculate_terpene_relationships
@@ -34,6 +33,7 @@ def build_network_data(
     strains_data: StrainDataDict,
     all_relationships: RelationshipSet,
     terpene_relationships: list[dict[str, Any]] | None = None,
+    lineage_relationships: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Build the JSON payload for the network visualization.
 
@@ -41,10 +41,13 @@ def build_network_data(
     and packages everything for the Vis.js frontend.
 
     Returns:
-        Dict with 'nodes', 'relationships', 'terpeneRelationships' keys.
+        Dict with 'nodes', 'relationships', 'terpeneRelationships',
+        'lineageRelationships' keys.
     """
     if terpene_relationships is None:
         terpene_relationships = calculate_terpene_relationships(strains_data)
+    if lineage_relationships is None:
+        lineage_relationships = []
 
     nodes = []
     relationships_list = []
@@ -106,6 +109,7 @@ def build_network_data(
         "nodes": nodes,
         "relationships": relationships_list,
         "terpeneRelationships": terpene_relationships,
+        "lineageRelationships": lineage_relationships,
     }
 
 
@@ -140,31 +144,3 @@ def render_visualization_html(
     html_content = template.replace("{{DATA_INITIALIZATION}}", data_script)
     return html_content
 
-
-def generate_visualization_from_directory(
-    data_dir: str,
-    output_path: str | None = None,
-) -> str:
-    """One-shot: load CSV data, compute relationships, render HTML.
-
-    Convenience function for generating a static visualization file
-    from a kannapedia-scraper data directory.
-
-    Args:
-        data_dir: Root directory with strain folders.
-        output_path: Where to write the HTML file. If None, returns HTML string.
-
-    Returns:
-        HTML content string.
-    """
-    strains_data, all_relationships = load_strain_data_from_directory(data_dir)
-    terpene_rels = calculate_terpene_relationships(strains_data)
-    network_data = build_network_data(strains_data, all_relationships, terpene_rels)
-    html = render_visualization_html(network_data)
-
-    if output_path:
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write(html)
-        logger.info("Wrote visualization to %s", output_path)
-
-    return html
