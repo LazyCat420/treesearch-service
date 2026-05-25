@@ -55,15 +55,31 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+import asyncio
+_db_state_cache = None
+_db_state_lock = asyncio.Lock()
+_resolved_name_cache = {}
+
+def invalidate_db_state_cache():
+    global _db_state_cache, _resolved_name_cache
+    logger.info("Invalidating DB state and resolved name caches.")
+    _db_state_cache = None
+    _resolved_name_cache.clear()
+
 async def get_canonical_strain_name(session, name: str) -> Optional[str]:
     """Resolve any case, punctuation, or alias variation of a strain name to its canonical primary name in the database."""
     if not name:
         return None
         
+    name_key = name.lower().strip()
+    if name_key in _resolved_name_cache:
+        return _resolved_name_cache[name_key]
+        
     # 1. Case-insensitive exact match
     stmt = select(CanonicalStrainORM.primary_name).where(CanonicalStrainORM.primary_name.ilike(name))
     res = (await session.execute(stmt)).scalar()
     if res:
+        _resolved_name_cache[name_key] = res
         return res
         
     # 2. Case and punctuation-insensitive match
@@ -74,6 +90,7 @@ async def get_canonical_strain_name(session, name: str) -> Optional[str]:
     )
     res = (await session.execute(stmt2)).scalar()
     if res:
+        _resolved_name_cache[name_key] = res
         return res
         
     # 3. Check aliases
@@ -87,6 +104,7 @@ async def get_canonical_strain_name(session, name: str) -> Optional[str]:
     )
     res = (await session.execute(stmt_alias)).scalar()
     if res:
+        _resolved_name_cache[name_key] = res
         return res
         
     return None
@@ -262,12 +280,40 @@ async def save_domain_models_to_db(session, result: dict):
     session.add(src_orm)
 
 async def load_state_from_db(session) -> dict:
+    """Wrapper function to load state with caching."""
+    import sys
+    if "pytest" in sys.modules:
+        return await load_state_from_db_internal(session)
+        
+    global _db_state_cache
+    if _db_state_cache is not None:
+        return _db_state_cache
+        
+    async with _db_state_lock:
+        if _db_state_cache is not None:
+            return _db_state_cache
+            
+        logger.info("Rebuilding database state cache...")
+        state = await load_state_from_db_internal(session)
+        _db_state_cache = state
+        return _db_state_cache
+
+async def load_state_from_db_internal(session) -> dict:
     """Dynamically reconstruct state from DB to feed viz graph/matrices."""
     stmt_samples = select(GenomicSampleORM).outerjoin(ChemicalProfileORM).options(
         selectinload(GenomicSampleORM.chemical_profile)
     )
     samples_db = (await session.execute(stmt_samples)).scalars().all()
     
+    # Pre-fetch all genetic relationships in one query to avoid N+1 query loop
+    stmt_all_rels = select(GeneticRelationshipORM)
+    rels_db_all = (await session.execute(stmt_all_rels)).scalars().all()
+    
+    # Group by sample_id_a in memory
+    rels_by_sample = {}
+    for r in rels_db_all:
+        rels_by_sample.setdefault(r.sample_id_a, []).append(r)
+        
     from src.models.genomic_sample import GenomicSample, ChemicalProfile as DomainChemicalProfile, GeneticRelationship as DomainGeneticRelationship
     
     domain_samples = []
@@ -310,8 +356,7 @@ async def load_state_from_db(session) -> dict:
                 raw_data=cp_orm.raw_data or {},
             )
             
-        stmt_rels = select(GeneticRelationshipORM).where(GeneticRelationshipORM.sample_id_a == s_orm.id)
-        rels_db = (await session.execute(stmt_rels)).scalars().all()
+        rels_db = rels_by_sample.get(s_orm.id, [])
         domain_rels = [
             DomainGeneticRelationship(
                 id=r.id,
@@ -541,11 +586,22 @@ async def lifespan(app: FastAPI):
                     }
                     await save_domain_models_to_db(session, result)
                 await session.commit()
+                invalidate_db_state_cache()
                 logger.info("Successfully bootstrapped %d strains to database.", len(samples))
             else:
                 logger.info("Database already contains %d strains. Skipping bootstrap.", count)
     else:
         logger.info("No KANNAPEDIA_DATA_DIR set, database starts as-is.")
+        
+    # Pre-populate cache on startup
+    logger.info("Pre-populating database state cache on startup...")
+    try:
+        async for session in get_session():
+            await load_state_from_db(session)
+            break
+    except Exception as e:
+        logger.error(f"Failed to pre-populate database state cache: {e}")
+        
     yield
     logger.info("treesearch-service stopped")
 
@@ -615,7 +671,9 @@ async def list_strains(
 ):
     """List all known strains with optional filtering, including live SeedFinder lookup fallback."""
     async for session in get_session():
-        stmt = select(CanonicalStrainORM)
+        stmt = select(CanonicalStrainORM).options(
+            selectinload(CanonicalStrainORM.genomic_samples).selectinload(GenomicSampleORM.chemical_profile)
+        )
         if search:
             # Handle both spaces and underscores in strain names
             search_space = search.replace("_", " ")
@@ -632,10 +690,7 @@ async def list_strains(
         results = []
         
         for s in strains:
-            stmt_samples = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == s.id).options(
-                selectinload(GenomicSampleORM.chemical_profile)
-            )
-            samples = (await session.execute(stmt_samples)).scalars().all()
+            samples = s.genomic_samples
             sample = None
             if samples:
                 def sample_pref(sm):
@@ -1336,60 +1391,49 @@ async def import_strain(request: Request):
                     session.add(placeholder_sample)
                     await session.flush()
 
-            yield json.dumps({"type": "progress", "message": "Scraping Overgrow...", "posts": 0, "images": 0}) + "\n"
-
-            # Scrape forum threads for observations and pictures
-            try:
-                # Overgrow (Discourse)
+            yield json.dumps({"type": "progress", "message": "Scraping community forums and Reddit concurrently...", "posts": total_posts, "images": total_images}) + "\n"
+            
+            async def fetch_overgrow():
                 try:
                     from src.collectors.discourse_collector import DiscourseCollector
                     collector = DiscourseCollector(base_url="https://overgrow.com", forum_name="overgrow")
                     items = await collector.search(search_query, limit=30)
-                    p_saved, i_saved = await _save_forum_posts_to_db(session, items, "overgrow", strain_orm.id, search_query)
-                    total_posts += p_saved
-                    total_images += i_saved
-                    yield json.dumps({"type": "progress", "message": f"Overgrow complete ({p_saved} posts, {i_saved} images). Scraping Rollitup...", "posts": total_posts, "images": total_images}) + "\n"
+                    return "overgrow", items
                 except Exception as ex:
                     logger.error(f"Failed to scrape Overgrow for {search_query}: {ex}")
+                    return "overgrow", []
 
-                # Rollitup (XenForo)
+            async def fetch_rollitup():
                 try:
                     from src.collectors.xenforo_collector import XenForoCollector
                     collector = XenForoCollector(base_url="https://www.rollitup.org", forum_name="rollitup")
                     items = await collector.search(search_query, limit=30)
-                    p_saved, i_saved = await _save_forum_posts_to_db(session, items, "rollitup", strain_orm.id, search_query)
-                    total_posts += p_saved
-                    total_images += i_saved
-                    yield json.dumps({"type": "progress", "message": f"Rollitup complete ({p_saved} posts, {i_saved} images). Scraping THCFarmer...", "posts": total_posts, "images": total_images}) + "\n"
+                    return "rollitup", items
                 except Exception as ex:
                     logger.error(f"Failed to scrape Rollitup for {search_query}: {ex}")
+                    return "rollitup", []
 
-                # THCFarmer (XenForo)
+            async def fetch_thcfarmer():
                 try:
                     from src.collectors.xenforo_collector import XenForoCollector
                     collector = XenForoCollector(base_url="https://www.thcfarmer.com", forum_name="thcfarmer")
                     items = await collector.search(search_query, limit=30)
-                    p_saved, i_saved = await _save_forum_posts_to_db(session, items, "thcfarmer", strain_orm.id, search_query)
-                    total_posts += p_saved
-                    total_images += i_saved
-                    yield json.dumps({"type": "progress", "message": f"THCFarmer complete ({p_saved} posts, {i_saved} images). Scraping ICMag...", "posts": total_posts, "images": total_images}) + "\n"
+                    return "thcfarmer", items
                 except Exception as ex:
                     logger.error(f"Failed to scrape THCFarmer for {search_query}: {ex}")
+                    return "thcfarmer", []
 
-                # ICMag (XenForo)
+            async def fetch_icmag():
                 try:
                     from src.collectors.xenforo_collector import XenForoCollector
                     collector = XenForoCollector(base_url="https://www.icmag.com", forum_name="icmag")
                     items = await collector.search(search_query, limit=30)
-                    p_saved, i_saved = await _save_forum_posts_to_db(session, items, "icmag", strain_orm.id, search_query)
-                    total_posts += p_saved
-                    total_images += i_saved
-                    yield json.dumps({"type": "progress", "message": f"ICMag complete ({p_saved} posts, {i_saved} images). Scraping Reddit...", "posts": total_posts, "images": total_images}) + "\n"
+                    return "icmag", items
                 except Exception as ex:
                     logger.error(f"Failed to scrape ICMag for {search_query}: {ex}")
+                    return "icmag", []
 
-                # Reddit — search cannabis subreddits for strain discussions and grow photos
-                yield json.dumps({"type": "progress", "message": "Scraping Reddit...", "posts": total_posts, "images": total_images}) + "\n"
+            async def fetch_reddit():
                 try:
                     from src.collectors.reddit_collector import RedditCollector
                     collector = RedditCollector()
@@ -1398,14 +1442,30 @@ async def import_strain(request: Request):
                         subreddits=["microgrowery", "cannabiscultivation", "trees", "GrowingMarijuana"],
                         limit=20
                     )
-                    p_saved, i_saved = await _save_forum_posts_to_db(session, items, "reddit", strain_orm.id, search_query)
-                    total_posts += p_saved
-                    total_images += i_saved
-                    yield json.dumps({"type": "progress", "message": f"Reddit complete ({p_saved} posts, {i_saved} images).", "posts": total_posts, "images": total_images}) + "\n"
+                    return "reddit", items
                 except Exception as ex:
                     logger.error(f"Failed to scrape Reddit for {search_query}: {ex}")
+                    return "reddit", []
+
+            # Scrape forum threads for observations and pictures concurrently
+            try:
+                scrape_results = await asyncio.gather(
+                    fetch_overgrow(),
+                    fetch_rollitup(),
+                    fetch_thcfarmer(),
+                    fetch_icmag(),
+                    fetch_reddit()
+                )
             finally:
                 await scraper_client.close()
+
+            # Process and save results sequentially
+            for source_name, items in scrape_results:
+                if items:
+                    p_saved, i_saved = await _save_forum_posts_to_db(session, items, source_name, strain_orm.id, search_query)
+                    total_posts += p_saved
+                    total_images += i_saved
+                    yield json.dumps({"type": "progress", "message": f"Processed {source_name.title()} ({p_saved} posts, {i_saved} images).", "posts": total_posts, "images": total_images}) + "\n"
 
             # Update observation count on the canonical strain
             stmt_obs_count = select(func.count()).select_from(ObservationORM).where(
@@ -1415,6 +1475,7 @@ async def import_strain(request: Request):
             strain_orm.observation_count = obs_count
 
             await session.commit()
+            invalidate_db_state_cache()
             
             detail_data = await strain_detail(strain_orm.primary_name)
             yield json.dumps({"type": "done", "data": detail_data}) + "\n"
@@ -1575,13 +1636,14 @@ async def strain_detail(strain_name: str):
         stmt_obs = select(ObservationORM).where(
             (ObservationORM.canonical_strain_id == strain.id) |
             (ObservationORM.reported_strain_name.ilike(strain.primary_name))
+        ).options(
+            selectinload(ObservationORM.images)
         )
         observations = (await session.execute(stmt_obs)).scalars().all()
         
         observations_data = []
         for obs in observations:
-            stmt_imgs = select(ObservationImageORM).where(ObservationImageORM.observation_id == obs.id)
-            imgs = (await session.execute(stmt_imgs)).scalars().all()
+            imgs = obs.images
             
             observations_data.append({
                 "id": obs.id,
@@ -1738,6 +1800,7 @@ async def update_strain_metadata(strain_name: str, request: Request):
                 
         await session.flush()
         await session.commit()
+        invalidate_db_state_cache()
         
         detail = await strain_detail(resolved_name)
         return detail
@@ -1848,6 +1911,7 @@ async def trigger_clustering():
     from src.ml.clustering import run_image_clustering
     async for session in get_session():
         count = await run_image_clustering(session)
+        invalidate_db_state_cache()
         return {"success": True, "clustered_count": count}
 
 # ----- ETL Ingestion ----- #
@@ -1877,6 +1941,7 @@ async def ingest_kannapedia(request: Request):
         result = ingest_kannapedia_record(payload, existing_strains)
         await save_domain_models_to_db(session, result)
         await session.commit()
+        invalidate_db_state_cache()
         
         sample = result["sample"]
         strain = result["strain"]

@@ -60,7 +60,20 @@ def get_vllm_endpoints() -> dict[str, str]:
                 
     return endpoints
 
-async def is_budding_plant_image(image_url: str) -> bool:
+async def check_vllm_health(base_url: str) -> bool:
+    """Fast check to see if a VLLM server is responsive (with 2.0s timeout)."""
+    if not HAS_ML_LIBRARIES:
+        return False
+    try:
+        async with httpx.AsyncClient(timeout=2.0) as client:
+            # We can check standard OpenAI/vLLM endpoints or just root.
+            # Any response means the server is reachable and active.
+            r = await client.get(f"{base_url.rstrip('/')}/v1/models")
+            return r.status_code in (200, 404, 405)
+    except Exception:
+        return False
+
+async def is_budding_plant_image(image_url: str, active_endpoints: list[tuple[str, str, str]] | None = None) -> bool:
     """Download image and use remote vision model on Jetson/DGX Spark to verify if it depicts a budding plant."""
     if not HAS_ML_LIBRARIES:
         return True
@@ -85,16 +98,19 @@ async def is_budding_plant_image(image_url: str) -> bool:
             b64_img = f"data:image/jpeg;base64,{img_str}"
             
         # 4. Prepare payload for vLLM vision model
-        endpoints = get_vllm_endpoints()
         prompt = "Does this image depict a budding cannabis plant or a close-up of a cannabis flower/bud? Answer only Yes or No."
         
-        # Attempt Jetson first, then fallback to DGX Spark
-        urls_to_try = [
-            ("Jetson", endpoints["JETSON_VLLM_URL"], "cyankiwi/Qwen3.6-35B-A3B-AWQ-4bit"),
-            ("DGX Spark", endpoints["DGX_SPARK_VLLM_URL"], "Qwen/Qwen3.5-122B-A10B-FP8")
-        ]
-        
-        for name, base_url, model in urls_to_try:
+        if active_endpoints is None:
+            endpoints = get_vllm_endpoints()
+            active_endpoints = [
+                ("Jetson", endpoints["JETSON_VLLM_URL"], "cyankiwi/Qwen3.6-35B-A3B-AWQ-4bit"),
+                ("DGX Spark", endpoints["DGX_SPARK_VLLM_URL"], "Qwen/Qwen3.5-122B-A10B-FP8")
+            ]
+            
+        if not active_endpoints:
+            return True
+            
+        for name, base_url, model in active_endpoints:
             url = f"{base_url.rstrip('/')}/v1/chat/completions"
             payload = {
                 "model": model,
@@ -128,8 +144,8 @@ async def is_budding_plant_image(image_url: str) -> bool:
             except Exception as e:
                 logger.warning(f"VLM classification failed on {name} ({url}): {e}")
                 
-        # If both endpoints fail, default to True so we don't drop images
-        logger.warning(f"All VLM endpoints failed or timed out for {image_url}. Defaulting to True.")
+        # If all active endpoints fail, default to True so we don't drop images
+        logger.warning(f"All active VLM endpoints failed or timed out for {image_url}. Defaulting to True.")
         return True
             
     except Exception as e:
@@ -140,12 +156,27 @@ async def classify_images_batch(urls: list[str], batch_size: int = 15) -> dict[s
     """Classify a list of image URLs concurrently in batches using a Semaphore."""
     if not urls:
         return {}
+        
+    # Pre-check endpoints health to filter out offline servers
+    endpoints = get_vllm_endpoints()
+    all_endpoints = [
+        ("Jetson", endpoints["JETSON_VLLM_URL"], "cyankiwi/Qwen3.6-35B-A3B-AWQ-4bit"),
+        ("DGX Spark", endpoints["DGX_SPARK_VLLM_URL"], "Qwen/Qwen3.5-122B-A10B-FP8")
+    ]
+    
+    # Check health in parallel with a fast timeout
+    health_checks = await asyncio.gather(*(check_vllm_health(ep[1]) for ep in all_endpoints))
+    active_endpoints = [ep for ep, healthy in zip(all_endpoints, health_checks) if healthy]
+    
+    if not active_endpoints:
+        logger.warning("All VLM endpoints are offline/unreachable. Skipping classifications, defaulting to True.")
+        return {url: True for url in urls}
     
     sem = asyncio.Semaphore(batch_size)
     
     async def worker(url: str):
         async with sem:
-            res = await is_budding_plant_image(url)
+            res = await is_budding_plant_image(url, active_endpoints=active_endpoints)
             return url, res
             
     tasks = [worker(url) for url in urls]
