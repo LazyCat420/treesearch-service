@@ -100,8 +100,8 @@ def calculate_terpene_relationships(
     relationships: list[dict[str, Any]] = []
     strain_names = sorted(profiles.keys())
     
-    # Track the single closest neighbor for each strain to guarantee at least one connection
-    closest_neighbors: dict[str, tuple[str, float]] = {}
+    # Store all distances for each strain to find top 5 closest
+    all_distances: dict[str, list[tuple[str, float]]] = {s: [] for s in strain_names}
 
     for i, s1 in enumerate(strain_names):
         t1 = profiles[s1]
@@ -110,12 +110,8 @@ def calculate_terpene_relationships(
 
             distance = _terpene_distance(t1, t2)
             
-            # Update closest neighbor for s1
-            if s1 not in closest_neighbors or distance < closest_neighbors[s1][1]:
-                closest_neighbors[s1] = (s2, distance)
-            # Update closest neighbor for s2
-            if s2 not in closest_neighbors or distance < closest_neighbors[s2][1]:
-                closest_neighbors[s2] = (s1, distance)
+            all_distances[s1].append((s2, distance))
+            all_distances[s2].append((s1, distance))
 
             if distance < max_distance:
                 relationships.append({
@@ -124,19 +120,31 @@ def calculate_terpene_relationships(
                     "distance": distance,
                 })
 
-    # Ensure every strain has its closest terpene neighbor connected
-    added_pairs = {tuple(sorted([r["from"], r["to"]])) for r in relationships}
-    for s1, (s2, distance) in closest_neighbors.items():
-        pair = tuple(sorted([s1, s2]))
-        if pair not in added_pairs:
-            relationships.append({
-                "from": s1,
-                "to": s2,
-                "distance": distance,
-            })
-            added_pairs.add(pair)
+    # Ensure every strain has its top 5 closest terpene neighbors connected
+    rel_map = {}
+    for rel in relationships:
+        key = tuple(sorted([rel["from"], rel["to"]]))
+        rel_map[key] = rel
 
-    logger.info("Found %d terpene relationships (including guaranteed closest neighbors)", len(relationships))
+    for s1 in strain_names:
+        # Sort neighbors by distance
+        neighbors = sorted(all_distances[s1], key=lambda x: x[1])
+        top_5 = neighbors[:5]
+        for s2, distance in top_5:
+            key = tuple(sorted([s1, s2]))
+            if key in rel_map:
+                rel_map[key]["is_top_5"] = True
+            else:
+                new_rel = {
+                    "from": s1,
+                    "to": s2,
+                    "distance": distance,
+                    "is_top_5": True,
+                }
+                relationships.append(new_rel)
+                rel_map[key] = new_rel
+
+    logger.info("Found %d terpene relationships (including guaranteed top 5 neighbors)", len(relationships))
     return relationships
 
 
