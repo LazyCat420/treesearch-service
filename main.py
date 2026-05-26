@@ -15,7 +15,7 @@ import os
 from contextlib import asynccontextmanager
 from typing import Any, Optional
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import or_
@@ -301,11 +301,25 @@ async def load_state_from_db(session) -> dict:
 
 async def load_state_from_db_internal(session) -> dict:
     """Dynamically reconstruct state from DB to feed viz graph/matrices."""
+    # 1. Load all canonical strains first so we have the primary names
+    stmt_strains = select(CanonicalStrainORM).options(
+        selectinload(CanonicalStrainORM.aliases)
+    )
+    strains_db = (await session.execute(stmt_strains)).scalars().all()
+    strain_id_to_primary_name = {s.id: s.primary_name for s in strains_db}
+
+    # 2. Load all genomic samples
     stmt_samples = select(GenomicSampleORM).outerjoin(ChemicalProfileORM).options(
         selectinload(GenomicSampleORM.chemical_profile)
     )
     samples_db = (await session.execute(stmt_samples)).scalars().all()
     
+    # Map sample_id to canonical strain's primary name
+    sample_id_to_primary_name = {}
+    for s_orm in samples_db:
+        name = strain_id_to_primary_name.get(s_orm.canonical_strain_id) if s_orm.canonical_strain_id else s_orm.strain_name
+        sample_id_to_primary_name[s_orm.id] = name
+
     # Pre-fetch all genetic relationships in one query to avoid N+1 query loop
     stmt_all_rels = select(GeneticRelationshipORM)
     rels_db_all = (await session.execute(stmt_all_rels)).scalars().all()
@@ -363,8 +377,8 @@ async def load_state_from_db_internal(session) -> dict:
                 id=r.id,
                 sample_id_a=r.sample_id_a,
                 sample_id_b=r.sample_id_b,
-                strain_name_a=r.strain_name_a,
-                strain_name_b=r.strain_name_b,
+                strain_name_a=sample_id_to_primary_name.get(r.sample_id_a) or r.strain_name_a,
+                strain_name_b=sample_id_to_primary_name.get(r.sample_id_b) or r.strain_name_b,
                 rsp_a=r.rsp_a,
                 rsp_b=r.rsp_b,
                 distance=r.distance,
@@ -373,12 +387,13 @@ async def load_state_from_db_internal(session) -> dict:
             ) for r in rels_db
         ]
         
+        primary_name = strain_id_to_primary_name.get(s_orm.canonical_strain_id) if s_orm.canonical_strain_id else s_orm.strain_name
         s_domain = GenomicSample(
             id=s_orm.id,
             canonical_strain_id=s_orm.canonical_strain_id,
             rsp_number=s_orm.rsp_number or "",
             sample_name=s_orm.sample_name or "",
-            strain_name=s_orm.strain_name or "",
+            strain_name=primary_name,
             grower=s_orm.grower,
             accession_date=s_orm.accession_date,
             reported_sex=s_orm.reported_sex,
@@ -398,12 +413,7 @@ async def load_state_from_db_internal(session) -> dict:
         )
         domain_samples.append(s_domain)
 
-    # Load all canonical strains to ensure we have placeholder samples for strains without genomic data
-    stmt_strains = select(CanonicalStrainORM).options(
-        selectinload(CanonicalStrainORM.aliases)
-    )
-    strains_db = (await session.execute(stmt_strains)).scalars().all()
-    
+    # 3. Add placeholders for canonical strains without any genomic samples
     sampled_strain_ids = {s.canonical_strain_id for s in samples_db if s.canonical_strain_id}
     for strain in strains_db:
         if strain.id not in sampled_strain_ids:
@@ -428,6 +438,66 @@ async def load_state_from_db_internal(session) -> dict:
         
     from src.genomics.data_loader import load_strain_data_from_samples
     strains_data, relationships = load_strain_data_from_samples(domain_samples)
+
+    # 4. Dynamic Terpene Propagation (Propagate terpene profile from closest relative in lineage tree)
+    from src.genomics.normalization import normalize_strain_name
+    canonical_by_norm = {normalize_strain_name(s.primary_name): s.primary_name for s in strains_db}
+    
+    parent_map = {}
+    child_map = {}
+    for s in strains_db:
+        child_name = s.primary_name
+        parent_map.setdefault(child_name, [])
+        if s.lineage:
+            parent_names = []
+            if isinstance(s.lineage, list):
+                for entry in s.lineage[:3]:
+                    if isinstance(entry, dict) and entry.get("name"):
+                        parent_names.append(entry["name"])
+                    elif isinstance(entry, str):
+                        parent_names.append(entry)
+            elif isinstance(s.lineage, dict):
+                for key in ("mother", "father", "parent1", "parent2"):
+                    if key in s.lineage:
+                        parent_names.append(str(s.lineage[key]))
+            
+            for p_name in parent_names:
+                p_norm = normalize_strain_name(p_name)
+                matched_p = canonical_by_norm.get(p_norm)
+                if matched_p and matched_p != child_name:
+                    parent_map[child_name].append(matched_p)
+                    child_map.setdefault(matched_p, []).append(child_name)
+
+    from collections import deque
+    for name, data in strains_data.items():
+        if not data.get("terpenes"):
+            queue = deque([(name, 0)])
+            visited = {name}
+            found_terpenes = None
+            found_relative = None
+            dist = 0
+            
+            while queue:
+                current, dist = queue.popleft()
+                if current != name and current in strains_data and strains_data[current].get("terpenes") and not strains_data[current].get("terpenes_inherited_from"):
+                    found_terpenes = strains_data[current]["terpenes"]
+                    found_relative = current
+                    break
+                    
+                for parent in parent_map.get(current, []):
+                    if parent not in visited:
+                        visited.add(parent)
+                        queue.append((parent, dist + 1))
+                for child in child_map.get(current, []):
+                    if child not in visited:
+                        visited.add(child)
+                        queue.append((child, dist + 1))
+            
+            if found_terpenes:
+                data["terpenes"] = found_terpenes.copy()
+                data["terpenes_inherited_from"] = found_relative
+                logger.info(f"Dynamically propagated terpene profile to '{name}' from closest relative '{found_relative}' (dist: {dist})")
+
     from src.genomics.terpene_analysis import calculate_terpene_relationships
     terpene_relationships = calculate_terpene_relationships(strains_data)
     
@@ -470,7 +540,8 @@ async def load_state_from_db_internal(session) -> dict:
                 if known_norm == parent_norm:
                     matched_parent = known
                     break
-            if matched_parent and matched_parent != child_name:
+            # Compare normalized values to avoid case-sensitive self-loops
+            if matched_parent and _re.sub(r"[^a-z0-9]", "", matched_parent.lower()) != _re.sub(r"[^a-z0-9]", "", child_name.lower()):
                 lineage_key = (matched_parent, child_name)
                 if lineage_key not in seen_lineage_keys:
                     seen_lineage_keys.add(lineage_key)
@@ -656,6 +727,24 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to pre-populate database state cache: {e}")
         
+    # Spawn background strain enrichment task
+    logger.info("Spawning background strain enrichment task on startup...")
+    async def run_enrichment():
+        await asyncio.sleep(5)  # Wait 5 seconds to let server start up
+        try:
+            logger.info("Starting background strain enrichment...")
+            async for session in get_session():
+                from src.enrich_strains import enrich_all_strains
+                await enrich_all_strains(session)
+                await session.commit()
+                invalidate_db_state_cache()
+                logger.info("Background strain enrichment completed successfully.")
+                break
+        except Exception as e:
+            logger.error(f"Background strain enrichment failed: {e}")
+            
+    asyncio.create_task(run_enrichment())
+        
     yield
     logger.info("treesearch-service stopped")
 
@@ -716,6 +805,24 @@ async def network_data():
             state.get("lineage_relationships"),
         )
         return data
+
+@app.post("/api/strains/enrich")
+async def trigger_strains_enrichment(background_tasks: BackgroundTasks):
+    """Trigger DB-wide Leafly terpene and parent lineage placeholder enrichment."""
+    async def run_enrich():
+        try:
+            async for session in get_session():
+                from src.enrich_strains import enrich_all_strains
+                await enrich_all_strains(session)
+                await session.commit()
+                invalidate_db_state_cache()
+                logger.info("Manual API-triggered strain enrichment completed successfully.")
+                break
+        except Exception as e:
+            logger.error(f"Manual API-triggered strain enrichment failed: {e}")
+            
+    background_tasks.add_task(run_enrich)
+    return {"message": "Strains enrichment started in the background."}
 
 # ----- Strain List & Search ----- #
 
@@ -1034,9 +1141,9 @@ async def fallback_search_genetics(strain_name: str) -> list[str]:
     
     # Candidate python paths with ddgs installed
     candidates = [
-        "/home/lazycat/github/rods-project/sun/scraper-service/.venv/bin/python",
-        "/home/lazycat/github/rods-project/sun/scraper-service/venv/bin/python",
-        "/home/lazycat/github/rods-project/sun/trading-service/.venv/bin/python",
+        "/home/lazycat/github/projects/sun/scraper-service/.venv/bin/python",
+        "/home/lazycat/github/projects/sun/scraper-service/venv/bin/python",
+        "/home/lazycat/github/projects/sun/trading-service/.venv/bin/python",
     ]
     
     python_exe = None
@@ -1337,6 +1444,50 @@ async def import_strain(request: Request):
                     strain_orm.description = sf_data.get("description") or strain_orm.description
                     strain_orm.lineage = sf_data.get("lineage") or strain_orm.lineage
                     await session.flush()
+
+            # Create placeholders for lineage parents if they don't exist
+            if strain_orm and strain_orm.lineage:
+                try:
+                    from src.enrich_strains import resolve_strain_name, create_parent_placeholder
+                    parent_entries = []
+                    if isinstance(strain_orm.lineage, list):
+                        for entry in strain_orm.lineage[:3]:
+                            if isinstance(entry, dict) and entry.get("name"):
+                                parent_entries.append(entry)
+                            elif isinstance(entry, str):
+                                parent_entries.append({"name": entry})
+                    elif isinstance(strain_orm.lineage, dict):
+                        for key in ("mother", "father", "parent1", "parent2"):
+                            if key in strain_orm.lineage:
+                                parent_entries.append({"name": str(strain_orm.lineage[key])})
+
+                    for entry in parent_entries:
+                        parent_name = entry["name"].strip()
+                        if parent_name.lower() in ("sativa", "indica", "hybrid", "ruderalis",
+                                                   "unknown strain", "unknown hybrid",
+                                                   "unknown mostly indica", "unknown mostly sativa",
+                                                   "unknown"):
+                            continue
+                        
+                        resolved_parent = await resolve_strain_name(session, parent_name)
+                        if resolved_parent and normalize_strain_name(resolved_parent) == normalize_strain_name(strain_orm.primary_name):
+                            resolved_parent = None
+
+                        if not resolved_parent:
+                            parent_primary_name = parent_name
+                            if normalize_strain_name(parent_primary_name) == normalize_strain_name(strain_orm.primary_name):
+                                parent_breeder = entry.get("breeder")
+                                if parent_breeder and parent_breeder.lower() not in ("unknown", "unknown breeder"):
+                                    parent_primary_name = f"{parent_name} ({parent_breeder})"
+                                else:
+                                    parent_primary_name = f"{parent_name} (Parent)"
+                            
+                            resolved_unique = await resolve_strain_name(session, parent_primary_name)
+                            if not resolved_unique:
+                                logger.info(f"Automatically creating parent placeholder for '{parent_primary_name}' during import.")
+                                await create_parent_placeholder(session, parent_primary_name)
+                except Exception as pl_ex:
+                    logger.error(f"Failed to auto-create parent placeholders for {search_name}: {pl_ex}")
 
             # Use the actual DB strain name for forum searches
             primary_name = strain_orm.primary_name
