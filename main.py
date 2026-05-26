@@ -1445,6 +1445,76 @@ async def import_strain(request: Request):
                     session.add(placeholder_sample)
                     await session.flush()
 
+            # ── Leafly terpene data enrichment ──
+            yield json.dumps({"type": "progress", "message": "Searching Leafly for terpene profile...", "posts": 0, "images": 0}) + "\n"
+            try:
+                leafly_result = await scraper_client.collect_leafly(strain_name=primary_name)
+                if leafly_result and "terpenes" in leafly_result:
+                    stmt_lf = select(GenomicSampleORM).where(
+                        (GenomicSampleORM.canonical_strain_id == strain_orm.id) &
+                        (GenomicSampleORM.source == "leafly")
+                    )
+                    existing_lf_sample = (await session.execute(stmt_lf)).scalars().first()
+                    
+                    if not existing_lf_sample:
+                        lf_sample = GenomicSampleORM(
+                            canonical_strain_id=strain_orm.id,
+                            rsp_number=f"LEAFLY-{strain_orm.primary_name.upper().replace(' ', '_')}",
+                            strain_name=strain_orm.primary_name,
+                            source="leafly",
+                            is_complete=True,
+                            raw_payload=leafly_result,
+                        )
+                        session.add(lf_sample)
+                        await session.flush()
+                        
+                        cp = ChemicalProfileORM(sample_id=lf_sample.id)
+                        session.add(cp)
+                    else:
+                        lf_sample = existing_lf_sample
+                        stmt_cp = select(ChemicalProfileORM).where(ChemicalProfileORM.sample_id == lf_sample.id)
+                        cp = (await session.execute(stmt_cp)).scalars().first()
+                        if not cp:
+                            cp = ChemicalProfileORM(sample_id=lf_sample.id)
+                            session.add(cp)
+                    
+                    lf_terps = leafly_result.get("terpenes") or {}
+                    terp_map = {
+                        "myrcene": "myrcene",
+                        "limonene": "limonene",
+                        "caryophyllene": "caryophyllene",
+                        "pinene": "pinene_alpha",
+                        "linalool": "linalool",
+                        "humulene": "humulene",
+                        "terpinolene": "terpinolene",
+                        "ocimene": "ocimene",
+                    }
+                    
+                    for raw_name, score in lf_terps.items():
+                        field_name = terp_map.get(raw_name.lower())
+                        if field_name:
+                            setattr(cp, field_name, float(score))
+                            
+                    await session.flush()
+                    
+                    terp_dict = {}
+                    for attr in ["myrcene", "limonene", "caryophyllene", "pinene_alpha",
+                                 "linalool", "humulene", "terpinolene", "ocimene"]:
+                        val = getattr(cp, attr, None)
+                        if val and val > 0:
+                            terp_dict[attr] = val
+                    if terp_dict:
+                        sorted_terps = sorted(terp_dict.items(), key=lambda x: x[1], reverse=True)
+                        strain_orm.dominant_terpenes = [t[0] for t in sorted_terps[:5]]
+                        await session.flush()
+                        
+                    yield json.dumps({"type": "progress", "message": f"Leafly: Terpene profile enriched for {primary_name}.", "posts": 0, "images": 0}) + "\n"
+                    logger.info(f"Ingested Leafly terpene profile for {primary_name}")
+                else:
+                    yield json.dumps({"type": "progress", "message": "No Leafly terpene data found.", "posts": 0, "images": 0}) + "\n"
+            except Exception as lex:
+                logger.error(f"Leafly terpene lookup failed for {primary_name}: {lex}")
+
             yield json.dumps({"type": "progress", "message": "Scraping community forums and Reddit concurrently...", "posts": total_posts, "images": total_images}) + "\n"
             
             async def fetch_overgrow():

@@ -117,5 +117,19 @@ class ScraperClient:
         data = await self.collect(payload)
         return data.get("items", [])
 
+    async def collect_leafly(
+        self,
+        strain_name: str,
+    ) -> Optional[Dict[str, Any]]:
+        """Scrape strain terpene profile from Leafly via the scraper-service."""
+        payload = {
+            "source": "leafly",
+            "query": strain_name,
+            "limit": 1,
+        }
+        data = await self.collect(payload)
+        items = data.get("items", [])
+        return items[0] if items else None
+
     async def close(self):
         await self.client.aclose()
