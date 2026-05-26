@@ -35,6 +35,7 @@ from src.genomics.distance_matrix import (
 from src.genomics.similarity import compute_combined_similarity
 from src.viz.server import build_network_data
 from src.etl.kannapedia_etl import ingest_kannapedia_record
+from src.genomics.normalization import normalize_strain_name
 from src.db import init_db, get_session
 from src.models.orm import (
     CanonicalStrainORM,
@@ -75,6 +76,8 @@ async def get_canonical_strain_name(session, name: str) -> Optional[str]:
     if name_key in _resolved_name_cache:
         return _resolved_name_cache[name_key]
         
+    norm = normalize_strain_name(name)
+    
     # 1. Case-insensitive exact match
     stmt = select(CanonicalStrainORM.primary_name).where(CanonicalStrainORM.primary_name.ilike(name))
     res = (await session.execute(stmt)).scalar()
@@ -83,10 +86,8 @@ async def get_canonical_strain_name(session, name: str) -> Optional[str]:
         return res
         
     # 2. Case and punctuation-insensitive match
-    import re
-    norm = re.sub(r"[^a-z0-9]", "", name.lower())
     stmt2 = select(CanonicalStrainORM.primary_name).where(
-        func.replace(func.replace(func.replace(func.lower(CanonicalStrainORM.primary_name), "_", ""), "-", ""), " ", "") == norm
+        func.regexp_replace(func.lower(CanonicalStrainORM.primary_name), '[^a-z0-9]', '', 'g') == norm
     )
     res = (await session.execute(stmt2)).scalar()
     if res:
@@ -99,7 +100,7 @@ async def get_canonical_strain_name(session, name: str) -> Optional[str]:
     ).where(
         or_(
             StrainAliasORM.name.ilike(name),
-            func.replace(func.replace(func.replace(func.lower(StrainAliasORM.name), "_", ""), "-", ""), " ", "") == norm
+            func.regexp_replace(func.lower(StrainAliasORM.name), '[^a-z0-9]', '', 'g') == norm
         )
     )
     res = (await session.execute(stmt_alias)).scalar()
@@ -1225,13 +1226,9 @@ async def import_strain(request: Request):
             # ── Step 2: Check if strain already exists in DB by name ──
             # This handles CSV-bootstrapped strains and previously imported ones
             search_name = real_name or strain_slug.replace("-", " ").replace("_", " ")
-            search_name_underscore = search_name.replace(" ", "_")
+            norm_search = normalize_strain_name(search_name)
             stmt_existing = select(CanonicalStrainORM).where(
-                or_(
-                    CanonicalStrainORM.primary_name.ilike(search_name),
-                    CanonicalStrainORM.primary_name.ilike(search_name_underscore),
-                    CanonicalStrainORM.primary_name.ilike(search_name.replace(" ", "")),
-                )
+                func.regexp_replace(func.lower(CanonicalStrainORM.primary_name), '[^a-z0-9]', '', 'g') == norm_search
             )
             existing_strain = (await session.execute(stmt_existing)).scalars().first()
 
@@ -1290,33 +1287,49 @@ async def import_strain(request: Request):
             if not strain_orm:
                 # Need to create or find the strain
                 breeder_name = (sf_data.get("breeder") or breeder_slug.replace("-", " ").title()) if sf_data else "Unknown Breeder"
+                from sqlalchemy.exc import IntegrityError
                 stmt_breeder = select(BreederORM).where(BreederORM.name.ilike(breeder_name))
                 breeder = (await session.execute(stmt_breeder)).scalars().first()
                 if not breeder:
-                    breeder = BreederORM(name=breeder_name)
-                    session.add(breeder)
-                    await session.flush()
+                    try:
+                        async with session.begin_nested():
+                            breeder = BreederORM(name=breeder_name)
+                            session.add(breeder)
+                            await session.flush()
+                    except IntegrityError:
+                        # Conflict! Re-fetch existing breeder
+                        breeder = (await session.execute(stmt_breeder)).scalars().first()
 
                 primary_name = sf_data["name"] if sf_data else search_name.title()
+                norm_primary = normalize_strain_name(primary_name)
                 
-                # Check if strain already exists by name
-                stmt_cs_name = select(CanonicalStrainORM).where(CanonicalStrainORM.primary_name.ilike(primary_name))
+                # Check if strain already exists by name (normalized)
+                stmt_cs_name = select(CanonicalStrainORM).where(
+                    func.regexp_replace(func.lower(CanonicalStrainORM.primary_name), '[^a-z0-9]', '', 'g') == norm_primary
+                )
                 strain_orm = (await session.execute(stmt_cs_name)).scalars().first()
                 if not strain_orm:
                     canonical_name = primary_name.replace(" ", "_")
-                    stmt_cs_canon = select(CanonicalStrainORM).where(CanonicalStrainORM.primary_name.ilike(canonical_name))
+                    stmt_cs_canon = select(CanonicalStrainORM).where(
+                        func.regexp_replace(func.lower(CanonicalStrainORM.primary_name), '[^a-z0-9]', '', 'g') == normalize_strain_name(canonical_name)
+                    )
                     strain_orm = (await session.execute(stmt_cs_canon)).scalars().first()
                     if not strain_orm:
-                        strain_orm = CanonicalStrainORM(
-                            primary_name=canonical_name,
-                            breeder_id=breeder.id,
-                            strain_type=sf_data.get("type") if sf_data else None,
-                            avg_flowering_days=sf_data.get("flowering_time_days") if sf_data else None,
-                            description=sf_data.get("description") if sf_data else None,
-                            lineage=sf_data.get("lineage") or {} if sf_data else {},
-                        )
-                        session.add(strain_orm)
-                        await session.flush()
+                        try:
+                            async with session.begin_nested():
+                                strain_orm = CanonicalStrainORM(
+                                    primary_name=canonical_name,
+                                    breeder_id=breeder.id,
+                                    strain_type=sf_data.get("type") if sf_data else None,
+                                    avg_flowering_days=sf_data.get("flowering_time_days") if sf_data else None,
+                                    description=sf_data.get("description") if sf_data else None,
+                                    lineage=sf_data.get("lineage") or {} if sf_data else {},
+                                )
+                                session.add(strain_orm)
+                                await session.flush()
+                        except IntegrityError:
+                            # Conflict! Re-fetch existing strain
+                            strain_orm = (await session.execute(stmt_cs_name)).scalars().first()
                 elif sf_data:
                     # Update existing strain with SeedFinder data
                     strain_orm.strain_type = sf_data.get("type") or strain_orm.strain_type

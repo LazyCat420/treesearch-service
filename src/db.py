@@ -20,10 +20,20 @@ AsyncSessionLocal = async_sessionmaker(
 
 Base = declarative_base()
 
+from sqlalchemy import text
+
 async def init_db():
     """Initialize the database, creating all tables if they don't exist."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        # Migrate unique indexes
+        await conn.execute(text(
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_breeders_name ON breeders (name);"
+        ))
+        await conn.execute(text(
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_canonical_strains_normalized_name "
+            "ON canonical_strains (regexp_replace(lower(primary_name), '[^a-z0-9]', '', 'g'));"
+        ))
 
 async def get_session() -> AsyncSession:
     """Get an async database session."""

@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import String, Float, Integer, JSON, Boolean, ForeignKey, DateTime, Column, Text
+from sqlalchemy import String, Float, Integer, JSON, Boolean, ForeignKey, DateTime, Column, Text, Index, func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from typing import Any, List
 
@@ -10,7 +10,7 @@ class BreederORM(Base):
     __tablename__ = "breeders"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    name: Mapped[str] = mapped_column(String, index=True)
+    name: Mapped[str] = mapped_column(String, index=True, unique=True)
     aliases: Mapped[list[str]] = mapped_column(JSON, default=list)
     website: Mapped[str | None] = mapped_column(String, nullable=True)
     region: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -58,6 +58,14 @@ class CanonicalStrainORM(Base):
     source_count: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (
+        Index(
+            "uq_canonical_strains_normalized_name",
+            func.regexp_replace(func.lower(primary_name), "[^a-z0-9]", "", "g"),
+            unique=True
+        ),
+    )
 
     breeder: Mapped["BreederORM"] = relationship("BreederORM", back_populates="strains")
     aliases: Mapped[List["StrainAliasORM"]] = relationship("StrainAliasORM", back_populates="canonical_strain")

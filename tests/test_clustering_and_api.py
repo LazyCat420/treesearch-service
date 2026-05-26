@@ -1,5 +1,6 @@
 import pytest
 import httpx
+import asyncio
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
@@ -12,6 +13,7 @@ from src.models.orm import (
     ObservationImageORM,
     StrainAliasORM,
     SourceGenomicsRecordORM,
+    BreederORM,
 )
 from src.ml.clustering import run_image_clustering
 
@@ -163,5 +165,68 @@ async def test_ingest_clustering_and_detail_api():
                 if strain.primary_name == "Jack Herer":
                     await session.delete(strain)
                 
+            await session.commit()
+            break
+
+
+@pytest.mark.asyncio
+async def test_concurrency_import_no_duplicates():
+    # 1. Initialize tables and indexes
+    await init_db()
+    
+    # 2. Run two concurrent import requests for "Test Stardawg Concurrency"
+    payload = {
+        "strain_slug": "test-stardawg-concurrency",
+        "breeder_slug": "forum-import",
+        "force": True
+    }
+    
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+        # Fire both concurrently
+        resp1, resp2 = await asyncio.gather(
+            client.post("/api/strains/import", json=payload),
+            client.post("/api/strains/import", json=payload),
+            return_exceptions=True
+        )
+        
+        # At least one should succeed
+        assert not isinstance(resp1, Exception)
+        assert not isinstance(resp2, Exception)
+        assert resp1.status_code == 200 or resp2.status_code == 200
+        
+        # Verify in DB that only ONE CanonicalStrain exists with this normalized name
+        from src.genomics.normalization import normalize_strain_name
+        async for session in get_session():
+            stmt = select(CanonicalStrainORM)
+            res = await session.execute(stmt)
+            strains = res.scalars().all()
+            
+            matching = [s for s in strains if normalize_strain_name(s.primary_name) == "teststardawgconcurrency"]
+            assert len(matching) == 1, f"Expected exactly 1 canonical strain, found {len(matching)}"
+            
+            # Clean up the test strain and its breeder
+            test_strain = matching[0]
+            # Delete aliases
+            from src.models.orm import StrainAliasORM
+            from sqlalchemy import delete
+            await session.execute(delete(StrainAliasORM).where(StrainAliasORM.canonical_strain_id == test_strain.id))
+            
+            # Re-parent/delete genomic samples
+            stmt_gs = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == test_strain.id)
+            samples = (await session.execute(stmt_gs)).scalars().all()
+            for gs in samples:
+                await session.delete(gs)
+                
+            # Delete strain
+            await session.delete(test_strain)
+            
+            # Delete breeder if it's the imported one
+            if test_strain.breeder_id:
+                stmt_br = select(BreederORM).where(BreederORM.id == test_strain.breeder_id)
+                br = (await session.execute(stmt_br)).scalars().first()
+                if br and br.name == "Unknown Breeder":
+                    await session.delete(br)
+                    
             await session.commit()
             break

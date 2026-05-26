@@ -20,6 +20,7 @@ from src.models.genomic_sample import (
 )
 from src.models.source_record import SourceGenomicsRecord
 from src.models.strain import CanonicalStrain, StrainAlias
+from src.genomics.normalization import normalize_strain_name
 
 logger = logging.getLogger(__name__)
 
@@ -250,21 +251,11 @@ def _resolve_strain(
     existing_strains: dict[str, CanonicalStrain],
 ) -> CanonicalStrain:
     """Resolve a strain name to an existing canonical strain or create a new one."""
-    name_stripped = name.strip()
-    name_lower = name_stripped.lower()
+    name_norm = normalize_strain_name(name)
     
-    # 1. Exact match after lowercase / strip
+    # Check normalized matches in existing strains lookup
     for existing_name, strain in existing_strains.items():
-        if existing_name.lower().strip() == name_lower:
-            return strain
-
-    # 2. Normalized match (remove spaces, underscores, hyphens, and other non-alphanumeric chars)
-    def normalize(val: str) -> str:
-        return re.sub(r"[^a-z0-9]", "", val.lower().strip())
-    
-    name_norm = normalize(name_stripped)
-    for existing_name, strain in existing_strains.items():
-        if normalize(existing_name) == name_norm:
+        if normalize_strain_name(existing_name) == name_norm:
             return strain
 
     # Create new canonical strain
