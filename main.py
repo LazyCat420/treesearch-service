@@ -1690,6 +1690,9 @@ async def import_strain(request: Request):
                 # Re-fetch session state after rollback
                 async for session in get_session():
                     break
+                # Re-fetch strain_orm in the new session
+                stmt_cs = select(CanonicalStrainORM).where(CanonicalStrainORM.primary_name == primary_name)
+                strain_orm = (await session.execute(stmt_cs)).scalars().first()
 
             # ── Kannapedia genomic data lookup ──
             yield json.dumps({"type": "progress", "message": "Searching Kannapedia for genomic data...", "posts": 0, "images": 0}) + "\n"

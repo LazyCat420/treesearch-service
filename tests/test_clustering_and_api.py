@@ -213,9 +213,13 @@ async def test_concurrency_import_no_duplicates():
             await session.execute(delete(StrainAliasORM).where(StrainAliasORM.canonical_strain_id == test_strain.id))
             
             # Re-parent/delete genomic samples
-            stmt_gs = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == test_strain.id)
+            stmt_gs = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == test_strain.id).options(
+                selectinload(GenomicSampleORM.chemical_profile)
+            )
             samples = (await session.execute(stmt_gs)).scalars().all()
             for gs in samples:
+                if gs.chemical_profile:
+                    await session.delete(gs.chemical_profile)
                 await session.delete(gs)
                 
             # Delete strain
