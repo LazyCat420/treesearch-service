@@ -403,20 +403,27 @@ async def load_state_from_db_internal(session) -> dict:
             )
             
         rels_db = rels_by_sample.get(s_orm.id, [])
-        domain_rels = [
-            DomainGeneticRelationship(
-                id=r.id,
-                sample_id_a=r.sample_id_a,
-                sample_id_b=r.sample_id_b,
-                strain_name_a=sample_id_to_primary_name.get(r.sample_id_a) or r.strain_name_a,
-                strain_name_b=sample_id_to_primary_name.get(r.sample_id_b) or r.strain_name_b,
-                rsp_a=r.rsp_a,
-                rsp_b=r.rsp_b,
-                distance=r.distance,
-                relationship_type=r.relationship_type,
-                source=r.source,
-            ) for r in rels_db
-        ]
+        domain_rels = []
+        for r in rels_db:
+            s_a = sample_id_to_primary_name.get(r.sample_id_a) or r.strain_name_a
+            s_b = sample_id_to_primary_name.get(r.sample_id_b) or r.strain_name_b
+            # Filter out invalid 0.0 distance genetic relationships between different strains
+            if r.distance == 0.0 and s_a.lower().strip() != s_b.lower().strip():
+                continue
+            domain_rels.append(
+                DomainGeneticRelationship(
+                    id=r.id,
+                    sample_id_a=r.sample_id_a,
+                    sample_id_b=r.sample_id_b,
+                    strain_name_a=s_a,
+                    strain_name_b=s_b,
+                    rsp_a=r.rsp_a,
+                    rsp_b=r.rsp_b,
+                    distance=r.distance,
+                    relationship_type=r.relationship_type,
+                    source=r.source,
+                )
+            )
         
         primary_name = strain_id_to_primary_name.get(s_orm.canonical_strain_id) if s_orm.canonical_strain_id else s_orm.strain_name
         s_domain = GenomicSample(
@@ -469,6 +476,11 @@ async def load_state_from_db_internal(session) -> dict:
         
     from src.genomics.data_loader import load_strain_data_from_samples
     strains_data, relationships = load_strain_data_from_samples(domain_samples)
+
+    # Store strain lineage inside each strain's strains_data entry
+    for s in strains_db:
+        if s.primary_name in strains_data:
+            strains_data[s.primary_name]["lineage"] = s.lineage
 
     # 4. Dynamic Terpene Propagation (Propagate terpene profile from closest relative in lineage tree)
     from src.genomics.normalization import normalize_strain_name
@@ -1228,6 +1240,137 @@ except Exception as e:
     return []
 
 
+def parse_terpenes_from_snippets(snippets: list[str]) -> dict[str, float]:
+    import re
+    
+    variant_map = {
+        "myrcene": "myrcene",
+        "limonene": "limonene",
+        "caryophyllene": "caryophyllene",
+        "pinene": "pinene_alpha",
+        "pinene_alpha": "pinene_alpha",
+        "pinene_beta": "pinene_beta",
+        "linalool": "linalool",
+        "humulene": "humulene",
+        "terpinolene": "terpinolene",
+        "ocimene": "ocimene",
+        "alpha-pinene": "pinene_alpha",
+        "beta-pinene": "pinene_beta",
+        "alpha-humulene": "humulene",
+        "beta-caryophyllene": "caryophyllene",
+    }
+
+    parsed_terps = {}
+    
+    # Regex 1: "terpene (0.5%)" or "terpene: 0.5%" or "terpene of 0.5%"
+    # Regex 2: "0.5% terpene"
+    regex_list = [
+        r'\b(myrcene|limonene|caryophyllene|pinene|linalool|humulene|terpinolene|ocimene|alpha-pinene|beta-pinene|alpha-humulene|beta-caryophyllene)\b[^%0-9]{0,10}(\d+(?:\.\d+)?)\s*%',
+        r'(\d+(?:\.\d+)?)\s*%\s*(?:of\s+)?\b(myrcene|limonene|caryophyllene|pinene|linalool|humulene|terpinolene|ocimene|alpha-pinene|beta-pinene|alpha-humulene|beta-caryophyllene)\b'
+    ]
+
+    for snip in snippets:
+        snip_lower = snip.lower()
+        
+        for regex in regex_list:
+            for match in re.finditer(regex, snip_lower):
+                g1, g2 = match.groups()
+                try:
+                    if '%' in match.group(0):
+                        if g1.replace('.', '', 1).isdigit():
+                            val = float(g1)
+                            name = g2
+                        else:
+                            name = g1
+                            val = float(g2)
+                        
+                        canonical_name = variant_map.get(name)
+                        if canonical_name:
+                            if canonical_name not in parsed_terps or val > parsed_terps[canonical_name]:
+                                parsed_terps[canonical_name] = val
+                except (ValueError, KeyError):
+                    continue
+
+    if parsed_terps:
+        total = sum(parsed_terps.values())
+        if total > 10.0:
+            parsed_terps = {k: round(v / total, 3) for k, v in parsed_terps.items()}
+        return parsed_terps
+
+    # Fallback to mention frequency
+    counts = {}
+    for snip in snippets:
+        snip_lower = snip.lower()
+        for variant, canonical in variant_map.items():
+            if re.search(rf'\b{re.escape(variant)}\b', snip_lower):
+                counts[canonical] = counts.get(canonical, 0) + 1
+
+    if counts:
+        total_counts = sum(counts.values())
+        profile = {}
+        for canonical, c in counts.items():
+            profile[canonical] = round((c / total_counts) * 1.5, 3)
+        return profile
+
+    return {}
+
+
+async def fallback_search_terpenes(strain_name: str) -> dict[str, float]:
+    import os
+    import sys
+    import json
+    import asyncio
+    
+    candidates = [
+        "/home/lazycat/github/projects/sun/scraper-service/.venv/bin/python",
+        "/home/lazycat/github/projects/sun/scraper-service/venv/bin/python",
+        "/home/lazycat/github/projects/sun/trading-service/.venv/bin/python",
+    ]
+    
+    python_exe = None
+    for c in candidates:
+        if os.path.exists(c):
+            python_exe = c
+            break
+            
+    if not python_exe:
+        python_exe = sys.executable
+
+    query = f'"{strain_name}" terpene profile OR terpenes'
+    script = """
+import sys
+import json
+try:
+    from ddgs import DDGS
+    with DDGS() as ddgs:
+        results = list(ddgs.text(sys.argv[1], max_results=10))
+    print(json.dumps({"success": True, "results": results}))
+except Exception as e:
+    print(json.dumps({"success": False, "error": str(e)}))
+"""
+    
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            python_exe, "-c", script, query,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        stdout, stderr = await proc.communicate()
+        if proc.returncode == 0:
+            data = json.loads(stdout.decode().strip())
+            if data.get("success"):
+                snippets = [r.get("body", "") for r in data.get("results", []) if r.get("body")]
+                return parse_terpenes_from_snippets(snippets)
+            else:
+                logger.error(f"DDG terpene fallback search execution error: {data.get('error')}")
+        else:
+            logger.error(f"DDG terpene fallback search process failed with code {proc.returncode}: {stderr.decode()}")
+    except Exception as e:
+        logger.error(f"Failed to execute DDG terpene fallback search: {e}")
+        
+    return {}
+
+
 @app.post("/api/strains/import")
 async def import_strain(request: Request):
     payload = await request.json()
@@ -1650,10 +1793,21 @@ async def import_strain(request: Request):
             yield json.dumps({"type": "progress", "message": "Searching Leafly for terpene profile...", "posts": 0, "images": 0}) + "\n"
             try:
                 leafly_result = await scraper_client.collect_leafly(strain_name=primary_name)
-                if leafly_result and "terpenes" in leafly_result:
+                terpene_profile = None
+                source_used = "leafly"
+                
+                if leafly_result and "terpenes" in leafly_result and leafly_result["terpenes"]:
+                    terpene_profile = leafly_result["terpenes"]
+                else:
+                    yield json.dumps({"type": "progress", "message": "No Leafly data. Searching web fallback for terpenes...", "posts": 0, "images": 0}) + "\n"
+                    terpene_profile = await fallback_search_terpenes(primary_name)
+                    if terpene_profile:
+                        source_used = "leafly_fallback"
+
+                if terpene_profile:
                     stmt_lf = select(GenomicSampleORM).where(
                         (GenomicSampleORM.canonical_strain_id == strain_orm.id) &
-                        (GenomicSampleORM.source == "leafly")
+                        (GenomicSampleORM.source.in_(["leafly", "leafly_fallback"]))
                     )
                     existing_lf_sample = (await session.execute(stmt_lf)).scalars().first()
                     
@@ -1662,9 +1816,9 @@ async def import_strain(request: Request):
                             canonical_strain_id=strain_orm.id,
                             rsp_number=f"LEAFLY-{strain_orm.primary_name.upper().replace(' ', '_')}",
                             strain_name=strain_orm.primary_name,
-                            source="leafly",
+                            source=source_used,
                             is_complete=True,
-                            raw_payload=leafly_result,
+                            raw_payload=leafly_result if leafly_result else {"terpenes": terpene_profile},
                         )
                         session.add(lf_sample)
                         await session.flush()
@@ -1673,25 +1827,36 @@ async def import_strain(request: Request):
                         session.add(cp)
                     else:
                         lf_sample = existing_lf_sample
+                        lf_sample.source = source_used
                         stmt_cp = select(ChemicalProfileORM).where(ChemicalProfileORM.sample_id == lf_sample.id)
                         cp = (await session.execute(stmt_cp)).scalars().first()
                         if not cp:
                             cp = ChemicalProfileORM(sample_id=lf_sample.id)
                             session.add(cp)
                     
-                    lf_terps = leafly_result.get("terpenes") or {}
                     terp_map = {
                         "myrcene": "myrcene",
                         "limonene": "limonene",
                         "caryophyllene": "caryophyllene",
                         "pinene": "pinene_alpha",
+                        "pinene_alpha": "pinene_alpha",
+                        "pinene_beta": "pinene_beta",
                         "linalool": "linalool",
                         "humulene": "humulene",
                         "terpinolene": "terpinolene",
                         "ocimene": "ocimene",
+                        "alpha-pinene": "pinene_alpha",
+                        "beta-pinene": "pinene_beta",
+                        "alpha-humulene": "humulene",
+                        "beta-caryophyllene": "caryophyllene"
                     }
                     
-                    for raw_name, score in lf_terps.items():
+                    # Reset all terpene fields to None first to clear old data if updating
+                    for attr in ["myrcene", "limonene", "caryophyllene", "pinene_alpha",
+                                 "pinene_beta", "linalool", "humulene", "terpinolene", "ocimene", "nerolidol"]:
+                        setattr(cp, attr, None)
+
+                    for raw_name, score in terpene_profile.items():
                         field_name = terp_map.get(raw_name.lower())
                         if field_name:
                             setattr(cp, field_name, float(score))
@@ -1709,12 +1874,12 @@ async def import_strain(request: Request):
                         strain_orm.dominant_terpenes = [t[0] for t in sorted_terps[:5]]
                         await session.flush()
                         
-                    yield json.dumps({"type": "progress", "message": f"Leafly: Terpene profile enriched for {primary_name}.", "posts": 0, "images": 0}) + "\n"
-                    logger.info(f"Ingested Leafly terpene profile for {primary_name}")
+                    yield json.dumps({"type": "progress", "message": f"Terpene profile enriched for {primary_name} via {source_used}.", "posts": 0, "images": 0}) + "\n"
+                    logger.info(f"Ingested {source_used} terpene profile for {primary_name}")
                 else:
-                    yield json.dumps({"type": "progress", "message": "No Leafly terpene data found.", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "message": "No terpene data found on Leafly or via search fallback.", "posts": 0, "images": 0}) + "\n"
             except Exception as lex:
-                logger.error(f"Leafly terpene lookup failed for {primary_name}: {lex}")
+                logger.error(f"Terpene lookup/fallback failed for {primary_name}: {lex}")
 
             yield json.dumps({"type": "progress", "message": "Scraping community forums and Reddit concurrently...", "posts": total_posts, "images": total_images}) + "\n"
             

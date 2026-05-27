@@ -132,6 +132,16 @@ async def enrich_all_strains(session, force_terpenes: bool = False):
     """Enrich all canonical strains with missing Leafly terpenes and auto-create lineage parent placeholders."""
     logger.info("Starting database-wide strain enrichment...")
 
+    # Consolidate duplicate strains and breeders first
+    try:
+        from src.merge_duplicates import merge_strains, merge_breeders
+        logger.info("Running duplicate consolidation before enrichment...")
+        await merge_strains(session)
+        await merge_breeders(session)
+        await session.flush()
+    except Exception as merge_ex:
+        logger.error(f"Failed to merge duplicate strains/breeders: {merge_ex}")
+
     scraper_client = ScraperClient()
     enriched_count = 0
     parent_placeholders_count = 0
@@ -199,78 +209,106 @@ async def enrich_all_strains(session, force_terpenes: bool = False):
                         logger.error(f"  Lineage scraping failed for '{primary_name}': {line_ex}")
 
                 # 1. Leafly Terpene Enrichment
-                has_leafly_sample = any(s.source == "leafly" for s in strain.genomic_samples)
+                has_leafly_sample = any(s.source in ("leafly", "leafly_fallback") for s in strain.genomic_samples)
                 has_terps = bool(strain.dominant_terpenes)
 
                 if force_terpenes or not has_terps or not has_leafly_sample:
                     logger.info(f"  Querying Leafly for '{primary_name}'...")
+                    leafly_result = None
                     try:
                         leafly_result = await scraper_client.collect_leafly(strain_name=primary_name)
-                        if leafly_result and "terpenes" in leafly_result:
-                            stmt_lf = select(GenomicSampleORM).where(
-                                (GenomicSampleORM.canonical_strain_id == strain.id) &
-                                (GenomicSampleORM.source == "leafly")
-                            )
-                            existing_lf_sample = (await session.execute(stmt_lf)).scalars().first()
-                            
-                            if not existing_lf_sample:
-                                lf_sample = GenomicSampleORM(
-                                    canonical_strain_id=strain.id,
-                                    rsp_number=f"LEAFLY-{strain.primary_name.upper().replace(' ', '_')}",
-                                    strain_name=strain.primary_name,
-                                    source="leafly",
-                                    is_complete=True,
-                                    raw_payload=leafly_result,
-                                )
-                                session.add(lf_sample)
-                                await session.flush()
-                                
-                                cp = ChemicalProfileORM(sample_id=lf_sample.id)
-                                session.add(cp)
-                            else:
-                                lf_sample = existing_lf_sample
-                                stmt_cp = select(ChemicalProfileORM).where(ChemicalProfileORM.sample_id == lf_sample.id)
-                                cp = (await session.execute(stmt_cp)).scalars().first()
-                                if not cp:
-                                    cp = ChemicalProfileORM(sample_id=lf_sample.id)
-                                    session.add(cp)
-                            
-                            lf_terps = leafly_result.get("terpenes") or {}
-                            terp_map = {
-                                "myrcene": "myrcene",
-                                "limonene": "limonene",
-                                "caryophyllene": "caryophyllene",
-                                "pinene": "pinene_alpha",
-                                "linalool": "linalool",
-                                "humulene": "humulene",
-                                "terpinolene": "terpinolene",
-                                "ocimene": "ocimene",
-                            }
-                            
-                            for raw_name, score in lf_terps.items():
-                                field_name = terp_map.get(raw_name.lower())
-                                if field_name:
-                                    setattr(cp, field_name, float(score))
-                                    
-                            await session.flush()
-                            
-                            terp_dict = {}
-                            for attr in ["myrcene", "limonene", "caryophyllene", "pinene_alpha",
-                                         "linalool", "humulene", "terpinolene", "ocimene"]:
-                                val = getattr(cp, attr, None)
-                                if val and val > 0:
-                                    terp_dict[attr] = val
-                            if terp_dict:
-                                sorted_terps = sorted(terp_dict.items(), key=lambda x: x[1], reverse=True)
-                                strain.dominant_terpenes = [t[0] for t in sorted_terps[:5]]
-                                await session.flush()
-                            
-                            logger.info(f"  Successfully enriched terpenes for '{primary_name}' from Leafly.")
-                            enriched_count += 1
-                        else:
-                            logger.info(f"  No Leafly terpene data found for '{primary_name}'.")
                     except Exception as lex:
                         logger.error(f"  Leafly terpene lookup failed for '{primary_name}': {lex}")
+
+                    terpene_profile = None
+                    source_used = "leafly"
+
+                    if leafly_result and "terpenes" in leafly_result and leafly_result["terpenes"]:
+                        terpene_profile = leafly_result["terpenes"]
+                    else:
+                        logger.info(f"  No Leafly terpene data for '{primary_name}'. Trying web search fallback...")
+                        try:
+                            from main import fallback_search_terpenes
+                            terpene_profile = await fallback_search_terpenes(primary_name)
+                            if terpene_profile:
+                                source_used = "leafly_fallback"
+                        except Exception as fex:
+                            logger.error(f"  Web search terpene fallback failed for '{primary_name}': {fex}")
+
+                    if terpene_profile:
+                        stmt_lf = select(GenomicSampleORM).where(
+                            (GenomicSampleORM.canonical_strain_id == strain.id) &
+                            (GenomicSampleORM.source.in_(["leafly", "leafly_fallback"]))
+                        )
+                        existing_lf_sample = (await session.execute(stmt_lf)).scalars().first()
+                        
+                        if not existing_lf_sample:
+                            lf_sample = GenomicSampleORM(
+                                canonical_strain_id=strain.id,
+                                rsp_number=f"LEAFLY-{strain.primary_name.upper().replace(' ', '_')}",
+                                strain_name=strain.primary_name,
+                                source=source_used,
+                                is_complete=True,
+                                raw_payload=leafly_result if leafly_result else {"terpenes": terpene_profile},
+                            )
+                            session.add(lf_sample)
+                            await session.flush()
+                            
+                            cp = ChemicalProfileORM(sample_id=lf_sample.id)
+                            session.add(cp)
+                        else:
+                            lf_sample = existing_lf_sample
+                            lf_sample.source = source_used
+                            stmt_cp = select(ChemicalProfileORM).where(ChemicalProfileORM.sample_id == lf_sample.id)
+                            cp = (await session.execute(stmt_cp)).scalars().first()
+                            if not cp:
+                                cp = ChemicalProfileORM(sample_id=lf_sample.id)
+                                session.add(cp)
+                        
+                        terp_map = {
+                            "myrcene": "myrcene",
+                            "limonene": "limonene",
+                            "caryophyllene": "caryophyllene",
+                            "pinene": "pinene_alpha",
+                            "pinene_alpha": "pinene_alpha",
+                            "pinene_beta": "pinene_beta",
+                            "linalool": "linalool",
+                            "humulene": "humulene",
+                            "terpinolene": "terpinolene",
+                            "ocimene": "ocimene",
+                            "alpha-pinene": "pinene_alpha",
+                            "beta-pinene": "pinene_beta",
+                            "alpha-humulene": "humulene",
+                            "beta-caryophyllene": "caryophyllene"
+                        }
+                        
+                        # Reset all terpene fields to None first to clear old data if updating
+                        for attr in ["myrcene", "limonene", "caryophyllene", "pinene_alpha",
+                                     "pinene_beta", "linalool", "humulene", "terpinolene", "ocimene", "nerolidol"]:
+                            setattr(cp, attr, None)
+
+                        for raw_name, score in terpene_profile.items():
+                            field_name = terp_map.get(raw_name.lower())
+                            if field_name:
+                                setattr(cp, field_name, float(score))
+                                
+                        await session.flush()
+                        
+                        terp_dict = {}
+                        for attr in ["myrcene", "limonene", "caryophyllene", "pinene_alpha",
+                                     "linalool", "humulene", "terpinolene", "ocimene"]:
+                            val = getattr(cp, attr, None)
+                            if val and val > 0:
+                                terp_dict[attr] = val
+                        if terp_dict:
+                            sorted_terps = sorted(terp_dict.items(), key=lambda x: x[1], reverse=True)
+                            strain.dominant_terpenes = [t[0] for t in sorted_terps[:5]]
+                            await session.flush()
+                        
+                        logger.info(f"  Successfully enriched terpenes for '{primary_name}' from {source_used}.")
+                        enriched_count += 1
+                    else:
+                        logger.info(f"  No terpene profile found for '{primary_name}' on Leafly or via search fallback.")
 
                 # 2. Lineage Parent Placeholders Creation
                 if strain.lineage:

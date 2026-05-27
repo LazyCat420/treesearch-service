@@ -88,6 +88,13 @@ def calculate_terpene_relationships(
         if not data.get("terpenes"):
             continue
 
+        # Enforce that the node has either family tree (lineage) data or complete genomic sample data (for community strains)
+        if "complete" in data or "lineage" in data:
+            has_lineage = bool(data.get("lineage"))
+            is_complete = data.get("complete", False)
+            if not (has_lineage or is_complete):
+                continue
+
         normalized = normalize_terpene_profile(data["terpenes"])
         total = sum(normalized.values())
 

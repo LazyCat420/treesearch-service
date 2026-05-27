@@ -222,6 +222,9 @@ def load_strain_data_from_samples(
         # Build relationships
         for rel in sample.genetic_relationships:
             other_name = rel.strain_name_b if rel.strain_name_a == name else rel.strain_name_a
+            # Filter out invalid 0.0 distance genetic relationships between different strains
+            if rel.distance == 0.0 and name.lower().strip() != other_name.lower().strip():
+                continue
             all_relationships.add((name, other_name, rel.distance))
 
             if other_name not in strains_data:
