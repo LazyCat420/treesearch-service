@@ -24,6 +24,8 @@ from src.models.orm import (
 from src.genomics.normalization import normalize_strain_name
 from src.scraper_client import ScraperClient
 
+_group_normalized_cache = {}
+
 async def resolve_strain_name(session, name: str) -> str | None:
     """Resolve any case, punctuation, or alias variation of a strain name to its canonical primary name in the database."""
     if not name:
@@ -57,6 +59,28 @@ async def resolve_strain_name(session, name: str) -> str | None:
     if res:
         return res
         
+    # 4. Try matching using group normalization
+    global _group_normalized_cache
+    from src.genomics.normalization import normalize_for_grouping
+    norm_group = normalize_for_grouping(name)
+    if norm_group:
+        if norm_group in _group_normalized_cache:
+            return _group_normalized_cache[norm_group]
+            
+        stmt_all = select(CanonicalStrainORM).options(selectinload(CanonicalStrainORM.aliases))
+        all_strains = (await session.execute(stmt_all)).scalars().all()
+        for s in all_strains:
+            s_norm = normalize_for_grouping(s.primary_name)
+            if s_norm:
+                _group_normalized_cache[s_norm] = s.primary_name
+            for a in s.aliases:
+                a_norm = normalize_for_grouping(a.name)
+                if a_norm:
+                    _group_normalized_cache[a_norm] = s.primary_name
+                    
+        if norm_group in _group_normalized_cache:
+            return _group_normalized_cache[norm_group]
+            
     return None
 
 async def create_parent_placeholder(session, parent_name: str) -> CanonicalStrainORM:

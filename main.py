@@ -57,15 +57,19 @@ logger = logging.getLogger(__name__)
 
 
 import asyncio
+from sqlalchemy.orm import selectinload
+
 _db_state_cache = None
 _db_state_lock = asyncio.Lock()
 _resolved_name_cache = {}
+_group_normalized_cache = {}
 
 def invalidate_db_state_cache():
-    global _db_state_cache, _resolved_name_cache
+    global _db_state_cache, _resolved_name_cache, _group_normalized_cache
     logger.info("Invalidating DB state and resolved name caches.")
     _db_state_cache = None
     _resolved_name_cache.clear()
+    _group_normalized_cache.clear()
 
 async def get_canonical_strain_name(session, name: str) -> Optional[str]:
     """Resolve any case, punctuation, or alias variation of a strain name to its canonical primary name in the database."""
@@ -108,6 +112,33 @@ async def get_canonical_strain_name(session, name: str) -> Optional[str]:
         _resolved_name_cache[name_key] = res
         return res
         
+    # 4. Try matching using group normalization
+    global _group_normalized_cache
+    from src.genomics.normalization import normalize_for_grouping
+    norm_group = normalize_for_grouping(name)
+    if norm_group:
+        if norm_group in _group_normalized_cache:
+            res = _group_normalized_cache[norm_group]
+            _resolved_name_cache[name_key] = res
+            return res
+            
+        # Load from DB and build/search
+        stmt_all = select(CanonicalStrainORM).options(selectinload(CanonicalStrainORM.aliases))
+        all_strains = (await session.execute(stmt_all)).scalars().all()
+        for s in all_strains:
+            s_norm = normalize_for_grouping(s.primary_name)
+            if s_norm:
+                _group_normalized_cache[s_norm] = s.primary_name
+            for a in s.aliases:
+                a_norm = normalize_for_grouping(a.name)
+                if a_norm:
+                    _group_normalized_cache[a_norm] = s.primary_name
+                    
+        if norm_group in _group_normalized_cache:
+            res = _group_normalized_cache[norm_group]
+            _resolved_name_cache[name_key] = res
+            return res
+            
     return None
 
 
@@ -840,13 +871,16 @@ async def list_strains(
             # Handle both spaces and underscores in strain names
             search_space = search.replace("_", " ")
             search_underscore = search.replace(" ", "_")
-            stmt = stmt.where(
+            stmt = stmt.join(CanonicalStrainORM.aliases, isouter=True).where(
                 or_(
                     CanonicalStrainORM.primary_name.ilike(f"%{search}%"),
                     CanonicalStrainORM.primary_name.ilike(f"%{search_space}%"),
                     CanonicalStrainORM.primary_name.ilike(f"%{search_underscore}%"),
+                    StrainAliasORM.name.ilike(f"%{search}%"),
+                    StrainAliasORM.name.ilike(f"%{search_space}%"),
+                    StrainAliasORM.name.ilike(f"%{search_underscore}%"),
                 )
-            )
+            ).distinct()
         
         strains = (await session.execute(stmt)).scalars().all()
         results = []
@@ -891,11 +925,14 @@ async def list_strains(
         if search and len(search.strip()) >= 3:
             try:
                 from src.collectors.seedfinder_collector import search_seedfinder
+                from src.genomics.normalization import normalize_for_grouping
                 sf_results = await search_seedfinder(search, limit=10)
                 local_names = {r["name"].lower().replace("_", " ") for r in results}
+                local_norms = {normalize_for_grouping(r["name"]) for r in results}
                 for sf in sf_results:
                     sf_name_normalized = sf["name"].lower().replace("_", " ")
-                    if sf_name_normalized not in local_names:
+                    sf_norm = normalize_for_grouping(sf["name"])
+                    if sf_name_normalized not in local_names and sf_norm not in local_norms:
                         results.append({
                             "name": f"{sf['name']} ({sf['breeder']})",
                             "rsp": "",
