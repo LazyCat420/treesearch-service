@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import sys
+import re
 from collections import defaultdict
 from sqlalchemy import select, func, update
 from sqlalchemy.orm import selectinload
@@ -23,6 +24,20 @@ from src.models.orm import (
 )
 from src.genomics.normalization import normalize_strain_name
 
+def normalize_for_grouping(name: str) -> str:
+    if not name:
+        return ""
+    # Replace underscores with spaces
+    name_clean = name.replace("_", " ")
+    # Lowercase
+    name_clean = name_clean.lower()
+    # Strip parenthesized content: e.g. "headband (unknown or legendary)" -> "headband "
+    name_clean = re.sub(r"\s*\([^)]*\)", "", name_clean)
+    # Strip common breeding/phenotype/type suffixes as whole words
+    name_clean = re.sub(r"\b(bx\d*|auto|f\d*|s\d*|ix)\b", "", name_clean)
+    # Remove all non-alphanumeric characters
+    return re.sub(r"[^a-z0-9]", "", name_clean)
+
 async def merge_strains(session):
     logger.info("Scanning canonical strains for duplicates...")
     stmt = select(CanonicalStrainORM).options(
@@ -33,10 +48,10 @@ async def merge_strains(session):
     result = await session.execute(stmt)
     strains = result.scalars().all()
     
-    # Group by normalized name
+    # Group by normalized name for grouping/merging
     groups = defaultdict(list)
     for s in strains:
-        norm = normalize_strain_name(s.primary_name)
+        norm = normalize_for_grouping(s.primary_name)
         groups[norm].append(s)
         
     duplicate_groups = {k: v for k, v in groups.items() if len(v) > 1}
@@ -110,6 +125,22 @@ async def merge_strains(session):
             # 2. Aliases
             # Deduplicate aliases: delete those that are already defined in primary
             primary_alias_names = {a.name.lower() for a in primary.aliases}
+            
+            # Add dup's own primary name as an alias to primary if not already present
+            clean_dup_name = dup.primary_name.replace("_", " ")
+            if clean_dup_name.lower() not in primary_alias_names and dup.primary_name.lower() not in primary_alias_names:
+                new_alias = StrainAliasORM(
+                    canonical_strain_id=primary.id,
+                    name=clean_dup_name,
+                    source_name="merge",
+                    source_id=f"merged:{dup.id}",
+                    confidence=1.0
+                )
+                session.add(new_alias)
+                logger.info(f"    Added duplicate primary name '{clean_dup_name}' as alias to primary")
+                primary_alias_names.add(clean_dup_name.lower())
+                primary_alias_names.add(dup.primary_name.lower())
+
             for alias in list(dup.aliases):
                 if alias.name.lower() in primary_alias_names:
                     await session.delete(alias)
