@@ -66,10 +66,24 @@ async def merge_strains(session):
         
         # Consolidate metadata
         for dup in duplicates:
-            if not primary.description and dup.description:
-                primary.description = dup.description
-            if not primary.lineage and dup.lineage:
-                primary.lineage = dup.lineage
+            if dup.description:
+                if not primary.description:
+                    primary.description = dup.description
+                elif dup.description.strip() not in primary.description:
+                    primary.description = f"{primary.description}\n\n[Alternative Description]:\n{dup.description}"
+            if dup.lineage:
+                if not primary.lineage:
+                    primary.lineage = dup.lineage
+                else:
+                    if isinstance(primary.lineage, list) and isinstance(dup.lineage, list):
+                        primary_parents = {p.get("name").lower().strip() for p in primary.lineage if isinstance(p, dict) and p.get("name")}
+                        for p in dup.lineage:
+                            if isinstance(p, dict) and p.get("name") and p.get("name").lower().strip() not in primary_parents:
+                                primary.lineage.append(p)
+                    elif isinstance(primary.lineage, dict) and isinstance(dup.lineage, dict):
+                        for k, v in dup.lineage.items():
+                            if k not in primary.lineage:
+                                primary.lineage[k] = v
             if not primary.breeder_id and dup.breeder_id:
                 primary.breeder_id = dup.breeder_id
             if not primary.strain_type and dup.strain_type:

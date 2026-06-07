@@ -1621,8 +1621,27 @@ async def import_strain(request: Request):
                     # Update existing strain with SeedFinder data
                     strain_orm.strain_type = sf_data.get("type") or strain_orm.strain_type
                     strain_orm.avg_flowering_days = sf_data.get("flowering_time_days") or strain_orm.avg_flowering_days
-                    strain_orm.description = sf_data.get("description") or strain_orm.description
-                    strain_orm.lineage = sf_data.get("lineage") or strain_orm.lineage
+                    
+                    if sf_data.get("description"):
+                        if not strain_orm.description:
+                            strain_orm.description = sf_data.get("description")
+                        elif sf_data.get("description").strip() not in strain_orm.description:
+                            strain_orm.description = f"{strain_orm.description}\n\n[Alternative Source / Variety Description]:\n{sf_data.get('description')}"
+                            
+                    if sf_data.get("lineage"):
+                        if not strain_orm.lineage:
+                            strain_orm.lineage = sf_data.get("lineage")
+                        else:
+                            if isinstance(strain_orm.lineage, list) and isinstance(sf_data.get("lineage"), list):
+                                existing_parents = {p.get("name").lower().strip() for p in strain_orm.lineage if isinstance(p, dict) and p.get("name")}
+                                for p in sf_data.get("lineage"):
+                                    if isinstance(p, dict) and p.get("name") and p.get("name").lower().strip() not in existing_parents:
+                                        strain_orm.lineage.append(p)
+                            elif isinstance(strain_orm.lineage, dict) and isinstance(sf_data.get("lineage"), dict):
+                                for k, v in sf_data.get("lineage").items():
+                                    if k not in strain_orm.lineage:
+                                        strain_orm.lineage[k] = v
+                                        
                     await session.flush()
 
             # Create placeholders for lineage parents if they don't exist
