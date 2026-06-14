@@ -131,5 +131,22 @@ class ScraperClient:
         items = data.get("items", [])
         return items[0] if items else None
 
+    async def collect_duckduckgo(
+        self,
+        query: str,
+        limit: int = 10,
+        time_filter: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """Search DuckDuckGo via the scraper-service collect endpoint."""
+        payload = {
+            "source": "duckduckgo",
+            "query": query,
+            "limit": limit,
+        }
+        if time_filter:
+            payload["time_filter"] = time_filter
+        data = await self.collect(payload)
+        return data.get("items", [])
+
     async def close(self):
         await self.client.aclose()

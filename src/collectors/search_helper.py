@@ -18,42 +18,23 @@ async def search_search_engine_for_site(query: str, domain: str, limit: int = 10
     Search DuckDuckGo or Google for matching pages in a specific domain.
     Returns a list of absolute URLs.
     """
-    safe_query = urllib.parse.quote_plus(f"site:{domain} {query}")
+    search_query = f"site:{domain} {query}"
     urls = []
     
-    # --- Strategy 1: DuckDuckGo HTML search ---
-    ddg_url = f"https://html.duckduckgo.com/html/?q={safe_query}"
-    logger.info(f"Querying DuckDuckGo HTML search: {ddg_url}")
+    # --- Strategy 1: DuckDuckGo Native Collection ---
+    logger.info(f"Querying DuckDuckGo native collection for: {search_query}")
     
     scraper = ScraperClient()
     try:
-        # Use http first for speed; if it fails, fallback to playwright
-        res = await scraper.scrape(ddg_url, engine="http")
-        html = res.get("content")
-        if not html or "ddg-captcha" in html or len(html) < 2000:
-            logger.info("DuckDuckGo HTML search blocked or failed. Trying Playwright fallback...")
-            res = await scraper.scrape(ddg_url, engine="playwright", options={"raw_html": True, "wait_for": ".result__results"})
-            html = res.get("content")
-            
-        if html:
-            soup = BeautifulSoup(html, "html.parser")
-            for a in soup.select(".result__url, .result__snippet a, a.result__link"):
-                href = a.get("href")
-                if href:
-                    # Unpack redirect if it's a ddg link
-                    if "uddg=" in href:
-                        try:
-                            parsed = urllib.parse.urlparse(href)
-                            qs = urllib.parse.parse_qs(parsed.query)
-                            href = qs.get("uddg", [None])[0]
-                        except Exception:
-                            pass
-                    if href and domain in href and href not in urls:
-                        urls.append(href)
-                        if len(urls) >= limit:
-                            break
+        results = await scraper.collect_duckduckgo(query=search_query, limit=limit)
+        for r in results:
+            href = r.get("url")
+            if href and domain in href and href not in urls:
+                urls.append(href)
+                if len(urls) >= limit:
+                    break
     except Exception as e:
-        logger.warning(f"DuckDuckGo HTML search failed: {e}")
+        logger.warning(f"DuckDuckGo native collection failed: {e}")
     finally:
         await scraper.close()
         
@@ -62,6 +43,7 @@ async def search_search_engine_for_site(query: str, domain: str, limit: int = 10
         return urls
 
     # --- Strategy 2: Google Search fallback ---
+    safe_query = urllib.parse.quote_plus(search_query)
     google_url = f"https://www.google.com/search?q={safe_query}"
     logger.info(f"Querying Google Search fallback: {google_url}")
     
