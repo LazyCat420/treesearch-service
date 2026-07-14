@@ -17,14 +17,8 @@ logger = logging.getLogger(__name__)
 import base64
 import asyncio
 
-# Check for Pillow and HTTPX dependencies
-HAS_ML_LIBRARIES = False
-try:
-    from PIL import Image
-    import httpx
-    HAS_ML_LIBRARIES = True
-except ImportError:
-    HAS_ML_LIBRARIES = False
+import httpx
+from PIL import Image
 
 
 def get_vllm_endpoints() -> dict[str, str]:
@@ -62,8 +56,6 @@ def get_vllm_endpoints() -> dict[str, str]:
 
 async def check_vllm_health(base_url: str) -> bool:
     """Fast check to see if a VLLM server is responsive (with 2.0s timeout)."""
-    if not HAS_ML_LIBRARIES:
-        return False
     try:
         async with httpx.AsyncClient(timeout=2.0) as client:
             # We can check standard OpenAI/vLLM endpoints or just root.
@@ -75,8 +67,6 @@ async def check_vllm_health(base_url: str) -> bool:
 
 async def is_budding_plant_image(image_url: str, active_endpoints: list[tuple[str, str, str]] | None = None) -> bool:
     """Download image and use remote vision model on Jetson/DGX Spark to verify if it depicts a budding plant."""
-    if not HAS_ML_LIBRARIES:
-        return True
     try:
         from io import BytesIO
         
@@ -184,26 +174,26 @@ async def classify_images_batch(urls: list[str], batch_size: int = 15) -> dict[s
     return dict(results)
 
 async def extract_image_embedding(image_url: str) -> list[float]:
-    """Download image and extract feature vector (color histogram fallback)."""
-    if HAS_ML_LIBRARIES:
-        # Fallback to local image processing (color histogram)
-        try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                resp = await client.get(image_url)
-                if resp.status_code == 200:
-                    from io import BytesIO
-                    img = Image.open(BytesIO(resp.content)).convert("RGB")
-                    img = img.resize((64, 64))
-                    hist = img.histogram() # RGB components (768 elements)
-                    arr = np.interp(np.linspace(0, len(hist) - 1, 512), np.arange(len(hist)), hist)
-                    norm = np.linalg.norm(arr)
-                    if norm > 0:
-                        arr = arr / norm
-                    return arr.tolist()
-        except Exception as e:
-            logger.warning(f"Color histogram extraction failed for {image_url}: {e}")
+    """Download image and extract feature vector (color histogram)."""
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(image_url)
+            if resp.status_code == 200:
+                from io import BytesIO
+                img = Image.open(BytesIO(resp.content)).convert("RGB")
+                img = img.resize((64, 64))
+                hist = img.histogram() # RGB components (768 elements)
+                arr = np.interp(np.linspace(0, len(hist) - 1, 512), np.arange(len(hist)), hist)
+                norm = np.linalg.norm(arr)
+                if norm > 0:
+                    arr = arr / norm
+                return arr.tolist()
+    except Exception as e:
+        logger.warning(f"Color histogram extraction failed for {image_url}: {e}")
 
-    # Ultimate deterministic hashing fallback if no libraries or download failed
+    # Deterministic hashing fallback if the image could not be downloaded or decoded.
+    # NOTE: this is a hash of the URL, not of the image — it carries no visual signal, so
+    # clustering cannot group these. Only reachable when the download itself fails.
     return get_fallback_features(image_url)
 
 def get_fallback_features(image_url: str) -> list[float]:

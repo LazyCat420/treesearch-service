@@ -79,8 +79,8 @@ async def test_enrich_all_strains_terpenes_and_parent_placeholders():
     # Use patch to mock ScraperClient collect_leafly and disable network requests for lineage lookup
     with patch("src.enrich_strains.ScraperClient.collect_leafly", new_callable=AsyncMock) as mock_leafly, \
          patch("src.collectors.seedfinder_collector.search_seedfinder", new_callable=AsyncMock, return_value=[]), \
-         patch("main.fallback_search_genetics", new_callable=AsyncMock, return_value=[]), \
-         patch("main.fallback_search_terpenes", new_callable=AsyncMock, return_value={}):
+         patch("src.enrich_strains.fallback_search_genetics", new_callable=AsyncMock, return_value=[]), \
+         patch("src.enrich_strains.fallback_search_terpenes", new_callable=AsyncMock, return_value={}):
         mock_leafly.side_effect = mock_collect_leafly
         async for session in get_session():
             await enrich_all_strains(session)

@@ -1,0 +1,20 @@
+# The 600+ CSV plant corpus under data/plants/ is only read when KANNAPEDIA_DATA_DIR
+# is set, which docker-compose.yml never sets — the runtime source of truth is Postgres.
+# Baking it into the image is pure bloat.
+data/
+
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+tests/
+.git/
+.gitignore
+*.log
+.env
+.env.*
+!.env.example
+node_modules/
+docs/

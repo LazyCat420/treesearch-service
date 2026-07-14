@@ -15,9 +15,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY main.py .
 COPY src/ src/
 
-# Copy data directory
-COPY data/ data/
-
 # Expose port
 EXPOSE 8005
 

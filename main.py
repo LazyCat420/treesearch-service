@@ -10,8 +10,11 @@ Standalone backend service. Provides:
 The frontend is served separately by treesearch-client (nginx).
 """
 
+import asyncio
+import json
 import logging
 import os
+import re
 from contextlib import asynccontextmanager
 from typing import Any, Optional
 
@@ -35,6 +38,17 @@ from src.genomics.distance_matrix import (
 from src.genomics.similarity import compute_combined_similarity
 from src.viz.server import build_network_data
 from src.etl.kannapedia_etl import ingest_kannapedia_record
+from src.etl.image_urls import clean_forum_image_url
+from src.collectors.web_fallback import (
+    parse_genetics_from_snippets,
+    fallback_search_genetics,
+    parse_terpenes_from_snippets,
+    fallback_search_terpenes,
+)
+from src.services.strain_resolver import (
+    resolve_canonical_name,
+    invalidate_caches as invalidate_resolver_caches,
+)
 from src.genomics.normalization import normalize_strain_name
 from src.db import init_db, get_session
 from src.models.orm import (
@@ -56,113 +70,21 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-import asyncio
-from sqlalchemy.orm import selectinload
-
 _db_state_cache = None
 _db_state_lock = asyncio.Lock()
-_resolved_name_cache = {}
-_group_normalized_cache = {}
 
 def invalidate_db_state_cache():
-    global _db_state_cache, _resolved_name_cache, _group_normalized_cache
+    """Drop the graph-state cache and the strain-name lookup caches after a write."""
+    global _db_state_cache
     logger.info("Invalidating DB state and resolved name caches.")
     _db_state_cache = None
-    _resolved_name_cache.clear()
-    _group_normalized_cache.clear()
+    # The resolver owns its own caches now. Previously this cleared only main's copy,
+    # leaving the background enricher's identical cache stale forever.
+    invalidate_resolver_caches()
 
-async def get_canonical_strain_name(session, name: str) -> Optional[str]:
-    """Resolve any case, punctuation, or alias variation of a strain name to its canonical primary name in the database."""
-    if not name:
-        return None
-        
-    name_key = name.lower().strip()
-    if name_key in _resolved_name_cache:
-        return _resolved_name_cache[name_key]
-        
-    norm = normalize_strain_name(name)
-    
-    # 1. Case-insensitive exact match
-    stmt = select(CanonicalStrainORM.primary_name).where(CanonicalStrainORM.primary_name.ilike(name))
-    res = (await session.execute(stmt)).scalar()
-    if res:
-        _resolved_name_cache[name_key] = res
-        return res
-        
-    # 2. Case and punctuation-insensitive match
-    stmt2 = select(CanonicalStrainORM.primary_name).where(
-        func.regexp_replace(func.lower(CanonicalStrainORM.primary_name), '[^a-z0-9]', '', 'g') == norm
-    )
-    res = (await session.execute(stmt2)).scalar()
-    if res:
-        _resolved_name_cache[name_key] = res
-        return res
-        
-    # 3. Check aliases
-    stmt_alias = select(CanonicalStrainORM.primary_name).join(
-        StrainAliasORM, CanonicalStrainORM.id == StrainAliasORM.canonical_strain_id
-    ).where(
-        or_(
-            StrainAliasORM.name.ilike(name),
-            func.regexp_replace(func.lower(StrainAliasORM.name), '[^a-z0-9]', '', 'g') == norm
-        )
-    )
-    res = (await session.execute(stmt_alias)).scalar()
-    if res:
-        _resolved_name_cache[name_key] = res
-        return res
-        
-    # 4. Try matching using group normalization
-    global _group_normalized_cache
-    from src.genomics.normalization import normalize_for_grouping
-    norm_group = normalize_for_grouping(name)
-    if norm_group:
-        if norm_group in _group_normalized_cache:
-            res = _group_normalized_cache[norm_group]
-            _resolved_name_cache[name_key] = res
-            return res
-            
-        # Load from DB and build/search
-        stmt_all = select(CanonicalStrainORM).options(selectinload(CanonicalStrainORM.aliases))
-        all_strains = (await session.execute(stmt_all)).scalars().all()
-        for s in all_strains:
-            s_norm = normalize_for_grouping(s.primary_name)
-            if s_norm:
-                _group_normalized_cache[s_norm] = s.primary_name
-            for a in s.aliases:
-                a_norm = normalize_for_grouping(a.name)
-                if a_norm:
-                    _group_normalized_cache[a_norm] = s.primary_name
-                    
-        if norm_group in _group_normalized_cache:
-            res = _group_normalized_cache[norm_group]
-            _resolved_name_cache[name_key] = res
-            return res
-            
-    return None
-
-
-def clean_forum_image_url(url: str) -> str:
-    """Extract direct image URL from XenForo/Rollitup proxy.php wrapper URLs if present."""
-    if not url:
-        return ""
-    if "proxy.php?image=" in url or "/proxy.php?image=" in url:
-        try:
-            import urllib.parse
-            import re
-            parsed = urllib.parse.urlparse(url)
-            query = urllib.parse.parse_qs(parsed.query)
-            image_param = query.get("image")
-            if image_param:
-                return image_param[0]
-        except Exception:
-            import urllib.parse
-            import re
-            # Fallback regex if URL parsing fails
-            match = re.search(r'[?&]image=([^&]+)', url)
-            if match:
-                return urllib.parse.unquote(match.group(1))
-    return url
+# The resolver lives in src/services/strain_resolver.py. Kept as a module-level alias
+# because tests and five route handlers import it from here.
+get_canonical_strain_name = resolve_canonical_name
 
 
 async def save_domain_models_to_db(session, result: dict):
@@ -1140,237 +1062,6 @@ async def _save_forum_posts_to_db(session, posts: list[dict], source_name: str, 
     return posts_saved, images_saved
 
 
-def parse_genetics_from_snippets(snippets: list[str], strain_name: str) -> list[str]:
-    import re
-    # Normalize strain name
-    name_norm = re.sub(r'[^a-zA-Z0-9]', '', strain_name.lower())
-    
-    # Try different regex strategies across all snippets
-    for snip in snippets:
-        snip_clean = snip.replace('\xa0', ' ').replace('\u200e', '')
-        
-        # Strategy 1: Look for "StrainName »»» Parent1 x Parent2"
-        match = re.search(r'»»»\s*([^·\n]+)', snip_clean)
-        if match:
-            cross_text = match.group(1).strip()
-            if any(x in cross_text.lower() for x in [' x ', '×', ' x']):
-                parts = re.split(r'\s+[xX×]\s+|\s+x\s+|_x_|_X_', cross_text)
-                parents = [p.strip() for p in parts if p.strip()]
-                parents = [p for p in parents if len(p) > 2 and p.lower() not in ["mostly indica", "mostly sativa", "hybrid"]]
-                if len(parents) >= 2:
-                    return parents
-                    
-        # Strategy 2: Look for "Genetic:Parent1 x Parent2"
-        match_genetic = re.search(r'Genetic\s*:\s*([^.\n]+)', snip_clean, re.IGNORECASE)
-        if match_genetic:
-            cross_text = match_genetic.group(1).strip()
-            cross_text = re.split(r'flowering|characteristics|strong|medicinal', cross_text, flags=re.IGNORECASE)[0].strip()
-            if any(x in cross_text.lower() for x in [' x ', '×', ' x']):
-                parts = re.split(r'\s+[xX×]\s+|\s+x\s+|_x_|_X_', cross_text)
-                parents = [p.strip() for p in parts if p.strip()]
-                parents = [p for p in parents if len(p) > 2 and p.lower() not in ["mostly indica", "mostly sativa", "hybrid"]]
-                if len(parents) >= 2:
-                    return parents
-                    
-        # Strategy 3: Heuristic for Capitalized Words separated by 'x'
-        for match in re.finditer(r'([A-Z][a-zA-Z0-9\s\']+)\s+[xX×*]\s+([A-Z][a-zA-Z0-9\s\']+)(?:\s+[xX×*]\s+([A-Z][a-zA-Z0-9\s\']+))?', snip_clean):
-            parents = [p.strip() for p in match.groups() if p]
-            parents = [p for p in parents if len(p) > 2 and p.lower() not in ["mostly indica", "mostly sativa", "hybrid"] and len(p) < 40]
-            if len(parents) >= 2:
-                return parents
-
-    return []
-
-
-async def fallback_search_genetics(strain_name: str) -> list[str]:
-    import os
-    import sys
-    import json
-    import asyncio
-    
-    # Candidate python paths with ddgs installed
-    candidates = [
-        "/home/lazycat/github/projects/sun/scraper-service/.venv/bin/python",
-        "/home/lazycat/github/projects/sun/scraper-service/venv/bin/python",
-        "/home/lazycat/github/projects/sun/trading-service/.venv/bin/python",
-    ]
-    
-    python_exe = None
-    for c in candidates:
-        if os.path.exists(c):
-            python_exe = c
-            break
-            
-    if not python_exe:
-        python_exe = sys.executable
-
-    # Query DuckDuckGo
-    query = f'site:seedfinder.eu "{strain_name}"'
-    script = """
-import sys
-import json
-try:
-    from ddgs import DDGS
-    with DDGS() as ddgs:
-        results = list(ddgs.text(sys.argv[1], max_results=10))
-    print(json.dumps({"success": True, "results": results}))
-except Exception as e:
-    print(json.dumps({"success": False, "error": str(e)}))
-"""
-    
-    try:
-        proc = await asyncio.create_subprocess_exec(
-            python_exe, "-c", script, query,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
-        stdout, stderr = await proc.communicate()
-        if proc.returncode == 0:
-            data = json.loads(stdout.decode().strip())
-            if data.get("success"):
-                snippets = [r.get("body", "") for r in data.get("results", []) if r.get("body")]
-                return parse_genetics_from_snippets(snippets, strain_name)
-            else:
-                logger.error(f"DDG fallback search execution error: {data.get('error')}")
-        else:
-            logger.error(f"DDG fallback search process failed with code {proc.returncode}: {stderr.decode()}")
-    except Exception as e:
-        logger.error(f"Failed to execute DDG fallback search: {e}")
-        
-    return []
-
-
-def parse_terpenes_from_snippets(snippets: list[str]) -> dict[str, float]:
-    import re
-    
-    variant_map = {
-        "myrcene": "myrcene",
-        "limonene": "limonene",
-        "caryophyllene": "caryophyllene",
-        "pinene": "pinene_alpha",
-        "pinene_alpha": "pinene_alpha",
-        "pinene_beta": "pinene_beta",
-        "linalool": "linalool",
-        "humulene": "humulene",
-        "terpinolene": "terpinolene",
-        "ocimene": "ocimene",
-        "alpha-pinene": "pinene_alpha",
-        "beta-pinene": "pinene_beta",
-        "alpha-humulene": "humulene",
-        "beta-caryophyllene": "caryophyllene",
-    }
-
-    parsed_terps = {}
-    
-    # Regex 1: "terpene (0.5%)" or "terpene: 0.5%" or "terpene of 0.5%"
-    # Regex 2: "0.5% terpene"
-    regex_list = [
-        r'\b(myrcene|limonene|caryophyllene|pinene|linalool|humulene|terpinolene|ocimene|alpha-pinene|beta-pinene|alpha-humulene|beta-caryophyllene)\b[^%0-9]{0,10}(\d+(?:\.\d+)?)\s*%',
-        r'(\d+(?:\.\d+)?)\s*%\s*(?:of\s+)?\b(myrcene|limonene|caryophyllene|pinene|linalool|humulene|terpinolene|ocimene|alpha-pinene|beta-pinene|alpha-humulene|beta-caryophyllene)\b'
-    ]
-
-    for snip in snippets:
-        snip_lower = snip.lower()
-        
-        for regex in regex_list:
-            for match in re.finditer(regex, snip_lower):
-                g1, g2 = match.groups()
-                try:
-                    if '%' in match.group(0):
-                        if g1.replace('.', '', 1).isdigit():
-                            val = float(g1)
-                            name = g2
-                        else:
-                            name = g1
-                            val = float(g2)
-                        
-                        canonical_name = variant_map.get(name)
-                        if canonical_name:
-                            if canonical_name not in parsed_terps or val > parsed_terps[canonical_name]:
-                                parsed_terps[canonical_name] = val
-                except (ValueError, KeyError):
-                    continue
-
-    if parsed_terps:
-        total = sum(parsed_terps.values())
-        if total > 10.0:
-            parsed_terps = {k: round(v / total, 3) for k, v in parsed_terps.items()}
-        return parsed_terps
-
-    # Fallback to mention frequency
-    counts = {}
-    for snip in snippets:
-        snip_lower = snip.lower()
-        for variant, canonical in variant_map.items():
-            if re.search(rf'\b{re.escape(variant)}\b', snip_lower):
-                counts[canonical] = counts.get(canonical, 0) + 1
-
-    if counts:
-        total_counts = sum(counts.values())
-        profile = {}
-        for canonical, c in counts.items():
-            profile[canonical] = round((c / total_counts) * 1.5, 3)
-        return profile
-
-    return {}
-
-
-async def fallback_search_terpenes(strain_name: str) -> dict[str, float]:
-    import os
-    import sys
-    import json
-    import asyncio
-    
-    candidates = [
-        "/home/lazycat/github/projects/sun/scraper-service/.venv/bin/python",
-        "/home/lazycat/github/projects/sun/scraper-service/venv/bin/python",
-        "/home/lazycat/github/projects/sun/trading-service/.venv/bin/python",
-    ]
-    
-    python_exe = None
-    for c in candidates:
-        if os.path.exists(c):
-            python_exe = c
-            break
-            
-    if not python_exe:
-        python_exe = sys.executable
-
-    query = f'"{strain_name}" terpene profile OR terpenes'
-    script = """
-import sys
-import json
-try:
-    from ddgs import DDGS
-    with DDGS() as ddgs:
-        results = list(ddgs.text(sys.argv[1], max_results=10))
-    print(json.dumps({"success": True, "results": results}))
-except Exception as e:
-    print(json.dumps({"success": False, "error": str(e)}))
-"""
-    
-    try:
-        proc = await asyncio.create_subprocess_exec(
-            python_exe, "-c", script, query,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
-        stdout, stderr = await proc.communicate()
-        if proc.returncode == 0:
-            data = json.loads(stdout.decode().strip())
-            if data.get("success"):
-                snippets = [r.get("body", "") for r in data.get("results", []) if r.get("body")]
-                return parse_terpenes_from_snippets(snippets)
-            else:
-                logger.error(f"DDG terpene fallback search execution error: {data.get('error')}")
-        else:
-            logger.error(f"DDG terpene fallback search process failed with code {proc.returncode}: {stderr.decode()}")
-    except Exception as e:
-        logger.error(f"Failed to execute DDG terpene fallback search: {e}")
-        
-    return {}
-
-
 @app.post("/api/strains/import")
 async def import_strain(request: Request):
     payload = await request.json()
@@ -1628,20 +1319,31 @@ async def import_strain(request: Request):
                         elif sf_data.get("description").strip() not in strain_orm.description:
                             strain_orm.description = f"{strain_orm.description}\n\n[Alternative Source / Variety Description]:\n{sf_data.get('description')}"
                             
-                    if sf_data.get("lineage"):
+                    incoming_lineage = sf_data.get("lineage")
+                    if incoming_lineage:
+                        # lineage is a plain JSON column — reassign, never mutate in place,
+                        # or SQLAlchemy emits no UPDATE and the new parents are silently lost.
                         if not strain_orm.lineage:
-                            strain_orm.lineage = sf_data.get("lineage")
-                        else:
-                            if isinstance(strain_orm.lineage, list) and isinstance(sf_data.get("lineage"), list):
-                                existing_parents = {p.get("name").lower().strip() for p in strain_orm.lineage if isinstance(p, dict) and p.get("name")}
-                                for p in sf_data.get("lineage"):
-                                    if isinstance(p, dict) and p.get("name") and p.get("name").lower().strip() not in existing_parents:
-                                        strain_orm.lineage.append(p)
-                            elif isinstance(strain_orm.lineage, dict) and isinstance(sf_data.get("lineage"), dict):
-                                for k, v in sf_data.get("lineage").items():
-                                    if k not in strain_orm.lineage:
-                                        strain_orm.lineage[k] = v
-                                        
+                            strain_orm.lineage = incoming_lineage
+                        elif isinstance(strain_orm.lineage, list) and isinstance(incoming_lineage, list):
+                            existing_parents = {
+                                p.get("name").lower().strip()
+                                for p in strain_orm.lineage
+                                if isinstance(p, dict) and p.get("name")
+                            }
+                            additions = [
+                                p for p in incoming_lineage
+                                if isinstance(p, dict) and p.get("name")
+                                and p.get("name").lower().strip() not in existing_parents
+                            ]
+                            if additions:
+                                strain_orm.lineage = list(strain_orm.lineage) + additions
+                        elif isinstance(strain_orm.lineage, dict) and isinstance(incoming_lineage, dict):
+                            merged = dict(strain_orm.lineage)
+                            for k, v in incoming_lineage.items():
+                                merged.setdefault(k, v)
+                            strain_orm.lineage = merged
+
                     await session.flush()
 
             # Create placeholders for lineage parents if they don't exist

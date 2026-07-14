@@ -2,8 +2,14 @@ import os
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import declarative_base
 
-# Default to the Synology NAS postgres instance if not specified
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://trader:trading_bot_pass@10.0.0.16:5433/trading_bot")
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is not set. This service has no default connection string — "
+        "a credential must never be committed to this repo. "
+        "Set it in deploy-kit/.env.deploy (staged into the container as .env), "
+        "or export it locally. See .env.example for the expected format."
+    )
 
 engine = create_async_engine(
     DATABASE_URL,

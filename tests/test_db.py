@@ -1,9 +1,10 @@
 import pytest
 import os
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from src.db import init_db, get_session, engine
-from src.models.orm import BreederORM, CanonicalStrainORM
-from src.collector import save_strain_data
+from src.models.orm import BreederORM, CanonicalStrainORM, GenomicSampleORM
+from src.etl.kannapedia_etl import ingest_kannapedia_record
 
 pytestmark = pytest.mark.asyncio
 
@@ -53,7 +54,8 @@ async def test_database_connection_and_crud():
         await session.commit()
         break
 
-    # Now test the collector logic
+    # Now exercise the real Kannapedia ingest path used by POST /api/ingest/kannapedia:
+    # transform the raw payload into domain models, then persist them.
     mock_scraped_data = {
         "name": "White Fire",
         "general_info": {
@@ -70,32 +72,69 @@ async def test_database_connection_and_crud():
             }
         }
     }
-    
-    # Save the data
-    strain_id = await save_strain_data(mock_scraped_data)
-    assert strain_id is not None
-    
-    # Verify it was saved correctly
+
+    from main import save_domain_models_to_db
+
+    result = ingest_kannapedia_record(mock_scraped_data)
     async for session in get_session():
-        stmt = select(CanonicalStrainORM).where(CanonicalStrainORM.id == strain_id)
-        result = await session.execute(stmt)
-        strain = result.scalar_one_or_none()
-        
+        await save_domain_models_to_db(session, result)
+        await session.commit()
+        break
+
+    # Verify it was saved correctly. Note the Kannapedia path stores chemistry on the
+    # sample's ChemicalProfile, not as strain-level averages — the strain row carries
+    # identity, the sample carries the assay.
+    async for session in get_session():
+        stmt = (
+            select(CanonicalStrainORM)
+            .where(CanonicalStrainORM.primary_name == "White Fire")
+            .options(
+                selectinload(CanonicalStrainORM.genomic_samples).selectinload(
+                    GenomicSampleORM.chemical_profile
+                )
+            )
+        )
+        result_row = await session.execute(stmt)
+        strain = result_row.scalar_one_or_none()
+
         assert strain is not None
         assert strain.primary_name == "White Fire"
-        assert strain.avg_thc_pct == 24.5
-        assert strain.avg_cbd_pct == 0.1
-        assert "Myrcene" in strain.dominant_terpenes
-        
-        # Cleanup
+
+        assert len(strain.genomic_samples) == 1
+        profile = strain.genomic_samples[0].chemical_profile
+        assert profile is not None
+        assert profile.total_thc == 24.5
+        assert profile.total_cbd == 0.1
+        assert profile.myrcene == 1.2
+        assert profile.limonene == 0.8
+
+        # Cleanup. Aliases must go first — strain_aliases.canonical_strain_id is NOT NULL,
+        # so letting SQLAlchemy null it out on delete raises an IntegrityError.
+        from sqlalchemy import delete
+        from src.models.orm import StrainAliasORM, SourceGenomicsRecordORM
+
+        await session.execute(
+            delete(StrainAliasORM).where(StrainAliasORM.canonical_strain_id == strain.id)
+        )
+        sample_ids = [s.id for s in strain.genomic_samples]
+        if sample_ids:
+            await session.execute(
+                delete(SourceGenomicsRecordORM).where(
+                    SourceGenomicsRecordORM.genomic_sample_id.in_(sample_ids)
+                )
+            )
+        for sample in strain.genomic_samples:
+            if sample.chemical_profile:
+                await session.delete(sample.chemical_profile)
+            await session.delete(sample)
         await session.delete(strain)
-        
+
         breeder_stmt = select(BreederORM).where(BreederORM.id == strain.breeder_id)
         result_breeder = await session.execute(breeder_stmt)
         breeder = result_breeder.scalar_one_or_none()
         if breeder:
             await session.delete(breeder)
-            
+
         await session.commit()
         break
 

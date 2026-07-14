@@ -19,7 +19,6 @@ from src.models.orm import (
     GenomicSampleORM,
     StrainAliasORM,
     ObservationORM,
-    SourceStrainRecordORM,
     BreederORM
 )
 from src.genomics.normalization import normalize_strain_name, normalize_for_grouping
@@ -71,19 +70,32 @@ async def merge_strains(session):
                     primary.description = dup.description
                 elif dup.description.strip() not in primary.description:
                     primary.description = f"{primary.description}\n\n[Alternative Description]:\n{dup.description}"
+            # NOTE: every JSON column below must be REASSIGNED, never mutated in place.
+            # lineage/dominant_terpenes/aroma_tags/effect_tags are plain JSON columns with
+            # no MutableList wrapper, so SQLAlchemy cannot see an .append() or a [k]=v and
+            # emits no UPDATE — the merge would compute a result, delete the duplicate, and
+            # silently throw the merged data away.
+            #
+            # (MutableDict.as_mutable is NOT an option for `lineage`: it holds a dict on some
+            # code paths and a list of {"name": ...} on others, and coerce() raises on the list.)
             if dup.lineage:
                 if not primary.lineage:
                     primary.lineage = dup.lineage
                 else:
                     if isinstance(primary.lineage, list) and isinstance(dup.lineage, list):
                         primary_parents = {p.get("name").lower().strip() for p in primary.lineage if isinstance(p, dict) and p.get("name")}
-                        for p in dup.lineage:
-                            if isinstance(p, dict) and p.get("name") and p.get("name").lower().strip() not in primary_parents:
-                                primary.lineage.append(p)
+                        additions = [
+                            p for p in dup.lineage
+                            if isinstance(p, dict) and p.get("name")
+                            and p.get("name").lower().strip() not in primary_parents
+                        ]
+                        if additions:
+                            primary.lineage = list(primary.lineage) + additions
                     elif isinstance(primary.lineage, dict) and isinstance(dup.lineage, dict):
+                        merged = dict(primary.lineage)
                         for k, v in dup.lineage.items():
-                            if k not in primary.lineage:
-                                primary.lineage[k] = v
+                            merged.setdefault(k, v)
+                        primary.lineage = merged
             if not primary.breeder_id and dup.breeder_id:
                 primary.breeder_id = dup.breeder_id
             if not primary.strain_type and dup.strain_type:
@@ -95,19 +107,15 @@ async def merge_strains(session):
             if primary.avg_cbd_pct is None and dup.avg_cbd_pct is not None:
                 primary.avg_cbd_pct = dup.avg_cbd_pct
                 
-            # Merge lists
-            if dup.dominant_terpenes:
-                for t in dup.dominant_terpenes:
-                    if t not in primary.dominant_terpenes:
-                        primary.dominant_terpenes.append(t)
-            if dup.aroma_tags:
-                for t in dup.aroma_tags:
-                    if t not in primary.aroma_tags:
-                        primary.aroma_tags.append(t)
-            if dup.effect_tags:
-                for t in dup.effect_tags:
-                    if t not in primary.effect_tags:
-                        primary.effect_tags.append(t)
+            # Merge lists — reassign, do not append (see the note above).
+            for column in ("dominant_terpenes", "aroma_tags", "effect_tags"):
+                incoming = getattr(dup, column) or []
+                if not incoming:
+                    continue
+                current = list(getattr(primary, column) or [])
+                additions = [t for t in incoming if t not in current]
+                if additions:
+                    setattr(primary, column, current + additions)
                         
             # Sum up observation counts
             primary.observation_count += dup.observation_count
@@ -163,14 +171,7 @@ async def merge_strains(session):
                 .values(canonical_strain_id=primary.id)
             )
             logger.info(f"    Re-parented Observations for duplicate: {dup.id}")
-                
-            # 4. Source Strain Records
-            await session.execute(
-                update(SourceStrainRecordORM)
-                .where(SourceStrainRecordORM.canonical_strain_id == dup.id)
-                .values(canonical_strain_id=primary.id)
-            )
-            
+
             dup_id = dup.id
             # Expire relationships of dup before deleting it
             session.expire(dup)

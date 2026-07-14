@@ -280,32 +280,6 @@ class ObservationImageORM(Base):
 # Per-source evidence tables
 # --------------------------------------------------------------------------- #
 
-class SourceStrainRecordORM(Base):
-    """Raw strain record from a single source before entity resolution."""
-    __tablename__ = "source_strain_records"
-
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    canonical_strain_id: Mapped[str | None] = mapped_column(String, ForeignKey("canonical_strains.id"), nullable=True, index=True)
-
-    source_name: Mapped[str] = mapped_column(String, index=True)
-    source_id: Mapped[str] = mapped_column(String, default="")
-    source_url: Mapped[str | None] = mapped_column(String, nullable=True)
-
-    strain_name: Mapped[str] = mapped_column(String, index=True)
-    breeder_name: Mapped[str | None] = mapped_column(String, nullable=True)
-    strain_type: Mapped[str | None] = mapped_column(String, nullable=True)
-    lineage: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
-    flowering_time_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    thc_range: Mapped[str | None] = mapped_column(String, nullable=True)
-    cbd_range: Mapped[str | None] = mapped_column(String, nullable=True)
-    terpene_list: Mapped[list[str]] = mapped_column(JSON, default=list)
-    aroma_descriptors: Mapped[list[str]] = mapped_column(JSON, default=list)
-    effect_descriptors: Mapped[list[str]] = mapped_column(JSON, default=list)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    payload: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
-
-    scraped_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
 class SourceGenomicsRecordORM(Base):

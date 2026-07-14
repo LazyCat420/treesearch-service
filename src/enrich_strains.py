@@ -10,9 +10,6 @@ from sqlalchemy.orm import selectinload
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("enrich_strains")
 
-# Add Cwd to python path to resolve src imports
-sys.path.append("/home/lazycat/github/projects/sun/treesearch-service")
-
 from src.db import get_session, engine
 from src.models.orm import (
     CanonicalStrainORM,
@@ -23,65 +20,17 @@ from src.models.orm import (
 )
 from src.genomics.normalization import normalize_strain_name
 from src.scraper_client import ScraperClient
+from src.collectors.web_fallback import (
+    fallback_search_genetics,
+    fallback_search_terpenes,
+)
+from src.services.strain_resolver import resolve_canonical_name
 
-_group_normalized_cache = {}
+# Name resolution is shared with main.py — see src/services/strain_resolver.py.
+# This module used to carry its own copy of the algorithm and its own cache, which
+# invalidate_db_state_cache() never cleared.
+resolve_strain_name = resolve_canonical_name
 
-async def resolve_strain_name(session, name: str) -> str | None:
-    """Resolve any case, punctuation, or alias variation of a strain name to its canonical primary name in the database."""
-    if not name:
-        return None
-    norm = normalize_strain_name(name)
-    
-    # 1. Case-insensitive exact match
-    stmt = select(CanonicalStrainORM.primary_name).where(CanonicalStrainORM.primary_name.ilike(name))
-    res = (await session.execute(stmt)).scalar()
-    if res:
-        return res
-        
-    # 2. Case and punctuation-insensitive match
-    stmt2 = select(CanonicalStrainORM.primary_name).where(
-        func.regexp_replace(func.lower(CanonicalStrainORM.primary_name), '[^a-z0-9]', '', 'g') == norm
-    )
-    res = (await session.execute(stmt2)).scalar()
-    if res:
-        return res
-        
-    # 3. Check aliases
-    stmt_alias = select(CanonicalStrainORM.primary_name).join(
-        StrainAliasORM, CanonicalStrainORM.id == StrainAliasORM.canonical_strain_id
-    ).where(
-        or_(
-            StrainAliasORM.name.ilike(name),
-            func.regexp_replace(func.lower(StrainAliasORM.name), '[^a-z0-9]', '', 'g') == norm
-        )
-    )
-    res = (await session.execute(stmt_alias)).scalar()
-    if res:
-        return res
-        
-    # 4. Try matching using group normalization
-    global _group_normalized_cache
-    from src.genomics.normalization import normalize_for_grouping
-    norm_group = normalize_for_grouping(name)
-    if norm_group:
-        if norm_group in _group_normalized_cache:
-            return _group_normalized_cache[norm_group]
-            
-        stmt_all = select(CanonicalStrainORM).options(selectinload(CanonicalStrainORM.aliases))
-        all_strains = (await session.execute(stmt_all)).scalars().all()
-        for s in all_strains:
-            s_norm = normalize_for_grouping(s.primary_name)
-            if s_norm:
-                _group_normalized_cache[s_norm] = s.primary_name
-            for a in s.aliases:
-                a_norm = normalize_for_grouping(a.name)
-                if a_norm:
-                    _group_normalized_cache[a_norm] = s.primary_name
-                    
-        if norm_group in _group_normalized_cache:
-            return _group_normalized_cache[norm_group]
-            
-    return None
 
 async def create_parent_placeholder(session, parent_name: str) -> CanonicalStrainORM:
     """Create a placeholder canonical strain and placeholder genomic sample for a parent strain."""
@@ -196,7 +145,6 @@ async def enrich_all_strains(session, force_terpenes: bool = False):
                                 logger.info(f"  No lineage details parsed from SeedFinder for '{primary_name}'.")
                         else:
                             logger.info(f"  No SeedFinder match found for '{primary_name}'. Trying DuckDuckGo fallback...")
-                            from main import fallback_search_genetics
                             parsed_parents = await fallback_search_genetics(primary_name)
                             if parsed_parents:
                                 strain.lineage = [{"name": p} for p in parsed_parents]
@@ -228,7 +176,6 @@ async def enrich_all_strains(session, force_terpenes: bool = False):
                     else:
                         logger.info(f"  No Leafly terpene data for '{primary_name}'. Trying web search fallback...")
                         try:
-                            from main import fallback_search_terpenes
                             terpene_profile = await fallback_search_terpenes(primary_name)
                             if terpene_profile:
                                 source_used = "leafly_fallback"

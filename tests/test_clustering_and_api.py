@@ -1,6 +1,7 @@
 import pytest
 import httpx
 import asyncio
+from unittest.mock import AsyncMock, patch
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
@@ -170,17 +171,17 @@ async def test_ingest_clustering_and_detail_api():
 
 
 @pytest.mark.asyncio
-async def test_concurrency_import_no_duplicates():
+async def test_concurrency_import_no_duplicates(no_network):
     # 1. Initialize tables and indexes
     await init_db()
-    
+
     # 2. Run two concurrent import requests for "Test Stardawg Concurrency"
     payload = {
         "strain_slug": "test-stardawg-concurrency",
         "breeder_slug": "forum-import",
         "force": True
     }
-    
+
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
         # Fire both concurrently
@@ -189,7 +190,7 @@ async def test_concurrency_import_no_duplicates():
             client.post("/api/strains/import", json=payload),
             return_exceptions=True
         )
-        
+
         # At least one should succeed
         assert not isinstance(resp1, Exception)
         assert not isinstance(resp2, Exception)
