@@ -195,7 +195,9 @@ async def enrich_all_strains(session, force_terpenes: bool = False):
                                 rsp_number=f"LEAFLY-{strain.primary_name.upper().replace(' ', '_')}",
                                 strain_name=strain.primary_name,
                                 source=source_used,
-                                is_complete=True,
+                                # NOT complete — Leafly gives relative terpene scores, not a
+                                # lab assay. See the matching note in main.py.
+                                is_complete=False,
                                 raw_payload=leafly_result if leafly_result else {"terpenes": terpene_profile},
                             )
                             session.add(lf_sample)

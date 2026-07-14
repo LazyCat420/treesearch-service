@@ -15,12 +15,13 @@ import json
 import logging
 import os
 import re
+import uuid
 from contextlib import asynccontextmanager
 from typing import Any, Optional
 
 from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy import or_
 from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
@@ -49,6 +50,11 @@ from src.services.strain_resolver import (
     resolve_canonical_name,
     invalidate_caches as invalidate_resolver_caches,
 )
+from src.enrich_strains import (
+    enrich_all_strains,
+    resolve_strain_name,
+    create_parent_placeholder,
+)
 from src.genomics.normalization import normalize_strain_name
 from src.db import init_db, get_session
 from src.models.orm import (
@@ -72,6 +78,16 @@ logger = logging.getLogger(__name__)
 
 _db_state_cache = None
 _db_state_lock = asyncio.Lock()
+
+# Serializes DB-wide enrichment. The startup task and POST /api/strains/enrich run the
+# identical job; without this they interleave on the same rows and race to create the
+# same parent placeholders.
+_enrich_lock = asyncio.Lock()
+
+# Progress of background (non-streaming) imports, keyed by job id.
+# In-memory on purpose: single process, single user, and an import is always re-runnable,
+# so surviving a restart buys nothing that a retry does not.
+IMPORT_JOBS: dict[str, dict] = {}
 
 def invalidate_db_state_cache():
     """Drop the graph-state cache and the strain-name lookup caches after a write."""
@@ -273,6 +289,34 @@ async def load_state_from_db_internal(session) -> dict:
         name = strain_id_to_primary_name.get(s_orm.canonical_strain_id) if s_orm.canonical_strain_id else s_orm.strain_name
         sample_id_to_primary_name[s_orm.id] = name
 
+    # Normalized name -> canonical primary name, over both primary names and aliases.
+    #
+    # Kannapedia reports a sample's genetic relatives BY NAME, and those relatives are
+    # almost never samples we hold ourselves — every one of the 4,195 relationship rows
+    # points at a sample_id we do not have. So the endpoint name falls through to the raw
+    # string Kannapedia used ("Blue Dream"), which never equals our canonical primary name
+    # ("Blue_Dream").
+    #
+    # The effect was that a strain had ZERO genetic neighbors while a phantom duplicate of
+    # itself appeared in the graph under Kannapedia's spelling — 878 graph nodes for 393
+    # real strains, and an empty /neighbors response for a strain with plenty of relatives.
+    # Resolving through the same normalization the strain resolver uses collapses them.
+    normalized_to_primary: dict[str, str] = {}
+    for s in strains_db:
+        key = normalize_strain_name(s.primary_name)
+        if key:
+            normalized_to_primary.setdefault(key, s.primary_name)
+        for alias in s.aliases:
+            akey = normalize_strain_name(alias.name)
+            if akey:
+                normalized_to_primary.setdefault(akey, s.primary_name)
+
+    def canonicalize(raw_name: str | None) -> str:
+        """Map a relationship endpoint name onto our canonical strain, if we know it."""
+        if not raw_name:
+            return ""
+        return normalized_to_primary.get(normalize_strain_name(raw_name), raw_name)
+
     # Pre-fetch all genetic relationships in one query to avoid N+1 query loop
     stmt_all_rels = select(GeneticRelationshipORM)
     rels_db_all = (await session.execute(stmt_all_rels)).scalars().all()
@@ -327,8 +371,11 @@ async def load_state_from_db_internal(session) -> dict:
         rels_db = rels_by_sample.get(s_orm.id, [])
         domain_rels = []
         for r in rels_db:
-            s_a = sample_id_to_primary_name.get(r.sample_id_a) or r.strain_name_a
-            s_b = sample_id_to_primary_name.get(r.sample_id_b) or r.strain_name_b
+            s_a = sample_id_to_primary_name.get(r.sample_id_a) or canonicalize(r.strain_name_a)
+            s_b = sample_id_to_primary_name.get(r.sample_id_b) or canonicalize(r.strain_name_b)
+            # A relative that resolves back to the strain itself is not an edge.
+            if not s_a or not s_b or s_a == s_b:
+                continue
             # Filter out invalid 0.0 distance genetic relationships between different strains
             if r.distance == 0.0 and s_a.lower().strip() != s_b.lower().strip():
                 continue
@@ -405,9 +452,9 @@ async def load_state_from_db_internal(session) -> dict:
             strains_data[s.primary_name]["lineage"] = s.lineage
 
     # 4. Dynamic Terpene Propagation (Propagate terpene profile from closest relative in lineage tree)
-    from src.genomics.normalization import normalize_strain_name
-    canonical_by_norm = {normalize_strain_name(s.primary_name): s.primary_name for s in strains_db}
-    
+    # Reuses normalized_to_primary from above — it already covers aliases, not just primary names.
+    canonical_by_norm = normalized_to_primary
+
     parent_map = {}
     child_map = {}
     for s in strains_db:
@@ -692,19 +739,32 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to pre-populate database state cache: {e}")
         
-    # Spawn background strain enrichment task
+    # Spawn background strain enrichment task.
+    # This scrapes SeedFinder/Leafly/DuckDuckGo for every strain in the database on every
+    # boot, so it needs an off switch — for tests, for local work against a copy of prod,
+    # and for any restart where you do not want the network traffic.
+    if os.getenv("DISABLE_STARTUP_ENRICHMENT", "").lower() in ("1", "true", "yes"):
+        logger.info("Startup strain enrichment disabled via DISABLE_STARTUP_ENRICHMENT.")
+        yield
+        logger.info("treesearch-service stopped")
+        return
+
     logger.info("Spawning background strain enrichment task on startup...")
     async def run_enrichment():
         await asyncio.sleep(5)  # Wait 5 seconds to let server start up
         try:
             logger.info("Starting background strain enrichment...")
-            async for session in get_session():
-                from src.enrich_strains import enrich_all_strains
-                await enrich_all_strains(session)
-                await session.commit()
-                invalidate_db_state_cache()
-                logger.info("Background strain enrichment completed successfully.")
-                break
+            async with _enrich_lock:
+                async for session in get_session():
+                    try:
+                        await enrich_all_strains(session)
+                        await session.commit()
+                    except Exception:
+                        await session.rollback()
+                        raise
+                    invalidate_db_state_cache()
+                    logger.info("Background strain enrichment completed successfully.")
+                    break
         except Exception as e:
             logger.error(f"Background strain enrichment failed: {e}")
             
@@ -774,20 +834,33 @@ async def network_data():
 @app.post("/api/strains/enrich")
 async def trigger_strains_enrichment(background_tasks: BackgroundTasks):
     """Trigger DB-wide Leafly terpene and parent lineage placeholder enrichment."""
+    # Reject rather than queue a second pass. Enrichment walks the whole strain table
+    # and creates parent placeholders; two concurrent runs race to create the same rows.
+    # A caller (or an agent) gets a real answer instead of silently starting a duplicate.
+    if _enrich_lock.locked():
+        return JSONResponse(
+            {"error": "Enrichment is already running.", "status": "already_running"},
+            status_code=409,
+        )
+
     async def run_enrich():
         try:
-            async for session in get_session():
-                from src.enrich_strains import enrich_all_strains
-                await enrich_all_strains(session)
-                await session.commit()
-                invalidate_db_state_cache()
-                logger.info("Manual API-triggered strain enrichment completed successfully.")
-                break
+            async with _enrich_lock:
+                async for session in get_session():
+                    try:
+                        await enrich_all_strains(session)
+                        await session.commit()
+                    except Exception:
+                        await session.rollback()
+                        raise
+                    invalidate_db_state_cache()
+                    logger.info("Manual API-triggered strain enrichment completed successfully.")
+                    break
         except Exception as e:
             logger.error(f"Manual API-triggered strain enrichment failed: {e}")
-            
+
     background_tasks.add_task(run_enrich)
-    return {"message": "Strains enrichment started in the background."}
+    return {"message": "Strains enrichment started in the background.", "status": "started"}
 
 # ----- Strain List & Search ----- #
 
@@ -795,30 +868,54 @@ async def trigger_strains_enrichment(background_tasks: BackgroundTasks):
 async def list_strains(
     complete_only: bool = False,
     search: str = "",
+    limit: int = 0,
+    offset: int = 0,
 ):
-    """List all known strains with optional filtering, including live SeedFinder lookup fallback."""
+    """List all known strains with optional filtering, including live SeedFinder lookup fallback.
+
+    limit=0 means "no limit" so the graph UI, which needs every node, keeps working.
+    Agents should always pass an explicit limit.
+    """
+    limit = max(0, min(limit, 500))
+    offset = max(0, offset)
+
     async for session in get_session():
         stmt = select(CanonicalStrainORM).options(
             selectinload(CanonicalStrainORM.genomic_samples).selectinload(GenomicSampleORM.chemical_profile)
         )
         if search:
-            # Handle both spaces and underscores in strain names
+            # Handle both spaces and underscores in strain names.
+            #
+            # These use EXISTS (.any()) rather than an outer join + DISTINCT. A join to
+            # aliases multiplies rows, and the DISTINCT that used to deduplicate them made
+            # Postgres compare every selected column — including the `lineage` json column,
+            # which has no equality operator. Every search therefore 500'd with
+            # "could not identify an equality operator for type json".
             search_space = search.replace("_", " ")
             search_underscore = search.replace(" ", "_")
-            stmt = stmt.join(CanonicalStrainORM.aliases, isouter=True).where(
+            patterns = {f"%{search}%", f"%{search_space}%", f"%{search_underscore}%"}
+            stmt = stmt.where(
                 or_(
-                    CanonicalStrainORM.primary_name.ilike(f"%{search}%"),
-                    CanonicalStrainORM.primary_name.ilike(f"%{search_space}%"),
-                    CanonicalStrainORM.primary_name.ilike(f"%{search_underscore}%"),
-                    StrainAliasORM.name.ilike(f"%{search}%"),
-                    StrainAliasORM.name.ilike(f"%{search_space}%"),
-                    StrainAliasORM.name.ilike(f"%{search_underscore}%"),
+                    *[CanonicalStrainORM.primary_name.ilike(p) for p in patterns],
+                    *[
+                        CanonicalStrainORM.aliases.any(StrainAliasORM.name.ilike(p))
+                        for p in patterns
+                    ],
                 )
-            ).distinct()
-        
+            )
+
+        if complete_only:
+            stmt = stmt.where(
+                CanonicalStrainORM.genomic_samples.any(GenomicSampleORM.is_complete.is_(True))
+            )
+
+        stmt = stmt.order_by(CanonicalStrainORM.primary_name)
+        if limit:
+            stmt = stmt.limit(limit).offset(offset)
+
         strains = (await session.execute(stmt)).scalars().all()
         results = []
-        
+
         for s in strains:
             samples = s.genomic_samples
             sample = None
@@ -988,12 +1085,24 @@ async def _save_forum_posts_to_db(session, posts: list[dict], source_name: str, 
     valid_posts = []
     all_image_urls = []
     
+    seen_in_batch: set[str] = set()
+
     for p in posts:
-        # Check if exists
-        stmt = select(ObservationORM).where(ObservationORM.source_id == str(p.get("id")))
+        post_id = str(p.get("id"))
+
+        # Post ids are only unique WITHIN a forum. Matching on source_id alone meant an
+        # Overgrow topic id of 4211 permanently blocked Rollitup's post 4211 from ever
+        # being saved. Scope the lookup to the forum the post came from.
+        if post_id in seen_in_batch:
+            continue
+        stmt = select(ObservationORM).where(
+            ObservationORM.source_name == source_name,
+            ObservationORM.source_id == post_id,
+        )
         existing = (await session.execute(stmt)).scalars().first()
         if existing:
             continue
+        seen_in_batch.add(post_id)
 
         title = p.get("title", "")
         body = p.get("body", "")
@@ -1063,7 +1172,7 @@ async def _save_forum_posts_to_db(session, posts: list[dict], source_name: str, 
 
 
 @app.post("/api/strains/import")
-async def import_strain(request: Request):
+async def import_strain(request: Request, background_tasks: BackgroundTasks):
     payload = await request.json()
     strain_slug = payload.get("strain_slug")
     breeder_slug = payload.get("breeder_slug")
@@ -1079,14 +1188,14 @@ async def import_strain(request: Request):
     if not strain_slug or not breeder_slug:
         return JSONResponse({"error": "Missing strain_slug or breeder_slug"}, status_code=400)
 
-    from fastapi.responses import StreamingResponse
-    import json
+    # Browsers stream; agents poll. Default to streaming so treesearch-client is unchanged.
+    stream = payload.get("stream", True)
 
-    async def event_generator():
+    async def _import_events():
         total_posts = 0
         total_images = 0
 
-        yield json.dumps({"type": "progress", "message": "Initializing...", "posts": 0, "images": 0}) + "\n"
+        yield json.dumps({"type": "progress", "percent": 2, "stage": "init", "message": "Initializing...", "posts": 0, "images": 0}) + "\n"
 
         async for session in get_session():
             nonlocal strain_slug, breeder_slug, real_name
@@ -1149,7 +1258,7 @@ async def import_strain(request: Request):
                 else:
                     # Not found in DB! Let's query SeedFinder for matches
                     logger.info(f"Free-text search '{lookup_name}' not found in DB. Searching SeedFinder...")
-                    yield json.dumps({"type": "progress", "message": f"Searching SeedFinder for '{lookup_name}'...", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "percent": 8, "stage": "seedfinder", "message": f"Searching SeedFinder for '{lookup_name}'...", "posts": 0, "images": 0}) + "\n"
                     
                     from src.collectors.seedfinder_collector import search_seedfinder
                     try:
@@ -1164,13 +1273,13 @@ async def import_strain(request: Request):
                         breeder_slug = best_match["breeder_slug"]
                         real_name = best_match["name"]
                         logger.info(f"Free-text search '{lookup_name}' matched SeedFinder strain '{real_name}' ({breeder_slug})")
-                        yield json.dumps({"type": "progress", "message": f"Found match on SeedFinder: '{real_name}' by '{breeder_slug}'", "posts": 0, "images": 0}) + "\n"
+                        yield json.dumps({"type": "progress", "percent": 12, "stage": "seedfinder", "message": f"Found match on SeedFinder: '{real_name}' by '{breeder_slug}'", "posts": 0, "images": 0}) + "\n"
                     else:
                         logger.info(f"Free-text search '{lookup_name}' had no SeedFinder matches. Falling back to Forum Import.")
                         strain_slug = lookup_name.lower().replace(" ", "-")
                         breeder_slug = "forum-import"
                         real_name = lookup_name
-                        yield json.dumps({"type": "progress", "message": f"No SeedFinder match. Falling back to Forum Import for '{lookup_name}'...", "posts": 0, "images": 0}) + "\n"
+                        yield json.dumps({"type": "progress", "percent": 12, "stage": "seedfinder", "message": f"No SeedFinder match. Falling back to Forum Import for '{lookup_name}'...", "posts": 0, "images": 0}) + "\n"
 
             # ── Step 1: Check if already imported via alias ──
             alias_source_name = "forum" if breeder_slug == "forum-import" else "seedfinder"
@@ -1210,7 +1319,7 @@ async def import_strain(request: Request):
             )
             existing_strain = (await session.execute(stmt_existing)).scalars().first()
 
-            yield json.dumps({"type": "progress", "message": "Fetching metadata...", "posts": 0, "images": 0}) + "\n"
+            yield json.dumps({"type": "progress", "percent": 18, "stage": "metadata", "message": "Fetching metadata...", "posts": 0, "images": 0}) + "\n"
 
             strain_orm = None
             primary_name = None
@@ -1231,7 +1340,7 @@ async def import_strain(request: Request):
                 strain_orm = existing_strain
                 primary_name = strain_orm.primary_name
                 logger.info(f"Found existing strain in DB: {primary_name} (id={strain_orm.id})")
-                yield json.dumps({"type": "progress", "message": f"Found {primary_name} in database, enriching with forum data...", "posts": 0, "images": 0}) + "\n"
+                yield json.dumps({"type": "progress", "percent": 20, "stage": "metadata", "message": f"Found {primary_name} in database, enriching with forum data...", "posts": 0, "images": 0}) + "\n"
             else:
                 # Try SeedFinder scrape
                 from src.collectors.seedfinder_collector import scrape_seedfinder_strain
@@ -1248,14 +1357,14 @@ async def import_strain(request: Request):
                         "description": None,
                         "lineage": {},
                     }
-                    yield json.dumps({"type": "progress", "message": f"Querying DuckDuckGo fallback for {primary_name} lineage...", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "percent": 25, "stage": "lineage", "message": f"Querying DuckDuckGo fallback for {primary_name} lineage...", "posts": 0, "images": 0}) + "\n"
                     parsed_parents = await fallback_search_genetics(primary_name)
                     if parsed_parents:
                         logger.info(f"DuckDuckGo fallback successfully parsed parents for {primary_name}: {parsed_parents}")
                         sf_data["lineage"] = [{"name": p} for p in parsed_parents]
                 elif not sf_data.get("lineage"):
                     primary_name = sf_data["name"]
-                    yield json.dumps({"type": "progress", "message": f"Querying DuckDuckGo fallback for {primary_name} lineage...", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "percent": 25, "stage": "lineage", "message": f"Querying DuckDuckGo fallback for {primary_name} lineage...", "posts": 0, "images": 0}) + "\n"
                     parsed_parents = await fallback_search_genetics(primary_name)
                     if parsed_parents:
                         logger.info(f"DuckDuckGo fallback successfully parsed parents for {primary_name}: {parsed_parents}")
@@ -1416,7 +1525,7 @@ async def import_strain(request: Request):
                 strain_orm = (await session.execute(stmt_cs)).scalars().first()
 
             # ── Kannapedia genomic data lookup ──
-            yield json.dumps({"type": "progress", "message": "Searching Kannapedia for genomic data...", "posts": 0, "images": 0}) + "\n"
+            yield json.dumps({"type": "progress", "percent": 35, "stage": "kannapedia", "message": "Searching Kannapedia for genomic data...", "posts": 0, "images": 0}) + "\n"
 
             from src.scraper_client import ScraperClient
             scraper_client = ScraperClient()
@@ -1470,7 +1579,7 @@ async def import_strain(request: Request):
                         logger.error(f"Failed to ingest Kannapedia record for {primary_name}: {kex}")
 
                 if kannapedia_ingested > 0:
-                    yield json.dumps({"type": "progress", "message": f"Kannapedia: {kannapedia_ingested} genomic sample(s) ingested.", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "percent": 45, "stage": "kannapedia", "message": f"Kannapedia: {kannapedia_ingested} genomic sample(s) ingested.", "posts": 0, "images": 0}) + "\n"
                     # Clean up any incomplete placeholder samples since we now have real Kannapedia WGS data
                     from sqlalchemy import delete
                     await session.execute(
@@ -1482,7 +1591,7 @@ async def import_strain(request: Request):
                     )
                     await session.flush()
                 else:
-                    yield json.dumps({"type": "progress", "message": "No Kannapedia genomic data found. Creating community placeholder...", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "percent": 45, "stage": "kannapedia", "message": "No Kannapedia genomic data found. Creating community placeholder...", "posts": 0, "images": 0}) + "\n"
                     stmt_sample_check = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == strain_orm.id)
                     existing_sample = (await session.execute(stmt_sample_check)).scalars().first()
                     if not existing_sample:
@@ -1498,7 +1607,7 @@ async def import_strain(request: Request):
                         await session.flush()
             except Exception as e:
                 logger.error(f"Kannapedia lookup failed for {primary_name}: {e}")
-                yield json.dumps({"type": "progress", "message": "Kannapedia lookup failed, creating community placeholder...", "posts": 0, "images": 0}) + "\n"
+                yield json.dumps({"type": "progress", "percent": 45, "stage": "kannapedia", "message": "Kannapedia lookup failed, creating community placeholder...", "posts": 0, "images": 0}) + "\n"
                 stmt_sample_check = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == strain_orm.id)
                 existing_sample = (await session.execute(stmt_sample_check)).scalars().first()
                 if not existing_sample:
@@ -1514,7 +1623,7 @@ async def import_strain(request: Request):
                     await session.flush()
 
             # ── Leafly terpene data enrichment ──
-            yield json.dumps({"type": "progress", "message": "Searching Leafly for terpene profile...", "posts": 0, "images": 0}) + "\n"
+            yield json.dumps({"type": "progress", "percent": 50, "stage": "leafly", "message": "Searching Leafly for terpene profile...", "posts": 0, "images": 0}) + "\n"
             try:
                 leafly_result = await scraper_client.collect_leafly(strain_name=primary_name)
                 terpene_profile = None
@@ -1523,7 +1632,7 @@ async def import_strain(request: Request):
                 if leafly_result and "terpenes" in leafly_result and leafly_result["terpenes"]:
                     terpene_profile = leafly_result["terpenes"]
                 else:
-                    yield json.dumps({"type": "progress", "message": "No Leafly data. Searching web fallback for terpenes...", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "percent": 55, "stage": "leafly", "message": "No Leafly data. Searching web fallback for terpenes...", "posts": 0, "images": 0}) + "\n"
                     terpene_profile = await fallback_search_terpenes(primary_name)
                     if terpene_profile:
                         source_used = "leafly_fallback"
@@ -1541,7 +1650,12 @@ async def import_strain(request: Request):
                             rsp_number=f"LEAFLY-{strain_orm.primary_name.upper().replace(' ', '_')}",
                             strain_name=strain_orm.primary_name,
                             source=source_used,
-                            is_complete=True,
+                            # NOT complete: Leafly gives RELATIVE terpene scores, not a lab
+                            # assay, and carries no cannabinoid panel. Marking it complete put
+                            # those scores into /api/terpene-heatmap (which filters on
+                            # is_complete) side by side with Kannapedia mass-percentages, so
+                            # the heatmap was comparing two different units as if they were one.
+                            is_complete=False,
                             raw_payload=leafly_result if leafly_result else {"terpenes": terpene_profile},
                         )
                         session.add(lf_sample)
@@ -1598,14 +1712,14 @@ async def import_strain(request: Request):
                         strain_orm.dominant_terpenes = [t[0] for t in sorted_terps[:5]]
                         await session.flush()
                         
-                    yield json.dumps({"type": "progress", "message": f"Terpene profile enriched for {primary_name} via {source_used}.", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "percent": 58, "stage": "leafly", "message": f"Terpene profile enriched for {primary_name} via {source_used}.", "posts": 0, "images": 0}) + "\n"
                     logger.info(f"Ingested {source_used} terpene profile for {primary_name}")
                 else:
-                    yield json.dumps({"type": "progress", "message": "No terpene data found on Leafly or via search fallback.", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "percent": 58, "stage": "leafly", "message": "No terpene data found on Leafly or via search fallback.", "posts": 0, "images": 0}) + "\n"
             except Exception as lex:
                 logger.error(f"Terpene lookup/fallback failed for {primary_name}: {lex}")
 
-            yield json.dumps({"type": "progress", "message": "Scraping community forums and Reddit concurrently...", "posts": total_posts, "images": total_images}) + "\n"
+            yield json.dumps({"type": "progress", "percent": 60, "stage": "forums", "message": "Scraping community forums and Reddit concurrently...", "posts": total_posts, "images": total_images}) + "\n"
             
             async def fetch_overgrow():
                 try:
@@ -1673,13 +1787,16 @@ async def import_strain(request: Request):
             finally:
                 await scraper_client.close()
 
-            # Process and save results sequentially
-            for source_name, items in scrape_results:
+            # Process and save results sequentially. The five collectors run in one
+            # asyncio.gather and yield nothing internally, so the forum phase (60-100%)
+            # can only advance as each source's results are persisted.
+            for idx, (source_name, items) in enumerate(scrape_results):
                 if items:
                     p_saved, i_saved = await _save_forum_posts_to_db(session, items, source_name, strain_orm.id, search_query)
                     total_posts += p_saved
                     total_images += i_saved
-                    yield json.dumps({"type": "progress", "message": f"Processed {source_name.title()} ({p_saved} posts, {i_saved} images).", "posts": total_posts, "images": total_images}) + "\n"
+                    pct = 60 + round(40 * (idx + 1) / len(scrape_results))
+                    yield json.dumps({"type": "progress", "percent": pct, "stage": "forums", "message": f"Processed {source_name.title()} ({p_saved} posts, {i_saved} images).", "posts": total_posts, "images": total_images}) + "\n"
 
             # Update observation count on the canonical strain
             stmt_obs_count = select(func.count()).select_from(ObservationORM).where(
@@ -1692,10 +1809,80 @@ async def import_strain(request: Request):
             invalidate_db_state_cache()
             
             detail_data = await strain_detail(strain_orm.primary_name)
-            yield json.dumps({"type": "done", "data": detail_data}) + "\n"
+            yield json.dumps({"type": "done", "percent": 100, "stage": "done", "data": detail_data}) + "\n"
             break
 
-    return StreamingResponse(event_generator(), media_type="application/x-ndjson")
+    async def event_generator():
+        # The response is already a 200 with headers flushed by the time anything can go
+        # wrong, so an unhandled exception just truncates the stream — leaving the client
+        # unable to tell a failed multi-minute import from a successful one. Always close
+        # the stream with an explicit terminal frame.
+        try:
+            async for frame in _import_events():
+                yield frame
+        except Exception as e:
+            logger.exception("Strain import failed for %s", strain_slug)
+            yield json.dumps({"type": "error", "error": str(e)}) + "\n"
+
+    if stream:
+        return StreamingResponse(event_generator(), media_type="application/x-ndjson")
+
+    # Non-streaming path: drain the same generator in the background and record progress
+    # against a job id the caller can poll. An import takes minutes; lazy-tool-service
+    # aborts a tool call long before that, so an agent cannot consume the stream at all.
+    job_id = str(uuid.uuid4())
+    IMPORT_JOBS[job_id] = {
+        "status": "queued",
+        "percent": 0,
+        "stage": "queued",
+        "message": "Queued.",
+        "posts": 0,
+        "images": 0,
+        "strain_name": real_name or strain_slug,
+        "data": None,
+        "error": None,
+    }
+
+    async def drain():
+        job = IMPORT_JOBS[job_id]
+        job["status"] = "running"
+        try:
+            async for frame in event_generator():
+                packet = json.loads(frame)
+                kind = packet.get("type")
+                if kind == "progress":
+                    job.update(
+                        percent=packet.get("percent", job["percent"]),
+                        stage=packet.get("stage", job["stage"]),
+                        message=packet.get("message", ""),
+                        posts=packet.get("posts", job["posts"]),
+                        images=packet.get("images", job["images"]),
+                    )
+                elif kind == "done":
+                    job.update(status="done", percent=100, stage="done",
+                               message="Import complete.", data=packet.get("data"))
+                elif kind == "error":
+                    job.update(status="failed", error=packet.get("error"),
+                               message="Import failed.")
+        except Exception as e:
+            logger.exception("Import job %s crashed", job_id)
+            job.update(status="failed", error=str(e), message="Import failed.")
+        else:
+            # The generator can finish without a terminal frame if it breaks early.
+            if job["status"] == "running":
+                job.update(status="done", percent=100, stage="done")
+
+    background_tasks.add_task(drain)
+    return {"job_id": job_id, "status": "queued"}
+
+
+@app.get("/api/import-jobs/{job_id}")
+async def import_job_status(job_id: str):
+    """Poll a background import started with {"stream": false}."""
+    job = IMPORT_JOBS.get(job_id)
+    if not job:
+        return JSONResponse({"error": f"Unknown job '{job_id}'"}, status_code=404)
+    return {"job_id": job_id, **job}
 
 # ----- Strain Detail ----- #
 
@@ -2020,6 +2207,134 @@ async def update_strain_metadata(strain_name: str, request: Request):
         return detail
 
 
+# ----- Agent-facing read APIs ----- #
+#
+# These exist so an agent (via lazy-tool-service) can pull one thing at a time with a
+# bounded response. /detail returns the whole strain — metadata, every relationship,
+# every forum post's full text and every image — which is fine for the graph UI but far
+# too large for an LLM context.
+
+@app.get("/api/strains/{strain_name}/images")
+async def strain_images(strain_name: str, limit: int = 20, offset: int = 0):
+    """Photographs of a strain, harvested from forum posts and vision-filtered to plants.
+
+    The images were already being collected, proxy-unwrapped and ML-gated — they just
+    had no route of their own and were reachable only nested inside /detail.
+    """
+    limit = max(1, min(limit, 100))
+    offset = max(0, offset)
+
+    async for session in get_session():
+        resolved_name = await get_canonical_strain_name(session, strain_name)
+        if not resolved_name:
+            return JSONResponse({"error": f"Strain '{strain_name}' not found"}, status_code=404)
+
+        stmt_strain = select(CanonicalStrainORM.id).where(CanonicalStrainORM.primary_name == resolved_name)
+        strain_id = (await session.execute(stmt_strain)).scalar()
+        if not strain_id:
+            return JSONResponse({"error": f"Strain '{strain_name}' not found"}, status_code=404)
+
+        base = (
+            select(ObservationImageORM, ObservationORM)
+            .join(ObservationORM, ObservationImageORM.observation_id == ObservationORM.id)
+            .where(ObservationORM.canonical_strain_id == strain_id)
+        )
+
+        total = (await session.execute(
+            select(func.count())
+            .select_from(ObservationImageORM)
+            .join(ObservationORM, ObservationImageORM.observation_id == ObservationORM.id)
+            .where(ObservationORM.canonical_strain_id == strain_id)
+        )).scalar() or 0
+
+        rows = (await session.execute(
+            base.order_by(ObservationORM.observed_at.desc().nullslast()).limit(limit).offset(offset)
+        )).all()
+
+        return {
+            "strain": resolved_name,
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "images": [
+                {
+                    "image_url": img.image_url,
+                    "source_name": obs.source_name,
+                    "source_url": obs.source_url,
+                    "author": obs.author,
+                    "observed_at": obs.observed_at.isoformat() if obs.observed_at else None,
+                    "observation_id": obs.id,
+                }
+                for img, obs in rows
+            ],
+        }
+
+
+@app.get("/api/strains/{strain_name}/observations")
+async def strain_observations(
+    strain_name: str,
+    limit: int = 25,
+    offset: int = 0,
+    source: str = "",
+    max_chars: int = 800,
+):
+    """Community forum posts and grow-journal excerpts about a strain.
+
+    raw_text is truncated — a single grow journal can run to tens of kilobytes, which
+    would blow an agent's context for no benefit.
+    """
+    limit = max(1, min(limit, 100))
+    offset = max(0, offset)
+    max_chars = max(100, min(max_chars, 5000))
+
+    async for session in get_session():
+        resolved_name = await get_canonical_strain_name(session, strain_name)
+        if not resolved_name:
+            return JSONResponse({"error": f"Strain '{strain_name}' not found"}, status_code=404)
+
+        stmt_strain = select(CanonicalStrainORM.id).where(CanonicalStrainORM.primary_name == resolved_name)
+        strain_id = (await session.execute(stmt_strain)).scalar()
+        if not strain_id:
+            return JSONResponse({"error": f"Strain '{strain_name}' not found"}, status_code=404)
+
+        conditions = [ObservationORM.canonical_strain_id == strain_id]
+        if source:
+            conditions.append(ObservationORM.source_name == source.lower())
+
+        total = (await session.execute(
+            select(func.count()).select_from(ObservationORM).where(*conditions)
+        )).scalar() or 0
+
+        rows = (await session.execute(
+            select(ObservationORM)
+            .where(*conditions)
+            .order_by(ObservationORM.observed_at.desc().nullslast())
+            .limit(limit)
+            .offset(offset)
+        )).scalars().all()
+
+        def _excerpt(text: str | None) -> str:
+            text = (text or "").strip()
+            return text if len(text) <= max_chars else text[:max_chars].rstrip() + "…"
+
+        return {
+            "strain": resolved_name,
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "posts": [
+                {
+                    "source_name": o.source_name,
+                    "source_url": o.source_url,
+                    "author": o.author,
+                    "observed_at": o.observed_at.isoformat() if o.observed_at else None,
+                    "text": _excerpt(o.raw_text),
+                }
+                for o in rows
+            ],
+        }
+
+
 # ----- Neighbors & Similarity ----- #
 
 @app.get("/api/strains/{strain_name}/neighbors")
@@ -2074,43 +2389,76 @@ async def terpene_profile(strain_name: str):
         stmt_sample = select(GenomicSampleORM).where(GenomicSampleORM.canonical_strain_id == strain.id).options(
             selectinload(GenomicSampleORM.chemical_profile)
         )
-        sample = (await session.execute(stmt_sample)).scalars().first()
-        
-        if not sample or not sample.chemical_profile:
-            return JSONResponse({"error": "No chemical profile found"}, status_code=404)
-            
-        normalized = normalize_terpene_profile(sample.chemical_profile.terpene_dict)
+        samples = (await session.execute(stmt_sample)).scalars().all()
+
+        # Pick a sample that actually HAS terpene data, preferring a real lab assay.
+        #
+        # This used to take .first() with no ORDER BY — an arbitrary row. A strain
+        # typically has several samples (a SeedFinder lineage placeholder with no
+        # chemistry, plus a Leafly or Kannapedia one with the terpenes), so the endpoint
+        # would routinely return an empty profile for a strain whose terpenes we hold.
+        # Blue_Dream was one of them.
+        def _rank(sm) -> tuple:
+            terps = sm.chemical_profile.terpene_dict if sm.chemical_profile else None
+            source_rank = {"kannapedia": 3, "manual": 2, "leafly": 1}.get(sm.source, 0)
+            return (bool(terps), source_rank, sm.rsp_number or "")
+
+        best = max(samples, key=_rank, default=None)
+        if best is None or not best.chemical_profile or not best.chemical_profile.terpene_dict:
+            return JSONResponse({"error": "No terpene data for this strain"}, status_code=404)
+
+        normalized = normalize_terpene_profile(best.chemical_profile.terpene_dict)
         total = sum(normalized.values())
         return {
             "strain": strain.primary_name,
             "terpenes": normalized,
             "total": round(total, 3),
             "dominant": max(normalized, key=normalized.get) if normalized else None,
+            "source": best.source,
         }
 
 @app.get("/api/terpene-heatmap")
 async def terpene_heatmap():
     """Matrix data: strains × terpenes for heatmap visualization."""
     async for session in get_session():
-        stmt_samples = select(GenomicSampleORM).outerjoin(ChemicalProfileORM).where(GenomicSampleORM.is_complete == True).options(
+        # Qualify on HAVING terpene data, not on is_complete.
+        #
+        # is_complete means "has a full genomic/lab assay" — only Kannapedia samples do.
+        # Filtering the heatmap on it dropped every Leafly sample, and Leafly is where
+        # almost all of our terpene profiles come from.
+        stmt_samples = select(GenomicSampleORM).join(ChemicalProfileORM).options(
             selectinload(GenomicSampleORM.chemical_profile)
         )
         samples = (await session.execute(stmt_samples)).scalars().all()
-        
+
         rows = []
         all_terpenes = set()
-        
+
         for s in samples:
             if not s.chemical_profile:
                 continue
             normalized = normalize_terpene_profile(s.chemical_profile.terpene_dict)
-            all_terpenes.update(normalized.keys())
-            rows.append({"strain": s.strain_name, "values": normalized})
-            
+            total = sum(normalized.values())
+            if total <= 0:
+                continue
+            # Rows are relative composition, so a Kannapedia mass-percent profile and a
+            # Leafly prominence score can sit in the same matrix without one dwarfing the
+            # other. `assay` says which kind each row is, so the client can label it.
+            composition = {k: round(v / total, 4) for k, v in normalized.items()}
+            all_terpenes.update(composition.keys())
+            rows.append({
+                "strain": s.strain_name,
+                "values": composition,
+                "assay": "lab" if s.is_complete else "relative",
+                "source": s.source,
+            })
+
         terpene_cols = sorted(all_terpenes)
         return {
             "strains": [r["strain"] for r in rows],
             "terpenes": terpene_cols,
+            "assays": [r["assay"] for r in rows],
+            "sources": [r["source"] for r in rows],
             "matrix": [
                 [r["values"].get(t, 0.0) for t in terpene_cols]
                 for r in rows

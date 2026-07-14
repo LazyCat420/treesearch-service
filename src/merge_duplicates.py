@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import sys
 import re
 from collections import defaultdict
 from sqlalchemy import select, func, update
@@ -9,9 +8,6 @@ from sqlalchemy.orm import selectinload
 # Setup logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("merge_duplicates")
-
-# Add Cwd to python path to resolve src imports
-sys.path.append("/home/lazycat/github/projects/sun/treesearch-service")
 
 from src.db import get_session, engine
 from src.models.orm import (

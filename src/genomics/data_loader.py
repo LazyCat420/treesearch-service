@@ -185,10 +185,32 @@ def load_strain_data_from_samples(
     strains_data: StrainDataDict = {}
     all_relationships: RelationshipSet = set()
 
+    # Best terpene profile seen for each strain, tracked SEPARATELY from the winning
+    # metadata sample: {name: (quality, terpenes)}.
+    #
+    # A strain usually has several samples — a SeedFinder lineage placeholder with no
+    # chemistry, a Kannapedia genomic sample (which very often has cannabinoids but no
+    # terpene columns), and a Leafly sample which is where the terpenes actually live.
+    # The loop below elects ONE sample per strain to represent it, and used to take the
+    # terpenes only from that winner. So whenever a terpene-less sample won the election,
+    # the strain's terpenes were silently thrown away — which is exactly what happened to
+    # ~290 strains the moment Leafly samples stopped being flagged is_complete.
+    #
+    # Elect the metadata sample and the terpene profile independently.
+    best_terpenes: dict[str, tuple[int, dict[str, float]]] = {}
+    terpene_quality = {"manual": 4, "kannapedia": 3, "leafly": 2, "leafly_fallback": 1}
+
     for sample in samples:
         name = sample.strain_name or sample.rsp_number
         src = sample.source or "kannapedia"
-        
+
+        if sample.chemical_profile:
+            terpenes = sample.chemical_profile.terpene_dict
+            if terpenes:
+                quality = terpene_quality.get(src, 0)
+                if quality >= best_terpenes.get(name, (-1, None))[0]:
+                    best_terpenes[name] = (quality, terpenes)
+
         existing = strains_data.get(name)
         should_update = True
         if existing:
@@ -198,9 +220,10 @@ def load_strain_data_from_samples(
             # If the existing one is incomplete, and new one is complete, definitely update
             elif not existing.get("complete", False) and sample.is_complete:
                 should_update = True
-            # If both have same completeness, prefer sources in order: manual > kannapedia > seedfinder > forum
+            # If both have same completeness, prefer sources in order:
+            # manual > kannapedia > leafly > seedfinder > forum
             else:
-                pref = {"manual": 4, "kannapedia": 3, "seedfinder": 2, "forum": 1}
+                pref = {"manual": 5, "kannapedia": 4, "leafly": 3, "seedfinder": 2, "forum": 1}
                 existing_pref = pref.get(existing.get("source"), 0)
                 new_pref = pref.get(src, 0)
                 if existing_pref >= new_pref:
@@ -213,11 +236,6 @@ def load_strain_data_from_samples(
                 "dir_name": "",
                 "source": src,
             }
-            # Build terpene dict from chemical profile
-            if sample.chemical_profile:
-                terpenes = sample.chemical_profile.terpene_dict
-                if terpenes:
-                    strains_data[name]["terpenes"] = terpenes
 
         # Build relationships
         for rel in sample.genetic_relationships:
@@ -236,9 +254,14 @@ def load_strain_data_from_samples(
                     "source": "kannapedia",
                 }
 
+    # Attach the best terpene profile found for each strain, whichever sample carried it.
+    for name, (_quality, terpenes) in best_terpenes.items():
+        if name in strains_data:
+            strains_data[name]["terpenes"] = terpenes
+
     logger.info(
-        "Loaded %d strains with %d relationships from %d samples",
-        len(strains_data), len(all_relationships), len(samples),
+        "Loaded %d strains with %d relationships from %d samples (%d with terpene profiles)",
+        len(strains_data), len(all_relationships), len(samples), len(best_terpenes),
     )
     return strains_data, all_relationships
 

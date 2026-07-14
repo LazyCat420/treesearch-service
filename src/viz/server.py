@@ -1,32 +1,26 @@
-"""
-Visualization server — FastAPI-based replacement for kannapedia-scraper's
-SimpleHTTPRequestHandler.
+"""Builds the strain-network payload for GET /api/network-data.
 
-Serves the strain network visualization, phylogenetic tree views,
-and strain detail endpoints. Works against the unified DB models
-instead of reading raw CSV files from disk.
+This is a pure data shaper: it deduplicates strains by RSP number and turns
+relationships into edges. It emits DOMAIN data only — no colours, no HTML, no vis.js
+styling. The client owns presentation.
+
+(This module used to also carry a render_visualization_html() that injected the payload
+into an HTML template from a src/viz/templates/ directory. That directory does not
+exist and nothing called the function, so it was removed.)
 """
 
 from __future__ import annotations
 
-import json
 import logging
-import os
 from typing import Any
 
 from src.genomics.data_loader import (
     StrainDataDict,
     RelationshipSet,
-    load_strain_data_from_samples,
 )
 from src.genomics.terpene_analysis import calculate_terpene_relationships
 
 logger = logging.getLogger(__name__)
-
-# Path to viz assets
-VIZ_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATES_DIR = os.path.join(VIZ_DIR, "templates")
-STATIC_DIR = os.path.join(VIZ_DIR, "static")
 
 
 def build_network_data(
@@ -69,14 +63,14 @@ def build_network_data(
             continue
 
         is_complete = data.get("complete", False)
+        # Domain fields only. This deliberately does NOT emit vis.js `color` or an HTML
+        # `title` tooltip: presentation belongs to the client, which already computes its
+        # own palette and overwrote these anyway. Worse, phylogenetic_tree.js used to
+        # *filter* on the hex values emitted here, so the colours were load-bearing
+        # business logic living in the wrong tier.
         nodes.append({
             "id": strain_name,
             "label": strain_name,
-            "title": f"{strain_name}<br>RSP: {rsp}<br>{'Has full data' if is_complete else 'Incomplete'}",
-            "color": {
-                "background": "#2B7CE9" if is_complete else "#cccccc",
-                "border": "#2B7CE9" if is_complete else "#666666",
-            },
             "rsp": rsp,
             "complete": is_complete,
             "source": data.get("source", "kannapedia"),
@@ -112,35 +106,4 @@ def build_network_data(
         "lineageRelationships": lineage_relationships,
     }
 
-
-def render_visualization_html(
-    network_data: dict[str, Any],
-    template_name: str = "network_view.html",
-) -> str:
-    """Render the visualization HTML with embedded data.
-
-    Reads the template and injects the network data as a JS object.
-
-    Args:
-        network_data: Output of build_network_data().
-        template_name: Template filename.
-
-    Returns:
-        Complete HTML string ready to serve.
-    """
-    template_path = os.path.join(TEMPLATES_DIR, template_name)
-
-    with open(template_path, "r", encoding="utf-8") as f:
-        template = f.read()
-
-    data_script = f"""
-        window.INITIAL_DATA = {{
-            nodes: {json.dumps(network_data['nodes'])},
-            relationships: {json.dumps(network_data['relationships'])},
-            terpeneRelationships: {json.dumps(network_data['terpeneRelationships'])}
-        }};
-    """
-
-    html_content = template.replace("{{DATA_INITIALIZATION}}", data_script)
-    return html_content
 

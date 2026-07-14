@@ -88,18 +88,32 @@ def calculate_terpene_relationships(
         if not data.get("terpenes"):
             continue
 
-        # Enforce that the node has either family tree (lineage) data or complete genomic sample data (for community strains)
-        if "complete" in data or "lineage" in data:
-            has_lineage = bool(data.get("lineage"))
-            is_complete = data.get("complete", False)
-            if not (has_lineage or is_complete):
-                continue
+        # Skip profiles that were copied from a relative rather than measured.
+        #
+        # main.py propagates a neighbour's terpene profile onto strains that have none, so
+        # the graph can still show them. That is fine for display, but it is circular as a
+        # correlation input: two strains that inherit from the same relative end up with
+        # byte-identical profiles, so they score distance 0 — "perfectly correlated" — on
+        # the strength of data neither of them has. Correlate only measured profiles.
+        if data.get("terpenes_inherited_from"):
+            continue
 
-        normalized = normalize_terpene_profile(data["terpenes"])
-        total = sum(normalized.values())
+        # NOTE: this deliberately does NOT gate on `complete`. A strain qualifies by having
+        # a measured terpene profile, full stop. Gating on is_complete tied the terpene
+        # graph to whether a strain had a *genomic* lab assay, which excluded Leafly — the
+        # source of almost every terpene profile we hold — and left the graph nearly empty.
+        raw = normalize_terpene_profile(data["terpenes"])
+        total = sum(raw.values())
+        if total < min_total_terpenes:
+            continue
 
-        if total >= min_total_terpenes:
-            profiles[name] = normalized
+        # Compare COMPOSITION, not magnitude. Kannapedia reports terpenes as mass percent
+        # of the flower; Leafly reports a relative prominence score. Those are different
+        # units, and _terpene_distance() weights by absolute concentration — so comparing
+        # them raw makes the distance depend on which source a strain came from. Scaling
+        # each profile to fractions of its own total makes the two directly comparable:
+        # "60% myrcene, 30% limonene" means the same thing whatever the source.
+        profiles[name] = {k: v / total for k, v in raw.items()}
 
     logger.info("Computing terpene relationships for %d strains with profiles", len(profiles))
 
