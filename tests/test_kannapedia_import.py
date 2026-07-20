@@ -195,7 +195,7 @@ class TestScraperClientKannapedia:
     async def test_collect_kannapedia_sends_correct_payload(self):
         from src.scraper_client import ScraperClient
 
-        client = ScraperClient(base_url="http://localhost:8001")
+        client = ScraperClient(base_url="http://localhost:3031")
 
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -212,7 +212,7 @@ class TestScraperClientKannapedia:
             # Verify correct endpoint and payload
             mock_post.assert_called_once()
             call_args = mock_post.call_args
-            assert call_args[0][0] == "http://localhost:8001/collect"
+            assert call_args[0][0] == "http://localhost:3031/collect"
             payload = call_args[1]["json"]
             assert payload["source"] == "kannapedia"
             assert payload["query"] == "Headband"
@@ -228,7 +228,7 @@ class TestScraperClientKannapedia:
     async def test_collect_kannapedia_by_rsp(self):
         from src.scraper_client import ScraperClient
 
-        client = ScraperClient(base_url="http://localhost:8001")
+        client = ScraperClient(base_url="http://localhost:3031")
 
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -252,7 +252,7 @@ class TestScraperClientKannapedia:
     async def test_collect_kannapedia_handles_errors(self):
         from src.scraper_client import ScraperClient
 
-        client = ScraperClient(base_url="http://localhost:8001")
+        client = ScraperClient(base_url="http://localhost:3031")
 
         with patch.object(client.client, "post", new_callable=AsyncMock, side_effect=Exception("Connection refused")):
             results = await client.collect_kannapedia("NonExistent")

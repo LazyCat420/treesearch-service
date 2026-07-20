@@ -104,7 +104,7 @@ async def test_leafly_collector_fallback_slug():
 async def test_scraper_client_collect_leafly():
     from src.scraper_client import ScraperClient
 
-    client = ScraperClient(base_url="http://localhost:8001")
+    client = ScraperClient(base_url="http://localhost:3031")
 
     mock_response = MagicMock()
     mock_response.status_code = 200
