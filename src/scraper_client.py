@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class ScraperClient:
     def __init__(self, base_url: Optional[str] = None):
         if not base_url:
-            base_url = os.getenv("SCRAPER_SERVICE_URL", "http://localhost:3031")
+            base_url = os.getenv("SCRAPER_SERVICE_URL", "http://localhost:8001")
         self.base_url = base_url.rstrip("/")
         self.client = httpx.AsyncClient(timeout=60.0)
 
