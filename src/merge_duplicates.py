@@ -239,7 +239,7 @@ async def main():
     db_url = str(engine.url)
     logger.info(f"Starting merge tool against: {db_url}")
     
-    async for session in get_session():
+    async with get_session() as session:
         try:
             await merge_strains(session)
             await merge_breeders(session)
@@ -249,7 +249,6 @@ async def main():
             await session.rollback()
             logger.error(f"Merge transaction failed, rolled back changes. Error: {e}")
             raise e
-        break
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -16,7 +16,7 @@ async def test_database_connection_and_crud():
     # Initialize tables
     await init_db()
 
-    async for session in get_session():
+    async with get_session() as session:
         # Create a mock breeder
         breeder = BreederORM(
             name="Test Breeder",
@@ -52,7 +52,6 @@ async def test_database_connection_and_crud():
             await session.delete(fetched_breeder)
             
         await session.commit()
-        break
 
     # Now exercise the real Kannapedia ingest path used by POST /api/ingest/kannapedia:
     # transform the raw payload into domain models, then persist them.
@@ -76,15 +75,14 @@ async def test_database_connection_and_crud():
     from main import save_domain_models_to_db
 
     result = ingest_kannapedia_record(mock_scraped_data)
-    async for session in get_session():
+    async with get_session() as session:
         await save_domain_models_to_db(session, result)
         await session.commit()
-        break
 
     # Verify it was saved correctly. Note the Kannapedia path stores chemistry on the
     # sample's ChemicalProfile, not as strain-level averages — the strain row carries
     # identity, the sample carries the assay.
-    async for session in get_session():
+    async with get_session() as session:
         stmt = (
             select(CanonicalStrainORM)
             .where(CanonicalStrainORM.primary_name == "White Fire")
@@ -136,7 +134,6 @@ async def test_database_connection_and_crud():
             await session.delete(breeder)
 
         await session.commit()
-        break
 
 
 async def test_get_canonical_strain_name():
@@ -145,7 +142,7 @@ async def test_get_canonical_strain_name():
 
     await init_db()
 
-    async for session in get_session():
+    async with get_session() as session:
         # Create a mock breeder
         breeder = BreederORM(
             name="Alias Test Breeder",
@@ -193,7 +190,6 @@ async def test_get_canonical_strain_name():
             await session.delete(strain)
             await session.delete(breeder)
             await session.commit()
-        break
 
 
 async def test_load_state_from_db_with_placeholders():
@@ -201,7 +197,7 @@ async def test_load_state_from_db_with_placeholders():
     
     await init_db()
     
-    async for session in get_session():
+    async with get_session() as session:
         # Create a mock breeder
         breeder = BreederORM(
             name="Placeholder Test Breeder",
@@ -234,5 +230,4 @@ async def test_load_state_from_db_with_placeholders():
             await session.delete(strain)
             await session.delete(breeder)
             await session.commit()
-        break
 

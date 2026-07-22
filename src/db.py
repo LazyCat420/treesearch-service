@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import declarative_base
 
@@ -102,7 +103,16 @@ async def init_db():
     except Exception as e:
         logger.error("Could not create uq_observations_source: %s", e)
 
-async def get_session() -> AsyncSession:
-    """Get an async database session."""
+@asynccontextmanager
+async def get_session():
+    """Get an async database session (async context manager).
+
+    Was a bare async generator driven by `async for session in get_session():`.
+    A `return` from inside that loop suspends the generator at the yield — its
+    `async with AsyncSessionLocal()` cleanup only ran at GC, so the asyncpg
+    connection sat idle-in-transaction until finalized and the pool
+    (5 + overflow 10) drained under load. As a context manager, cleanup runs
+    deterministically at block exit. Use `async with get_session() as session:`.
+    """
     async with AsyncSessionLocal() as session:
         yield session

@@ -682,7 +682,7 @@ async def lifespan(app: FastAPI):
     data_dir = os.getenv("KANNAPEDIA_DATA_DIR", "")
     if data_dir and os.path.isdir(data_dir):
         logger.info("Checking database bootstrapping status from %s", data_dir)
-        async for session in get_session():
+        async with get_session() as session:
             stmt = select(func.count(CanonicalStrainORM.id))
             count = (await session.execute(stmt)).scalar() or 0
             if count == 0:
@@ -733,9 +733,8 @@ async def lifespan(app: FastAPI):
     # Pre-populate cache on startup
     logger.info("Pre-populating database state cache on startup...")
     try:
-        async for session in get_session():
+        async with get_session() as session:
             await load_state_from_db(session)
-            break
     except Exception as e:
         logger.error(f"Failed to pre-populate database state cache: {e}")
         
@@ -755,7 +754,7 @@ async def lifespan(app: FastAPI):
         try:
             logger.info("Starting background strain enrichment...")
             async with _enrich_lock:
-                async for session in get_session():
+                async with get_session() as session:
                     try:
                         await enrich_all_strains(session)
                         await session.commit()
@@ -764,7 +763,6 @@ async def lifespan(app: FastAPI):
                         raise
                     invalidate_db_state_cache()
                     logger.info("Background strain enrichment completed successfully.")
-                    break
         except Exception as e:
             logger.error(f"Background strain enrichment failed: {e}")
             
@@ -797,7 +795,7 @@ app.add_middleware(
 @app.get("/health")
 async def health():
     try:
-        async for session in get_session():
+        async with get_session() as session:
             strain_count = (await session.execute(select(func.count(CanonicalStrainORM.id)))).scalar() or 0
             obs_count = (await session.execute(select(func.count(ObservationORM.id)))).scalar() or 0
             return {
@@ -821,7 +819,7 @@ async def root():
 @app.get("/api/network-data")
 async def network_data():
     """Full network data payload for the frontend graph."""
-    async for session in get_session():
+    async with get_session() as session:
         state = await load_state_from_db(session)
         data = build_network_data(
             state["strains_data"],
@@ -846,7 +844,7 @@ async def trigger_strains_enrichment(background_tasks: BackgroundTasks):
     async def run_enrich():
         try:
             async with _enrich_lock:
-                async for session in get_session():
+                async with get_session() as session:
                     try:
                         await enrich_all_strains(session)
                         await session.commit()
@@ -855,7 +853,6 @@ async def trigger_strains_enrichment(background_tasks: BackgroundTasks):
                         raise
                     invalidate_db_state_cache()
                     logger.info("Manual API-triggered strain enrichment completed successfully.")
-                    break
         except Exception as e:
             logger.error(f"Manual API-triggered strain enrichment failed: {e}")
 
@@ -879,7 +876,7 @@ async def list_strains(
     limit = max(0, min(limit, 500))
     offset = max(0, offset)
 
-    async for session in get_session():
+    async with get_session() as session:
         stmt = select(CanonicalStrainORM).options(
             selectinload(CanonicalStrainORM.genomic_samples).selectinload(GenomicSampleORM.chemical_profile)
         )
@@ -1197,7 +1194,7 @@ async def import_strain(request: Request, background_tasks: BackgroundTasks):
 
         yield json.dumps({"type": "progress", "percent": 2, "stage": "init", "message": "Initializing...", "posts": 0, "images": 0}) + "\n"
 
-        async for session in get_session():
+        async with get_session() as session:
             nonlocal strain_slug, breeder_slug, real_name
             
             # If free-text search or query parameter is present, resolve it first
@@ -1517,10 +1514,10 @@ async def import_strain(request: Request, background_tasks: BackgroundTasks):
             except Exception:
                 # Alias may already exist (unique constraint)
                 await session.rollback()
-                # Re-fetch session state after rollback
-                async for session in get_session():
-                    break
-                # Re-fetch strain_orm in the new session
+                # A rolled-back AsyncSession is reusable — re-fetch with the SAME
+                # session. (The old code grabbed a second session via
+                # `async for session in get_session(): break`, which both leaked
+                # the generator's connection AND shadowed the outer session.)
                 stmt_cs = select(CanonicalStrainORM).where(CanonicalStrainORM.primary_name == primary_name)
                 strain_orm = (await session.execute(stmt_cs)).scalars().first()
 
@@ -1810,7 +1807,6 @@ async def import_strain(request: Request, background_tasks: BackgroundTasks):
             
             detail_data = await strain_detail(strain_orm.primary_name)
             yield json.dumps({"type": "done", "percent": 100, "stage": "done", "data": detail_data}) + "\n"
-            break
 
     async def event_generator():
         # The response is already a 200 with headers flushed by the time anything can go
@@ -1889,7 +1885,7 @@ async def import_job_status(job_id: str):
 @app.get("/api/strains/{strain_name}/detail")
 async def strain_detail(strain_name: str):
     """Full detail for a single strain — metadata, chemicals, relationships, and observation notes/quotes."""
-    async for session in get_session():
+    async with get_session() as session:
         resolved_name = await get_canonical_strain_name(session, strain_name)
         if not resolved_name:
             return JSONResponse({"error": f"Strain '{strain_name}' not found"}, status_code=404)
@@ -2072,7 +2068,7 @@ async def strain_detail(strain_name: str):
 async def update_strain_metadata(strain_name: str, request: Request):
     """Manually update canonical strain info: breeder, type, flowering days, description, lineage."""
     payload = await request.json()
-    async for session in get_session():
+    async with get_session() as session:
         resolved_name = await get_canonical_strain_name(session, strain_name)
         if not resolved_name:
             return JSONResponse({"error": f"Strain '{strain_name}' not found"}, status_code=404)
@@ -2224,7 +2220,7 @@ async def strain_images(strain_name: str, limit: int = 20, offset: int = 0):
     limit = max(1, min(limit, 100))
     offset = max(0, offset)
 
-    async for session in get_session():
+    async with get_session() as session:
         resolved_name = await get_canonical_strain_name(session, strain_name)
         if not resolved_name:
             return JSONResponse({"error": f"Strain '{strain_name}' not found"}, status_code=404)
@@ -2287,7 +2283,7 @@ async def strain_observations(
     offset = max(0, offset)
     max_chars = max(100, min(max_chars, 5000))
 
-    async for session in get_session():
+    async with get_session() as session:
         resolved_name = await get_canonical_strain_name(session, strain_name)
         if not resolved_name:
             return JSONResponse({"error": f"Strain '{strain_name}' not found"}, status_code=404)
@@ -2340,7 +2336,7 @@ async def strain_observations(
 @app.get("/api/strains/{strain_name}/neighbors")
 async def strain_neighbors(strain_name: str, k: int = 10):
     """Find nearest genetic neighbors for a strain."""
-    async for session in get_session():
+    async with get_session() as session:
         resolved_name = await get_canonical_strain_name(session, strain_name)
         if not resolved_name:
             resolved_name = strain_name
@@ -2356,7 +2352,7 @@ async def strain_neighbors(strain_name: str, k: int = 10):
 @app.get("/api/strains/{strain_name}/similarity")
 async def strain_similarity(strain_name: str):
     """Combined genetic + terpene similarity for a strain."""
-    async for session in get_session():
+    async with get_session() as session:
         resolved_name = await get_canonical_strain_name(session, strain_name)
         if not resolved_name:
             resolved_name = strain_name
@@ -2376,7 +2372,7 @@ async def strain_similarity(strain_name: str):
 @app.get("/api/strains/{strain_name}/terpene-profile")
 async def terpene_profile(strain_name: str):
     """Normalized terpene profile for radar chart display."""
-    async for session in get_session():
+    async with get_session() as session:
         resolved_name = await get_canonical_strain_name(session, strain_name)
         if not resolved_name:
             return JSONResponse({"error": "Strain not found"}, status_code=404)
@@ -2420,7 +2416,7 @@ async def terpene_profile(strain_name: str):
 @app.get("/api/terpene-heatmap")
 async def terpene_heatmap():
     """Matrix data: strains × terpenes for heatmap visualization."""
-    async for session in get_session():
+    async with get_session() as session:
         # Qualify on HAVING terpene data, not on is_complete.
         #
         # is_complete means "has a full genomic/lab assay" — only Kannapedia samples do.
@@ -2471,7 +2467,7 @@ async def terpene_heatmap():
 async def trigger_clustering():
     """Trigger ML image clustering for all unclustered images."""
     from src.ml.clustering import run_image_clustering
-    async for session in get_session():
+    async with get_session() as session:
         count = await run_image_clustering(session)
         invalidate_db_state_cache()
         return {"success": True, "clustered_count": count}
@@ -2483,7 +2479,7 @@ async def ingest_kannapedia(request: Request):
     """Ingest a raw Kannapedia scraper payload into the warehouse."""
     payload = await request.json()
     
-    async for session in get_session():
+    async with get_session() as session:
         # Build existing canonical strains dictionary
         stmt = select(CanonicalStrainORM)
         strains_db = (await session.execute(stmt)).scalars().all()
