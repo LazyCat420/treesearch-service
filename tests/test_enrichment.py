@@ -13,7 +13,7 @@ async def test_enrich_all_strains_terpenes_and_parent_placeholders():
     await init_db()
 
     # Create a unique test breeder and clean up old data
-    async for session in get_session():
+    async with get_session() as session:
         from sqlalchemy import delete
         
         # Clean up any leftover test strains and parents first
@@ -58,7 +58,6 @@ async def test_enrich_all_strains_terpenes_and_parent_placeholders():
         await session.commit()
         strain_id = strain.id
         breeder_id = breeder.id
-        break
 
     # Mock ScraperClient and test enrichment
     mock_leafly_result = {
@@ -82,15 +81,14 @@ async def test_enrich_all_strains_terpenes_and_parent_placeholders():
          patch("src.enrich_strains.fallback_search_genetics", new_callable=AsyncMock, return_value=[]), \
          patch("src.enrich_strains.fallback_search_terpenes", new_callable=AsyncMock, return_value={}):
         mock_leafly.side_effect = mock_collect_leafly
-        async for session in get_session():
+        async with get_session() as session:
             await enrich_all_strains(session)
             await session.commit()
-            break
 
     # Verify that:
     # 1. The strain's terpenes were enriched
     # 2. Lineage parent placeholders were auto-created
-    async for session in get_session():
+    async with get_session() as session:
         # Check child strain
         stmt = select(CanonicalStrainORM).where(CanonicalStrainORM.id == strain_id).options(
             selectinload(CanonicalStrainORM.genomic_samples).selectinload(GenomicSampleORM.chemical_profile)
@@ -141,7 +139,6 @@ async def test_enrich_all_strains_terpenes_and_parent_placeholders():
         await session.delete(enriched_strain)
         await session.delete(breeder)
         await session.commit()
-        break
 
 
 async def test_dynamic_terpene_propagation_and_self_loops():
@@ -150,7 +147,7 @@ async def test_dynamic_terpene_propagation_and_self_loops():
     from sqlalchemy import delete
     
     # 1. Clean up potential old data
-    async for session in get_session():
+    async with get_session() as session:
         stmt_old = select(CanonicalStrainORM).where(
             CanonicalStrainORM.primary_name.in_([
                 "Test_Child_Strain",
@@ -175,7 +172,7 @@ async def test_dynamic_terpene_propagation_and_self_loops():
     # - "Test_Parent_Strain" with a leafly sample containing terpenes.
     # - "Test_Child_Strain" with lineage pointing to "Test_Parent_Strain", but NO samples/terpenes.
     # - "Test_Self_Loop_Strain" with lineage pointing to "Test_Self_Loop_Strain" (casing variation), to verify self-loop prevention.
-    async for session in get_session():
+    async with get_session() as session:
         parent = CanonicalStrainORM(
             primary_name="Test_Parent_Strain",
             lineage={}
@@ -211,10 +208,9 @@ async def test_dynamic_terpene_propagation_and_self_loops():
         session.add(self_loop)
         
         await session.commit()
-        break
         
     # 3. Call load_state_from_db_internal and assert behavior
-    async for session in get_session():
+    async with get_session() as session:
         state = await load_state_from_db_internal(session)
         
         strains_data = state["strains_data"]
@@ -253,5 +249,4 @@ async def test_dynamic_terpene_propagation_and_self_loops():
         for s in strains_to_del:
             await session.delete(s)
         await session.commit()
-        break
 

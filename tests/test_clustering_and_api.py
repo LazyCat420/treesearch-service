@@ -62,7 +62,7 @@ async def test_ingest_clustering_and_detail_api():
         assert data["rsp"] == "RSP420"
         
         # 3. Add mock forum observation with images linked to Jack Herer
-        async for session in get_session():
+        async with get_session() as session:
             # Find canonical strain
             stmt = select(CanonicalStrainORM).where(CanonicalStrainORM.id == data["strain_id"])
             strain = (await session.execute(stmt)).scalars().first()
@@ -94,10 +94,9 @@ async def test_ingest_clustering_and_detail_api():
             session.add(img1)
             session.add(img2)
             await session.commit()
-            break
             
         # 4. Trigger ML clustering
-        async for session in get_session():
+        async with get_session() as session:
             clustered_count = await run_image_clustering(session)
             assert clustered_count >= 2, "Both images should be clustered"
             
@@ -105,7 +104,6 @@ async def test_ingest_clustering_and_detail_api():
             stmt_img = select(ObservationImageORM).where(ObservationImageORM.image_url == "https://example.com/jack1.jpg")
             img = (await session.execute(stmt_img)).scalars().first()
             assert img.cluster_id is not None
-            break
             
         # 5. Fetch strain details via API
         resp_detail = await client.get("/api/strains/Jack_Herer/detail")
@@ -126,7 +124,7 @@ async def test_ingest_clustering_and_detail_api():
         assert obs_data["images"][0]["cluster_id"] is not None
         
         # Cleanup test data
-        async for session in get_session():
+        async with get_session() as session:
             stmt_sample = select(GenomicSampleORM).where(GenomicSampleORM.rsp_number == "RSP420").options(
                 selectinload(GenomicSampleORM.chemical_profile),
                 selectinload(GenomicSampleORM.genetic_relationships)
@@ -167,7 +165,6 @@ async def test_ingest_clustering_and_detail_api():
                     await session.delete(strain)
                 
             await session.commit()
-            break
 
 
 @pytest.mark.asyncio
@@ -198,7 +195,7 @@ async def test_concurrency_import_no_duplicates(no_network):
         
         # Verify in DB that only ONE CanonicalStrain exists with this normalized name
         from src.genomics.normalization import normalize_strain_name
-        async for session in get_session():
+        async with get_session() as session:
             stmt = select(CanonicalStrainORM)
             res = await session.execute(stmt)
             strains = res.scalars().all()
@@ -234,4 +231,3 @@ async def test_concurrency_import_no_duplicates(no_network):
                     await session.delete(br)
                     
             await session.commit()
-            break

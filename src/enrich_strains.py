@@ -310,7 +310,7 @@ async def enrich_all_strains(session, force_terpenes: bool = False):
 
 async def main():
     logger.info("Starting manual enrichment script...")
-    async for session in get_session():
+    async with get_session() as session:
         try:
             await enrich_all_strains(session)
             await session.commit()
@@ -319,7 +319,6 @@ async def main():
             await session.rollback()
             logger.error(f"Enrichment transaction failed, rolled back changes. Error: {e}")
             raise e
-        break
 
 if __name__ == "__main__":
     asyncio.run(main())
