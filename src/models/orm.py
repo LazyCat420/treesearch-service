@@ -301,3 +301,79 @@ class SourceGenomicsRecordORM(Base):
     scraped_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
+
+# --------------------------------------------------------------------------- #
+# Glass Search tables (Heady Glass Blowers Network)
+# --------------------------------------------------------------------------- #
+
+class GlassArtistORM(Base):
+    """Heady glass blower / functional glass artist entity."""
+    __tablename__ = "glass_artists"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    name: Mapped[str] = mapped_column(String, index=True, unique=True)
+    alias: Mapped[str | None] = mapped_column(String, nullable=True)
+    state_code: Mapped[str | None] = mapped_column(String, nullable=True, index=True) # e.g. "CA", "CO", "OR", "NC"
+    country: Mapped[str] = mapped_column(String, default="USA", index=True)
+    bio: Mapped[str | None] = mapped_column(Text, nullable=True)
+    instagram_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    website_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    tier: Mapped[str] = mapped_column(String, default="artisan") # "legend", "master", "artisan", "local"
+    styles: Mapped[list[str]] = mapped_column(JSON, default=list) # e.g. ["Wig-Wag", "Murrine", "Sculptural"]
+    status: Mapped[str] = mapped_column(String, default="verified") # "verified", "unverified"
+    image_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class GlassCollaborationORM(Base):
+    """Collaboration link between two glass artists."""
+    __tablename__ = "glass_collaborations"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    artist_1_id: Mapped[str] = mapped_column(String, ForeignKey("glass_artists.id"), index=True)
+    artist_2_id: Mapped[str] = mapped_column(String, ForeignKey("glass_artists.id"), index=True)
+    collab_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    piece_image_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    year: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class GlassRatingORM(Base):
+    """User rating for a glass artist."""
+    __tablename__ = "glass_ratings"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    artist_id: Mapped[str] = mapped_column(String, ForeignKey("glass_artists.id"), index=True)
+    user_identifier: Mapped[str] = mapped_column(String, default="anonymous")
+    craftsmanship_score: Mapped[float] = mapped_column(Float, default=5.0)
+    function_score: Mapped[float] = mapped_column(Float, default=5.0)
+    aesthetic_score: Mapped[float] = mapped_column(Float, default=5.0)
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class GlassFavoriteORM(Base):
+    """User favorite bookmark for a glass artist."""
+    __tablename__ = "glass_favorites"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    artist_id: Mapped[str] = mapped_column(String, ForeignKey("glass_artists.id"), index=True)
+    user_identifier: Mapped[str] = mapped_column(String, default="anonymous")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class GlassSubmissionORM(Base):
+    """User submission of a new glass blower with sources for community moderation."""
+    __tablename__ = "glass_submissions"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    name: Mapped[str] = mapped_column(String, index=True)
+    location_state: Mapped[str | None] = mapped_column(String, nullable=True)
+    instagram_or_site: Mapped[str | None] = mapped_column(String, nullable=True)
+    source_urls: Mapped[list[str]] = mapped_column(JSON, default=list)
+    status: Mapped[str] = mapped_column(String, default="pending") # "pending", "approved", "rejected"
+    submitted_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+

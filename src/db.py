@@ -12,12 +12,32 @@ if not DATABASE_URL:
         "or export it locally. See .env.example for the expected format."
     )
 
+engine_kwargs = {"echo": False}
+if "sqlite" not in DATABASE_URL:
+    engine_kwargs.update({"pool_size": 5, "max_overflow": 10})
+
 engine = create_async_engine(
     DATABASE_URL,
-    echo=False,
-    pool_size=5,
-    max_overflow=10,
+    **engine_kwargs
 )
+
+from sqlalchemy import event
+
+@event.listens_for(engine.sync_engine, "connect")
+def _register_sqlite_functions(dbapi_conn, connection_record):
+    if hasattr(dbapi_conn, "create_function"):
+        import re
+        def regexp_replace(text, pattern, replacement, flags=None):
+            if text is None:
+                return None
+            return re.sub(pattern, replacement, text)
+        try:
+            dbapi_conn.create_function("regexp_replace", 4, regexp_replace, deterministic=True)
+        except Exception:
+            try:
+                dbapi_conn.create_function("regexp_replace", 4, regexp_replace)
+            except Exception:
+                pass
 
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,

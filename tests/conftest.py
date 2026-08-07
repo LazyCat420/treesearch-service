@@ -81,6 +81,10 @@ def _reset_schema():
       loop than the function-scoped tests, which binds the engine's pool to the wrong
       loop and fails every subsequent test with "attached to a different loop".
     """
+    if "sqlite" in os.environ.get("DATABASE_URL", ""):
+        yield
+        return
+
     import asyncpg
 
     dsn = os.environ["DATABASE_URL"].replace("postgresql+asyncpg://", "postgresql://")

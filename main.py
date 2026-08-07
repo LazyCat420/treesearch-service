@@ -679,6 +679,9 @@ async def get_translation_cached(text: str) -> dict:
 async def lifespan(app: FastAPI):
     """Load initial data and bootstrap DB from CSV files on startup."""
     await init_db()
+    async with get_session() as session:
+        from src.services.glass_service import seed_initial_glass_data
+        await seed_initial_glass_data(session)
     data_dir = os.getenv("KANNAPEDIA_DATA_DIR", "")
     if data_dir and os.path.isdir(data_dir):
         logger.info("Checking database bootstrapping status from %s", data_dir)
@@ -2512,6 +2515,109 @@ async def ingest_kannapedia(request: Request):
             "rsp": sample.rsp_number,
         }
 
+
+# --------------------------------------------------------------------------- #
+# Glass Search API Endpoints (Heady Glass Blowers Network)
+# --------------------------------------------------------------------------- #
+
+@app.get("/api/glass/artists")
+async def api_get_glass_artists(
+    state_code: Optional[str] = None,
+    tier: Optional[str] = None,
+    search: Optional[str] = None
+):
+    """Retrieve list of glass artists with optional filters."""
+    from src.services.glass_service import get_glass_artists
+    async with get_session() as session:
+        artists = await get_glass_artists(session, state_code=state_code, tier=tier, search=search)
+        return {"artists": artists, "count": len(artists)}
+
+
+@app.get("/api/glass/network")
+async def api_get_glass_network():
+    """Retrieve Vis.js network format for artists and collaborations."""
+    from src.services.glass_service import get_glass_network
+    async with get_session() as session:
+        data = await get_glass_network(session)
+        return data
+
+
+@app.get("/api/glass/map")
+async def api_get_glass_map():
+    """Retrieve aggregated counts of artists by state and country."""
+    from src.services.glass_service import get_glass_map_summary
+    async with get_session() as session:
+        summary = await get_glass_map_summary(session)
+        return summary
+
+
+@app.get("/api/glass/leaderboard")
+async def api_get_glass_leaderboard():
+    """Retrieve glass artists sorted by community rating score."""
+    from src.services.glass_service import get_glass_artists
+    async with get_session() as session:
+        artists = await get_glass_artists(session)
+        sorted_artists = sorted(artists, key=lambda x: x["rating"]["overall"], reverse=True)
+        return {"leaderboard": sorted_artists}
+
+
+@app.post("/api/glass/rate")
+async def api_rate_artist(request: Request):
+    """Submit a rating for an artist."""
+    from src.services.glass_service import rate_artist
+    body = await request.json()
+    artist_id = body.get("artist_id")
+    if not artist_id:
+        return JSONResponse({"error": "artist_id is required"}, status_code=400)
+
+    user_identifier = body.get("user_identifier", "anonymous")
+    craftsmanship = float(body.get("craftsmanship", 5.0))
+    function_val = float(body.get("function", 5.0))
+    aesthetic = float(body.get("aesthetic", 5.0))
+    comment = body.get("comment")
+
+    async with get_session() as session:
+        res = await rate_artist(
+            session, artist_id, user_identifier, craftsmanship, function_val, aesthetic, comment
+        )
+        return res
+
+
+@app.post("/api/glass/submit")
+async def api_submit_artist(request: Request):
+    """Submit a new glass blower with source URLs."""
+    from src.services.glass_service import submit_artist
+    body = await request.json()
+    name = body.get("name")
+    if not name:
+        return JSONResponse({"error": "name is required"}, status_code=400)
+
+    location_state = body.get("location_state")
+    instagram_or_site = body.get("instagram_or_site")
+    source_urls = body.get("source_urls", [])
+
+    async with get_session() as session:
+        res = await submit_artist(
+            session, name, location_state, instagram_or_site, source_urls
+        )
+        return res
+
+
+@app.post("/api/glass/favorite")
+async def api_favorite_artist(request: Request):
+    """Toggle favorite for an artist."""
+    from src.services.glass_service import toggle_favorite
+    body = await request.json()
+    artist_id = body.get("artist_id")
+    user_identifier = body.get("user_identifier", "anonymous")
+    if not artist_id:
+        return JSONResponse({"error": "artist_id is required"}, status_code=400)
+
+    async with get_session() as session:
+        res = await toggle_favorite(session, artist_id, user_identifier)
+        return res
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
@@ -2520,3 +2626,4 @@ if __name__ == "__main__":
         port=int(os.getenv("PORT", "8005")),
         reload=True,
     )
+
