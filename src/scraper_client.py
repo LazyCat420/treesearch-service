@@ -44,6 +44,17 @@ class ScraperClient:
             logger.error(f"Error calling scraper-service collect: {e}")
             return {"error": str(e), "count": 0, "items": []}
 
+    async def collect_glass_artist(self, url: str) -> Dict[str, Any]:
+        """Collect glass blower profile data and discover artist links via scraper-service."""
+        payload = {
+            "source": "glass_artist",
+            "url": url
+        }
+        res = await self.collect(payload)
+        if res.get("items") and len(res["items"]) > 0:
+            return res["items"][0]
+        return {}
+
     async def collect_discourse(
         self, 
         base_url: str, 

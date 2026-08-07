@@ -2584,9 +2584,10 @@ async def api_rate_artist(request: Request):
 
 
 @app.post("/api/glass/submit")
-async def api_submit_artist(request: Request):
-    """Submit a new glass blower with source URLs."""
+async def api_submit_artist(request: Request, background_tasks: BackgroundTasks):
+    """Submit a new glass blower with source URLs and trigger background scraper crawl."""
     from src.services.glass_service import submit_artist
+    from src.services.glass_crawler import crawl_and_ingest_glass_url
     body = await request.json()
     name = body.get("name")
     if not name:
@@ -2600,7 +2601,35 @@ async def api_submit_artist(request: Request):
         res = await submit_artist(
             session, name, location_state, instagram_or_site, source_urls
         )
+        
+        # Trigger background crawl on submitted URL if provided
+        target_url = instagram_or_site or (source_urls[0] if source_urls else None)
+        if target_url:
+            async def run_bg_crawl(url, sub_id):
+                async with get_session() as bg_sess:
+                    await crawl_and_ingest_glass_url(bg_sess, url, sub_id)
+
+            background_tasks.add_task(run_bg_crawl, target_url, res.get("submission_id"))
+
+        res["crawling"] = bool(target_url)
         return res
+
+
+@app.post("/api/glass/crawl")
+async def api_crawl_glass_url(request: Request, background_tasks: BackgroundTasks):
+    """Manually trigger scraper crawl on a glass URL."""
+    from src.services.glass_crawler import crawl_and_ingest_glass_url
+    body = await request.json()
+    target_url = body.get("url")
+    if not target_url:
+        return JSONResponse({"error": "url is required"}, status_code=400)
+
+    async def run_bg_crawl(url):
+        async with get_session() as bg_sess:
+            await crawl_and_ingest_glass_url(bg_sess, url)
+
+    background_tasks.add_task(run_bg_crawl, target_url)
+    return {"success": True, "message": f"Background scraper crawl queued for {target_url}"}
 
 
 @app.post("/api/glass/favorite")
