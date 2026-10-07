@@ -1,15 +1,19 @@
 # Credential rotation — shared Postgres `trader` user
 
+> Credential values below are redacted (`<pg-password>`). This is a public repo;
+> the live password and the rotation itself are the owner's action. See the
+> credential-leak incident chapter in `trading-client/documentation/`.
+
 ## What happened
 
 `src/db.py:6` hardcoded a live credential as a default fallback:
 
 ```python
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://trader:trading_bot_pass@10.0.0.16:5433/trading_bot")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://trader:<pg-password>@10.0.0.16:5433/trading_bot")
 ```
 
 This repo is **public**. So is `trading-service`, `lazy-tool-service`, and `scraper-service`.
-The password `trading_bot_pass` is published in all four, and it is the credential for the
+The password `<pg-password>` is published in all four, and it is the credential for the
 **shared** `trading_bot` database — the same database the trading system uses.
 
 The literal has been removed from this repo (`src/db.py` now fails fast if `DATABASE_URL`
@@ -21,7 +25,7 @@ old objects are already cloned, cached, and indexed. Rotate instead.
 
 ## Blast radius
 
-`grep -rl trading_bot_pass` across `sun/`, excluding `.venv`/`node_modules`/`.git`:
+`grep -rl <pg-password>` across `sun/`, excluding `.venv`/`node_modules`/`.git`:
 
 | Location | Files | Repo visibility |
 |---|---|---|
@@ -43,7 +47,7 @@ Do this in one window, when no other session is mid-deploy. Order matters.
 `postgres-service/docker-compose.yml:11` is the source of truth:
 
 ```yaml
-POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trading_bot_pass}   # <- the weak default
+POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-<pg-password>}   # <- the weak default
 ```
 
 Set a real `POSTGRES_PASSWORD` in that stack's env and drop the fallback default.
@@ -65,7 +69,7 @@ DATABASE_URL=postgresql+asyncpg://trader:<NEW_PASSWORD>@10.0.0.16:5433/trading_b
 **4. Update every other consumer.** Get the live list with:
 
 ```bash
-grep -rl "trading_bot_pass" . --exclude-dir=.venv --exclude-dir=node_modules \
+grep -rl "<pg-password>" . --exclude-dir=.venv --exclude-dir=node_modules \
     --exclude-dir=.git --exclude-dir=__pycache__
 ```
 
