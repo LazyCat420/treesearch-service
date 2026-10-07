@@ -32,3 +32,10 @@ Every machine in the house leaves through one public IP, 71.198.70.27. DuckDuckG
   - `test_leafly_import.py::test_leafly_collector_fallback_slug`
 
   They are not caused by this change. They are still open.
+
+## Follow-up (2026-10-06): the last DuckDuckGo traces
+
+- `ddgs` is gone from `requirements.txt`. Nothing had imported it since the change above, but the image still installed it.
+- The strain import's progress lines said "Querying DuckDuckGo fallback for … lineage…". They now say "Searching the web for … lineage…", and the log line reads "Web fallback parsed parents".
+- `.env.example` no longer lists DuckDuckGo among scraper-service's sources.
+- `tests/test_shared_web_search.py::test_ddgs_is_not_installed_and_no_message_names_duckduckgo` checks both the dependency and `main.py`'s messages. The same 3 tests as above still fail on SQLite, and also fail on unchanged `master`.

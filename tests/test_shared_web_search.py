@@ -102,6 +102,16 @@ async def test_no_module_imports_ddgs():
             assert not any("ddgs" in n or "duckduckgo" in n for n in names), f"{path}: {names}"
 
 
+async def test_ddgs_is_not_installed_and_no_message_names_duckduckgo():
+    """Nothing imports ddgs, so it must not be installed either; and the strain
+    import's progress lines said "Querying DuckDuckGo fallback" long after the
+    fallback stopped using it."""
+    names = [line.split(">=")[0].split("==")[0].strip().lower()
+             for line in (ROOT / "requirements.txt").read_text().splitlines()]
+    assert "ddgs" not in names
+    assert "duckduckgo" not in (ROOT / "main.py").read_text().lower()
+
+
 async def test_the_boot_enrichment_never_searches_the_web():
     """A restart re-enriches every strain. With the web fallback on, that was a
     search for every strain SeedFinder and Leafly lack, on every boot."""

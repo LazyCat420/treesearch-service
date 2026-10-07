@@ -1360,17 +1360,17 @@ async def import_strain(request: Request, background_tasks: BackgroundTasks):
                         "description": None,
                         "lineage": {},
                     }
-                    yield json.dumps({"type": "progress", "percent": 25, "stage": "lineage", "message": f"Querying DuckDuckGo fallback for {primary_name} lineage...", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "percent": 25, "stage": "lineage", "message": f"Searching the web for {primary_name} lineage...", "posts": 0, "images": 0}) + "\n"
                     parsed_parents = await fallback_search_genetics(primary_name)
                     if parsed_parents:
-                        logger.info(f"DuckDuckGo fallback successfully parsed parents for {primary_name}: {parsed_parents}")
+                        logger.info(f"Web fallback parsed parents for {primary_name}: {parsed_parents}")
                         sf_data["lineage"] = [{"name": p} for p in parsed_parents]
                 elif not sf_data.get("lineage"):
                     primary_name = sf_data["name"]
-                    yield json.dumps({"type": "progress", "percent": 25, "stage": "lineage", "message": f"Querying DuckDuckGo fallback for {primary_name} lineage...", "posts": 0, "images": 0}) + "\n"
+                    yield json.dumps({"type": "progress", "percent": 25, "stage": "lineage", "message": f"Searching the web for {primary_name} lineage...", "posts": 0, "images": 0}) + "\n"
                     parsed_parents = await fallback_search_genetics(primary_name)
                     if parsed_parents:
-                        logger.info(f"DuckDuckGo fallback successfully parsed parents for {primary_name}: {parsed_parents}")
+                        logger.info(f"Web fallback parsed parents for {primary_name}: {parsed_parents}")
                         sf_data["lineage"] = [{"name": p} for p in parsed_parents]
 
             # ── Step 3: Create/update CanonicalStrain if needed ──
