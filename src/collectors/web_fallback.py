@@ -12,39 +12,24 @@ Snippet-derived numbers are low-confidence by nature. Callers must treat anythin
 this module as a hint, never as a lab measurement.
 """
 
-import asyncio
 import logging
 import re
 
+from src import shared_web_search
+
 logger = logging.getLogger(__name__)
 
-_DDG_MAX_RESULTS = 10
+_WEB_MAX_RESULTS = 10
 
 
-async def _ddg_snippets(query: str, max_results: int = _DDG_MAX_RESULTS) -> list[str]:
-    """Run a DuckDuckGo text search and return the result body snippets.
+async def _web_snippets(query: str, max_results: int = _WEB_MAX_RESULTS) -> list[str]:
+    """Snippets from lazy-agent-service's shared keyless web search.
 
-    ddgs is synchronous, so it runs in a worker thread — calling it directly would
-    block the event loop for the whole request.
-
-    (This previously shelled out via asyncio.create_subprocess_exec to a hardcoded
-    interpreter path inside *another service's* virtualenv —
-    /home/lazycat/.../scraper-service/.venv/bin/python — which does not exist inside
-    the container, so the fallback silently returned nothing in every deployment.
-    ddgs is a direct dependency; just call it.)
+    This used to run the `ddgs` library (DuckDuckGo, and about nine engines per
+    call on a blocked IP). See src/shared_web_search.py for why it changed.
     """
-    def _search() -> list[str]:
-        from ddgs import DDGS
-
-        with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=max_results))
-        return [r.get("body", "") for r in results if r.get("body")]
-
-    try:
-        return await asyncio.to_thread(_search)
-    except Exception as e:
-        logger.error(f"DuckDuckGo fallback search failed for {query!r}: {e}")
-        return []
+    results = await shared_web_search.search(query, max_results)
+    return [r.get("snippet", "") for r in results if r.get("snippet")]
 
 
 def parse_genetics_from_snippets(snippets: list[str], strain_name: str) -> list[str]:
@@ -130,7 +115,7 @@ def _is_plausible_strain_name(candidate: str) -> bool:
 
 async def fallback_search_genetics(strain_name: str) -> list[str]:
     """Search the web for a strain's parents. Returns [] if nothing parses."""
-    snippets = await _ddg_snippets(f'site:seedfinder.eu "{strain_name}"')
+    snippets = await _web_snippets(f'site:seedfinder.eu "{strain_name}"')
     if not snippets:
         return []
     return parse_genetics_from_snippets(snippets, strain_name)
@@ -217,7 +202,7 @@ def parse_terpenes_from_snippets(snippets: list[str]) -> dict[str, float]:
 
 async def fallback_search_terpenes(strain_name: str) -> dict[str, float]:
     """Search the web for a strain's terpene percentages. Returns {} if nothing parses."""
-    snippets = await _ddg_snippets(f'"{strain_name}" terpene profile OR terpenes')
+    snippets = await _web_snippets(f'"{strain_name}" terpene profile OR terpenes')
     if not snippets:
         return {}
     return parse_terpenes_from_snippets(snippets)

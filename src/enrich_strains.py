@@ -77,7 +77,7 @@ async def create_parent_placeholder(session, parent_name: str) -> CanonicalStrai
     
     return parent_strain
 
-async def enrich_all_strains(session, force_terpenes: bool = False):
+async def enrich_all_strains(session, force_terpenes: bool = False, web_fallback: bool = True):
     """Enrich all canonical strains with missing Leafly terpenes and auto-create lineage parent placeholders."""
     logger.info("Starting database-wide strain enrichment...")
 
@@ -144,12 +144,18 @@ async def enrich_all_strains(session, force_terpenes: bool = False):
                             else:
                                 logger.info(f"  No lineage details parsed from SeedFinder for '{primary_name}'.")
                         else:
-                            logger.info(f"  No SeedFinder match found for '{primary_name}'. Trying DuckDuckGo fallback...")
-                            parsed_parents = await fallback_search_genetics(primary_name)
+                            # The boot run does not search the web: every restart would
+                            # search for every strain SeedFinder lacks (docs/WEB_SEARCH.md).
+                            if web_fallback:
+                                logger.info(f"  No SeedFinder match found for '{primary_name}'. Trying web search fallback...")
+                                parsed_parents = await fallback_search_genetics(primary_name)
+                            else:
+                                logger.info(f"  No SeedFinder match found for '{primary_name}'; web search fallback is off for this run.")
+                                parsed_parents = []
                             if parsed_parents:
                                 strain.lineage = [{"name": p} for p in parsed_parents]
                                 await session.flush()
-                                logger.info(f"  Successfully retrieved fallback lineage for '{primary_name}' from DuckDuckGo.")
+                                logger.info(f"  Successfully retrieved fallback lineage for '{primary_name}' from web search.")
                                 lineage_enriched_count += 1
                             else:
                                 logger.info(f"  No fallback lineage found for '{primary_name}'.")
@@ -174,9 +180,10 @@ async def enrich_all_strains(session, force_terpenes: bool = False):
                     if leafly_result and "terpenes" in leafly_result and leafly_result["terpenes"]:
                         terpene_profile = leafly_result["terpenes"]
                     else:
-                        logger.info(f"  No Leafly terpene data for '{primary_name}'. Trying web search fallback...")
+                        logger.info(f"  No Leafly terpene data for '{primary_name}'."
+                                    + (" Trying web search fallback..." if web_fallback else " Web search fallback is off for this run."))
                         try:
-                            terpene_profile = await fallback_search_terpenes(primary_name)
+                            terpene_profile = await fallback_search_terpenes(primary_name) if web_fallback else None
                             if terpene_profile:
                                 source_used = "leafly_fallback"
                         except Exception as fex:

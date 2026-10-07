@@ -118,14 +118,13 @@ def no_network():
         "src.scraper_client.ScraperClient.collect_kannapedia": [],
         "src.scraper_client.ScraperClient.collect_kannapedia_by_rsp": [],
         "src.scraper_client.ScraperClient.collect_leafly": None,
-        "src.scraper_client.ScraperClient.collect_duckduckgo": [],
         "src.scraper_client.ScraperClient.collect": {"items": [], "count": 0},
         "src.ml.clustering.classify_images_batch": {},
         "main.get_translation_cached": {"translated_text": "", "detected_language": "en"},
         # The web fallbacks are imported by name into both main and enrich_strains, so
         # the bindings must be patched at each call site — patching only the defining
         # module would leave both callers pointing at the real, network-hitting function.
-        "src.collectors.web_fallback._ddg_snippets": [],
+        "src.shared_web_search.search": [],
         "src.collectors.web_fallback.fallback_search_genetics": [],
         "src.collectors.web_fallback.fallback_search_terpenes": {},
         "main.fallback_search_genetics": [],

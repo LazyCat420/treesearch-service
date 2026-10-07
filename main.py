@@ -742,9 +742,12 @@ async def lifespan(app: FastAPI):
         logger.error(f"Failed to pre-populate database state cache: {e}")
         
     # Spawn background strain enrichment task.
-    # This scrapes SeedFinder/Leafly/DuckDuckGo for every strain in the database on every
-    # boot, so it needs an off switch — for tests, for local work against a copy of prod,
-    # and for any restart where you do not want the network traffic.
+    # This scrapes SeedFinder and Leafly for every strain in the database on every boot,
+    # so it needs an off switch — for tests, for local work against a copy of prod, and
+    # for any restart where you do not want the network traffic. It never searches the
+    # web (web_fallback=False): a restart would send a search for every strain those
+    # sources lack, from an IP the search engines bot-block (docs/WEB_SEARCH.md).
+    # POST /api/strains/enrich still uses the fallback.
     if os.getenv("DISABLE_STARTUP_ENRICHMENT", "").lower() in ("1", "true", "yes"):
         logger.info("Startup strain enrichment disabled via DISABLE_STARTUP_ENRICHMENT.")
         yield
@@ -759,7 +762,7 @@ async def lifespan(app: FastAPI):
             async with _enrich_lock:
                 async with get_session() as session:
                     try:
-                        await enrich_all_strains(session)
+                        await enrich_all_strains(session, web_fallback=False)
                         await session.commit()
                     except Exception:
                         await session.rollback()
