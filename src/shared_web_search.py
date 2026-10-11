@@ -30,8 +30,11 @@ async def search(query: str, limit: int = 10) -> list[dict]:
     """
     try:
         # The shared search may queue a call for up to 20 s, then give Exa 15 s.
+        # POST /execute needs EXECUTE_API_KEY once the server sets it (W3 audit).
+        key = os.getenv("EXECUTE_API_KEY", "").strip()
         async with httpx.AsyncClient(timeout=40.0) as client:
-            resp = await client.post(WEB_SEARCH_URL, json={"query": query, "limit": min(int(limit), 10)})
+            resp = await client.post(WEB_SEARCH_URL, json={"query": query, "limit": min(int(limit), 10)},
+                                     headers={"x-api-key": key} if key else None)
             payload = resp.json()
     except Exception as e:
         logger.warning(f"Shared web search failed for {query!r}: {e}")
