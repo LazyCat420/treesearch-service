@@ -39,3 +39,11 @@ Every machine in the house leaves through one public IP, 71.198.70.27. DuckDuckG
 - The strain import's progress lines said "Querying DuckDuckGo fallback for … lineage…". They now say "Searching the web for … lineage…", and the log line reads "Web fallback parsed parents".
 - `.env.example` no longer lists DuckDuckGo among scraper-service's sources.
 - `tests/test_shared_web_search.py::test_ddgs_is_not_installed_and_no_message_names_duckduckgo` checks both the dependency and `main.py`'s messages. The same 3 tests as above still fail on SQLite, and also fail on unchanged `master`.
+
+
+## `/execute` API key (2026-10-11)
+
+lazy-tool-service now enforces `EXECUTE_API_KEY` on `POST /execute/*`. This repo sends it as
+`x-api-key` when the env var is set (it comes from the deployed `.env`); without it the shared
+search answers 401. Rollout record, live checks and how to rotate the key:
+lazy-agent-service `documentation/chapters/11-security-hardening-plan-2026-10-11.md` (Item 3).
