@@ -50,7 +50,7 @@ MOCK_LEAFLY_PAGE_HTML = """
 @pytest.mark.asyncio
 async def test_leafly_collector_parses_next_data():
     import sys
-    sys.path.append("/home/lazycat/github/projects/sun/scraper-service")
+    sys.path.append("/home/lazycat/github/projects/sun/agents/scraper-service")
     from app.collectors.leafly_collector import LeaflyCollector
 
     collector = LeaflyCollector()
@@ -74,7 +74,7 @@ async def test_leafly_collector_parses_next_data():
 @pytest.mark.asyncio
 async def test_leafly_collector_fallback_slug():
     import sys
-    sys.path.append("/home/lazycat/github/projects/sun/scraper-service")
+    sys.path.append("/home/lazycat/github/projects/sun/agents/scraper-service")
     from app.collectors.leafly_collector import LeaflyCollector
 
     collector = LeaflyCollector()
